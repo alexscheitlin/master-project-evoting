@@ -1,0 +1,16 @@
+import "ecc/babyjubjubParams.code" as context
+import "ecc/proofOfOwnership.code" as proofOfOwnership
+import "hashes/sha256/512bitPacked.code" as sha256packed
+
+def hash(private field[4] secret) -> (field[2]):
+    return sha256packed(secret)
+
+def main(field[2] publicKey, private field[4] secret, private field privateKey) -> (field[2]):
+    // load BabyJubJub ECC curve context
+    context = context()
+
+    // prove ownership of the private key
+    proofOfOwnership(publicKey, privateKey, context) == 1
+
+    // return hash
+    return hash(secret)
