@@ -40,8 +40,8 @@ function decrypt(sk, cipherText) {
   print && console.log("m_\t", m_);
 
   // alternative computation
-  // 1. compute p-x
-  const pMinusX = p.sub(sk);
+  // 1. compute p-2
+  const pMinusX = p.sub(new BN(2, 10));
   print && console.log("p - x\t", pMinusX);
 
   // 2. compute pre-result s^(p-x)
@@ -71,6 +71,6 @@ const message = new BN(random.int(1, p - 1), 10);
 console.log("plaintext\t", message);
 
 for (let i = 0; i < 10; i++) {
-  decrypt(sk, encrypt(message, pk, randomValue));
+  decrypt(sk, encrypt(message, pk));
   console.log("\n");
 }
