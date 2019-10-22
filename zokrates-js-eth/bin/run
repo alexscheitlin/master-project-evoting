@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+./node_modules/.bin/truffle compile
+./node_modules/.bin/truffle migrate --reset
+./node_modules/.bin/truffle console
