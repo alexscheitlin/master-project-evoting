@@ -1,62 +1,82 @@
 const BN = require("bn.js");
 const random = require("random");
-const printConsole = false;
+const printConsole = true;
 
 const encrypt = (message: any, pk: any, p: any): [any, any] => {
   // generate a random value
   const randomValue = new BN(random.int(1, p - 2), 10);
-  console.log("random value\t", randomValue);
+  console.log("random value (r)", randomValue);
 
   // compute c1: generator^randomValue
   let c1 = gen.pow(randomValue).mod(p);
-  printConsole && console.log("c1\t", c1);
+  printConsole && console.log("c1\t\t", c1);
 
   // compute s: h^randomValue whereby
   // h = publicKey => h = g^privateKeyOfReceiver (h is publically available)
   const s = pk.pow(randomValue).mod(p);
-  printConsole && console.log("s\t", s);
+  printConsole && console.log("s\t\t", s);
 
-  // compute c2: s*message
-  const c2 = s.mul(message).mod(p);
-  printConsole && console.log("c2\t", c2);
+  // compute mh: generator^message
+  const mh = gen.pow(message).mod(p);
+  printConsole && console.log("mh\t\t", mh);
+
+  // compute c2: s*message_homomorphic
+  const c2 = s.mul(mh).mod(p);
+  printConsole && console.log("c2\t\t", c2);
+  printConsole && console.log("------------------------");
 
   return [c1, c2];
 };
 
-const decrypt = (cipherText: [any, any], sk: any, p: any) => {
+const decrypt = (cipherText: [any, any], sk: any, p: any, gen: any) => {
   let c1 = cipherText[0];
   let c2 = cipherText[1];
 
   // compute s: c1^privateKey
   let s = c1.pow(sk).mod(p);
-  printConsole && console.log("s\t", s);
+  printConsole && console.log("s\t\t", s);
 
   // compute s^-1: the multiplicative inverse of s (probably the most difficult)
   let s_inverse = s.invm(p);
-  printConsole && console.log("s^-1\t", s_inverse);
+  printConsole && console.log("s^-1\t\t", s_inverse);
 
   // compute m: c2 * s^-1 | c2 / s
-  let m_ = c2.mul(s_inverse).mod(p);
-  printConsole && console.log("m_\t", m_);
+  let m_h = c2.mul(s_inverse).mod(p);
+  printConsole && console.log("m_h\t\t", m_h);
 
   // alternative computation
   // 1. compute p-2
   const pMinusX = p.sub(new BN(2, 10));
-  printConsole && console.log("p - x\t", pMinusX);
+  //const pMinusX = p.sub(new BN(2, 10));
+  printConsole && console.log("p - 2\t\t", pMinusX);
 
   // 2. compute pre-result s^(p-x)
   const sPowPMinusX = s.pow(pMinusX).mod(p);
-  printConsole && console.log("s^(p-x)\t", sPowPMinusX);
+  printConsole && console.log("s^(p-x)\t\t", sPowPMinusX);
 
   // 3. compute message - msg = c2*s^(p-x)
-  let msg = c2.mul(sPowPMinusX).mod(p);
-  console.log("plaintext\t", msg);
+  let msg_homo = c2.mul(sPowPMinusX).mod(p);
+  printConsole && console.log("msg_homo\t", msg_homo);
+
+  // 4.
+  let m_ = new BN(1, 10);
+  while(!(gen.pow(m_).mod(p)).eq(m_h)) {
+    m_ = m_.add(new BN(1, 10));
+  }
+
+  let msg = new BN(1, 10);
+  while(!(gen.pow(msg).mod(p)).eq(msg_homo)) {
+    msg = msg.add(new BN(1, 10));
+  }
+
+  console.log("plaintexts\t", m_, msg);
   console.log(
     "are plaintexts the same?",
     msg.eq(message),
     msg.eq(m_),
     m_.eq(message)
   );
+  printConsole && console.log("------------------------");
 
   return msg;
 };
@@ -65,12 +85,16 @@ const p = new BN(7, 10);
 const gen = new BN(3, 10);
 const sk = new BN(random.int(1, p - 2), 10);
 const pk = gen.pow(sk).mod(p);
-printConsole && console.log("public key\t", pk);
 
 const message = new BN(random.int(1, p - 1), 10);
-console.log("plaintext\t", message);
 
 for (let i = 0; i < 10; i++) {
-  decrypt(encrypt(message, pk, p), sk, p);
+  printConsole && console.log("prime      (p)\t", p);
+  printConsole && console.log("generator  (g)\t", gen);
+  printConsole && console.log("private key(x)\t", sk);
+  printConsole && console.log("           (h)\t", pk);
+  console.log("plaintext  (m)\t", message);
+  printConsole && console.log("------------------------");
+  decrypt(encrypt(message, pk, p), sk, p, gen);
   console.log("\n");
 }
