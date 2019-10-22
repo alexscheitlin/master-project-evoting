@@ -10,11 +10,11 @@ const UPPER_BOUND_RANDOM = new BN(
 );
 const RAND_SIZE_BYTES = 33;
 
-// fix constants for values 1 and 0
-const M_1 = ec.g.mul(new BN(1000, 10));
-const M_0 = ec.g.mul(new BN(500, 10));
+// fix constants for values 1 -> 4 and 0 -> 2
+const M_1 = ec.curve.pointFromX(4);
+const M_0 = ec.curve.pointFromX(2);
 console.log(
-  "constants are on curve?",
+  "are the chosen on the curve?",
   ec.curve.validate(M_1) && ec.curve.validate(M_0)
 );
 
@@ -72,6 +72,7 @@ function demo() {
   const plainText = decrypt(cipherText, privateKey);
 
   console.log("are the messages the same?", plainText.eq(M_1));
+  console.log("plaintext is:", plainText.getX());
 }
 
 demo();
