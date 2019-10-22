@@ -28,6 +28,10 @@ const encrypt = (message: any, pk: any, p: any): [any, any] => {
   return [c1, c2];
 };
 
+const add = (em1: [any, any], em2: [any, any]): [any, any] => {
+  return [em1[0].mul(em2[0]).mod(p), em1[1].mul(em2[1]).mod(p)];
+};
+
 const decrypt = (cipherText: [any, any], sk: any, p: any, gen: any) => {
   let c1 = cipherText[0];
   let c2 = cipherText[1];
@@ -60,12 +64,22 @@ const decrypt = (cipherText: [any, any], sk: any, p: any, gen: any) => {
 
   // 4.
   let m_ = new BN(1, 10);
-  while(!(gen.pow(m_).mod(p)).eq(m_h)) {
+  while (
+    !gen
+      .pow(m_)
+      .mod(p)
+      .eq(m_h)
+  ) {
     m_ = m_.add(new BN(1, 10));
   }
 
   let msg = new BN(1, 10);
-  while(!(gen.pow(msg).mod(p)).eq(msg_homo)) {
+  while (
+    !gen
+      .pow(msg)
+      .mod(p)
+      .eq(msg_homo)
+  ) {
     msg = msg.add(new BN(1, 10));
   }
 
@@ -87,7 +101,6 @@ const sk = new BN(random.int(1, p - 2), 10);
 const pk = gen.pow(sk).mod(p);
 
 const message = new BN(random.int(1, p - 1), 10);
-
 for (let i = 0; i < 10; i++) {
   printConsole && console.log("prime      (p)\t", p);
   printConsole && console.log("generator  (g)\t", gen);
@@ -98,3 +111,15 @@ for (let i = 0; i < 10; i++) {
   decrypt(encrypt(message, pk, p), sk, p, gen);
   console.log("\n");
 }
+
+// plaintext check may be wrong as it is checked against the message from above
+const m1 = new BN(4, 10);
+const e_m1 = encrypt(m1, pk, p);
+const d_m1 = decrypt(e_m1, sk, p, gen);
+
+const m2 = new BN(2, 10);
+const e_m2 = encrypt(m2, pk, p);
+const d_m2 = decrypt(e_m2, sk, p, gen);
+
+const d_sum = decrypt(add(e_m1, e_m2), sk, p, gen);
+console.log(d_sum);
