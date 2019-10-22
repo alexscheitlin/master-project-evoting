@@ -2,7 +2,11 @@ const BN = require("bn.js");
 const random = require("random");
 const print = false;
 
-function encrypt(message, pk, randomValue) {
+function encrypt(message, pk) {
+  // generate a random value
+  const randomValue = new BN(random.int(1, p - 2), 10);
+  console.log("random value\t", randomValue);
+
   // compute c1: generator^randomValue
   let c1 = gen.pow(randomValue).mod(p);
   print && console.log("c1\t", c1);
@@ -67,10 +71,6 @@ const message = new BN(random.int(1, p - 1), 10);
 console.log("plaintext\t", message);
 
 for (let i = 0; i < 10; i++) {
-  // const randomValue = new BN(random.int(0, p - 1), 10);
-  const randomValue = new BN(random.int(1, p - 2), 10);
-  console.log("random value\t", randomValue);
-
   decrypt(sk, encrypt(message, pk, randomValue));
   console.log("\n");
 }
