@@ -154,5 +154,5 @@ decrypt(sk, encrypt(message, pk, randomValue));
 const result = generate();
 console.log(result);
 
-encryptZKP(result[0], new BN(1, 10));
+encryptCramerShoup(result[0], new BN(1, 10));
 console.log(hashMe(1, 2, 3));
