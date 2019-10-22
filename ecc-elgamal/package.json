@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "ts": "./node_modules/.bin/ts-node"
+    "ts": "./node_modules/.bin/ts-node",
+    "test": "./node_modules/.bin/mocha"
   },
   "license": "MIT",
   "dependencies": {
@@ -15,6 +16,8 @@
   },
   "devDependencies": {
     "@types/elliptic": "^6.4.10",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.0",
     "ts-node": "^8.4.1",
