@@ -18,15 +18,20 @@ console.log(
   ec.curve.validate(M_1) && ec.curve.validate(M_0)
 );
 
-function encrypt(message, pubK) {
-  let randBytes = crypto.randomBytes(RAND_SIZE_BYTES);
-  let randBN = new BN(randBytes);
+function getRandomPointOnCurve() {
+  let randomBytes = crypto.randomBytes(RAND_SIZE_BYTES);
+  let randomPoint = new BN(randomBytes);
 
   // ensure that the random value is in range [1,p-1]
-  while (!randBN.lte(UPPER_BOUND_RANDOM)) {
-    randBytes = crypto.randomBytes(RAND_SIZE_BYTES);
-    randBN = new BN(randBytes);
+  while (!randomPoint.lte(UPPER_BOUND_RANDOM)) {
+    randomBytes = crypto.randomBytes(RAND_SIZE_BYTES);
+    randomPoint = new BN(randomBytes);
   }
+  return randomPoint;
+}
+
+function encrypt(message, pubK) {
+  const randBN = getRandomPointOnCurve();
 
   // compute c1: generator ecc-multiply randomValue
   let c1 = ec.g.mul(randBN);
