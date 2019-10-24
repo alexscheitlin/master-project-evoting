@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { ElGamal, ElGamalVoting, PublicKey, Cipher, Summary } from 'my-crypto';
+import { ElGamal, ElGamalVoting, PublicKey, Cipher, Summary } from 'mp-crypto';
 
 import './App.css';
 
