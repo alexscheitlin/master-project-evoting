@@ -9,8 +9,6 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@types/bn.js": "^4.11.5",
-    "bn.js": "^5.0.0",
     "mp-crypto": "file:../crypto",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
