@@ -4,13 +4,15 @@ Developed with the Truffe framework: https://www.trufflesuite.com/docs/truffle/q
 
 ## Commands
 
-**Testing**
+### Testing
 
 ```shell
 $ truffle test ./test/SomeContract.sol # run the Solidity test
 $ truffle test ./test/someContract.js # run the Javascript test
 $ truffle test # run all tests
 ```
+
+**Possible Assertions:** https://github.com/trufflesuite/truffle/blob/develop/packages/core/lib/testing/Assert.sol
 
 **Compile**
 
