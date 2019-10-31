@@ -1,12 +1,26 @@
 # Ethereum POA Chain with Parity
 
-## Prerequisite
+## Prerequisites
 
-Install JQ to process JSON in the command-line.
+Install JQ (https://stedolan.github.io/jq/download/) to process JSON in the command-line:
 
-https://stedolan.github.io/jq/download/
+```bash
+# ubuntu
+sudo apt-get install jq
 
-Install BC (Basic calculator) to convert hex numbers to decimal numbers.
+# fedora
+sudo dnf install jq
+```
+
+Install BC (Basic calculator) to convert hex numbers to decimal numbers:
+
+```bash
+# ubuntu
+sudo apt-get install bc
+
+# fedora
+sudo dnf install bc
+```
 
 ## Get Parity Ethereum Client Binary
 
@@ -15,25 +29,31 @@ Install BC (Basic calculator) to convert hex numbers to decimal numbers.
 2. Make the binary executable
    `chmod +x parity`
 
+## Install Geth (Go Ethereum)
+
+https://github.com/ethereum/go-ethereum/wiki/Installing-Geth
+
 ## Run chain with simple nodes
 
 1. Start node 0: `./1/scripts/start-node.sh 0`
 
 2. Create the address for the first authority (on node 0): `./1/scripts/create-first-authority.sh`
-   
+
    output: `{"jsonrpc":"2.0","result":"0x00bd138abd70e2f00903268f3db08f2d25677c9e","id":0}`
 
-3. Create a user account: `./1/scripts/create-user.sh`
-   
+3. Start user node: `./1/scripts/start-node.sh user`
+
+4. Create a user account: `./1/scripts/create-user.sh`
+
    output: `{"jsonrpc":"2.0","result":"0x004ec07d2329997267ec62b4166639513386f32e","id":0}`
 
-4. Start node 1: `./1/scripts/start-node.sh 1`
+5. Start node 1: `./1/scripts/start-node.sh 1`
 
-5. Create the address for the second authority (on node 1): `./1/scripts/create-second-authority.sh`
+6. Create the address for the second authority (on node 1): `./1/scripts/create-second-authority.sh`
 
     output: `{"jsonrpc":"2.0","result":"0x00aa39d30f0d20ff03a22ccfc30b7efbfca597c2","id":0}`
 
-6. Stop both nodes.
+7. Stop all three nodes.
 
 Summary:
 
@@ -49,9 +69,16 @@ User:               0x004ec07d2329997267ec62b4166639513386f32e
 
 2. Start node 1: `./2/scripts/start-node.sh 1`
 
+3. Start user node: `./2/scripts/start-node.sh user`
+
 ### Connect the two Nodes
 
-Only do this the first time: `./2/scripts/connect-nodes.sh`
+Only do this the first time:
+
+```bash
+`./2/scripts/connect-nodes.sh`
+`./2/scripts/register-user.sh`
+```
 
 ### Make Transactions
 
@@ -83,6 +110,20 @@ balance of user - 0x004ec07d2329997267ec62b4166639513386f32e is 9999999999999999
 $ ./2/scripts/get-balance.sh n0a
 balance of n0a - 0x00bd138abd70e2f00903268f3db08f2d25677c9e is 1000 (0x3e8)
 ```
+
+## Deploy Smart Contract
+
+Within the terminal in the `solidity-contract-testing` folder:
+
+1. Compile and deploy the smart contract: `./compile.sh contracts/Dummy.sol`
+
+2. Open geth (using the user account): `geth attach http://127.0.0.1:8542`
+
+Within the geth console:
+
+3. Load the contract: `loadScript('test.js')`
+
+4. Call a function of the contract: `test.helloGuys()`
 
 ## Reset
 

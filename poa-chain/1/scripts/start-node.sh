@@ -15,5 +15,10 @@ if [[ $1 = 1 ]] ; then
     exit
 fi
 
+if [[ $1 = 'user' ]] ; then
+    ./parity --chain 1/demo-spec.json --config 1/user.toml
+    exit
+fi
+
 echo 'node' $1 'is not configured'
 exit

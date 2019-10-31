@@ -3,7 +3,7 @@ passphrase="user"
 password="user"
 
 header="Content-Type: application/json"
-host="localhost:8540"
+host="localhost:8542"
 
 method="parity_newAccountFromPhrase"
 params='"'$passphrase'", "'$password'"'

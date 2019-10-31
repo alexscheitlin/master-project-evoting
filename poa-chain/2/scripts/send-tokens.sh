@@ -59,7 +59,7 @@ echo "balance of receiver ($2)" $( ./2/scripts/get-balance.sh $2 no )
 echo "transaction ..."
 
 header="Content-Type: application/json"
-host="localhost:8540"
+host="localhost:8542"
 
 method="personal_sendTransaction"
 params='{"from":"'$account_from'","to":"'$account_to'","value":"'$hex_amount'"}, "'$password'"'
