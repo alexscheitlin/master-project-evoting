@@ -1,40 +1,59 @@
 import React, { useState } from 'react'
 
-import { EccElGamal, EccElGamalVoting, Cipher, Summary } from 'mp-crypto'
+import { ECelGamal, Cipher, Summary, ValidVoteProof } from 'mp-crypto'
+
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
+
+const { Encryption, Voting, VoteZKP } = ECelGamal
 
 const keyPair = ec.genKeyPair()
 const privateKey = keyPair.getPrivate()
 const publicKey = keyPair.getPublic()
 
+// used for unique ID's mocking the voters wallet address
+
+const getRandomWalletAddress = () => {
+  return '0xAd4E7D8f03904b175a1F8AE0D88154f329ac9329' + getRandomArbitrary(1, Math.pow(2, 16))
+}
+
+const getRandomArbitrary = (min: number, max: number) => {
+  return Math.random() * (max - min) + min
+}
+
 const EccElGamalComponent: React.FC = () => {
   const [votes, setVotes] = useState<Cipher[]>([])
+  const [proofs, setProofs] = useState<ValidVoteProof[]>([])
   const [result, setResult] = useState<number>(0)
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 })
 
   const addYesVote = () => {
-    const newVotes = [...votes, EccElGamalVoting.generateYesVote(publicKey)]
+    const vote = Voting.generateYesVote(publicKey)
+    const randomWalletAddress = getRandomWalletAddress()
+    //const proof = VoteZKP.generateYesProof(vote, publicKey, randomWalletAddress)
+    const newVotes = [...votes]
+
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const addNoVote = () => {
-    const newVotes = [...votes, EccElGamalVoting.generateNoVote(publicKey)]
+    const newVotes = [...votes, Voting.generateNoVote(publicKey)]
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const getResult = (votes: any[]) => {
-    const result = EccElGamalVoting.tallyVotes(publicKey, privateKey, votes)
+    const result = Voting.tallyVotes(publicKey, privateKey, votes)
     setResult(result)
 
-    const sum = EccElGamalVoting.getSummary(votes.length, result)
+    const sum = Voting.getSummary(votes.length, result)
     setSummary(sum)
   }
 
   return (
     <div>
+      <h2>ECC Elgamal</h2>
       <button className="btn" onClick={addYesVote}>
         Vote Yes
       </button>{' '}
@@ -54,7 +73,11 @@ const EccElGamalComponent: React.FC = () => {
       Votes: {votes.length}
       {votes.map((vote, i) => (
         <div key={i}>
-          {vote.c1.toNumber()}, {vote.c2.toNumber()} - {JSON.stringify(EccElGamal.decrypt(vote, privateKey))}
+          <div style={{ borderBottom: '1px solid white', paddingTop: '1em', paddingBottom: '1em' }}>
+            <div>C1: {JSON.stringify(vote.a)} </div>
+            <div>C2: {JSON.stringify(vote.b)} </div>
+            <div>decrypted: {JSON.stringify(Encryption.decrypt(vote, privateKey))} </div>
+          </div>
         </div>
       ))}
     </div>
