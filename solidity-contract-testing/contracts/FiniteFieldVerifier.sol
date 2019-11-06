@@ -19,13 +19,11 @@ contract FiniteFieldVerifier {
 
   PublicKey publicKey;
 
+  address constant UNIQUEID = 0x71C7656EC7ab88b098defB751B7401B5f6d8976F;
 
-  constructor() public {
-    // FIXME: replace with correct values
-    publicKey.p = 0x8e81a4b79ebab6d063730feba5bb4d943bb33185fd6d29a25a322a797757fd23;
-    publicKey.q = 0x8e81a4b79ebab6d063730feba5bb4d943bb33185fd6d29a25a322a797757fd23;
-    publicKey.g = 0x8e81a4b79ebab6d063730feba5bb4d943bb33185fd6d29a25a322a797757fd23;
-    publicKey.h = 0x8e81a4b79ebab6d063730feba5bb4d943bb33185fd6d29a25a322a797757fd23;
+
+  constructor(uint p, uint q, uint g, uint h) public {
+    publicKey = PublicKey(p, q, g, h);
   }
 
   function verifyProof(
@@ -85,12 +83,14 @@ contract FiniteFieldVerifier {
 
   // verifies the challenge/hash
   function verifyV5(uint[2] memory a, uint[2] memory b, uint[2] memory c, uint[2] memory cipher) public view returns (bool) {
+    // use the address of the sender once the verification call comes from the frontend
     // address of the caller provides a unique nonce for the hash
-    address uniqueID = msg.sender;
+    // address uniqueID = msg.sender;
+    address uniqueID = UNIQUEID;
 
     uint256 lc = (c[1] + c[0]) % publicKey.q;
-    bytes32 rc = sha256(abi.encodePacked(publicKey.q, uniqueID, cipher[0], cipher[1], a[0], b[0], a[1], b[1]));
-    return bytes32(lc) == rc;
+    bytes32 rc = keccak256(abi.encodePacked(uniqueID, cipher[0], cipher[1], a[0], b[0], a[1], b[1]));
+    return lc == (uint(rc) % publicKey.q);
   }
 
   //////////////////////////////////////
