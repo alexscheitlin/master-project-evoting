@@ -1,4 +1,4 @@
-const FiniteFieldVerifier = artifacts.require('FiniteFieldVerifier');
+const VoteProofVerifier = artifacts.require('VoteProofVerifier');
 const { FFelGamal } = require('../crypto');
 
 // this is a ETH address
@@ -28,7 +28,7 @@ contract('VoteProofVerifier.sol', () => {
         }
 
         // deploy contract and pass system parameters
-        const verifierInstance = await FiniteFieldVerifier.new(
+        const verifierInstance = await VoteProofVerifier.new(
           pk.p,
           pk.q,
           pk.g,
