@@ -27,10 +27,6 @@ const proof = {
   f1: ''
 };
 
-// the ETH address of the sender of the proof
-// used to add more security in the hash function as it is unique
-const ethAddressOfSender = '0xad4e7d8f03904b175a1f8ae0d88154f329ac9329';
-
 contract('FiniteFieldVerifier.sol', () => {
   const _cipher0 = web3.utils.toBN(cipher.a);
   const _cipher1 = web3.utils.toBN(cipher.b);
