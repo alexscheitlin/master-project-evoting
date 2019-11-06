@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-contract FiniteFieldVerifier {
+contract VoteProofVerifier {
 
   struct Proof {
     uint[2] cipher; // a, b

@@ -9,7 +9,7 @@ const uniqueID = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
 
 const testCases = [[7, 2], [11, 3], [23, 2], [23, 6], [23, 8]];
 
-contract('FiniteFieldVerifier.sol', () => {
+contract('VoteProofVerifier.sol', () => {
   // run 10 tests for each test case
   for (let i = 0; i < 10; i++) {
     // create a test case for each pair of p,g values
@@ -28,7 +28,7 @@ contract('FiniteFieldVerifier.sol', () => {
         }
 
         // deploy contract and pass system parameters
-        verifierInstance = await FiniteFieldVerifier.new(
+        const verifierInstance = await FiniteFieldVerifier.new(
           pk.p,
           pk.q,
           pk.g,
