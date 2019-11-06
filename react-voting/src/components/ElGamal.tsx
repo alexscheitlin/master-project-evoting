@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 
-import { ElGamal, ElGamalVoting, Cipher, Summary } from 'mp-crypto'
+import { FFelGamal, Cipher, Summary } from 'mp-crypto'
 
-const [pk, sk] = ElGamal.generateKeys(137, 51)
+const Encryption = FFelGamal.Encryption
+const Voting = FFelGamal.Voting
+
+const [pk, sk] = Encryption.generateKeys(137, 51)
 
 const ElGamalComponent: React.FC = () => {
   const [votes, setVotes] = useState<Cipher[]>([])
@@ -10,22 +13,22 @@ const ElGamalComponent: React.FC = () => {
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 })
 
   const addYesVote = () => {
-    const newVotes = [...votes, ElGamalVoting.generateYesVote(pk)]
+    const newVotes = [...votes, Voting.generateYesVote(pk)]
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const addNoVote = () => {
-    const newVotes = [...votes, ElGamalVoting.generateNoVote(pk)]
+    const newVotes = [...votes, Voting.generateNoVote(pk)]
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const getResult = (votes: any[]) => {
-    const result = ElGamalVoting.tallyVotes(pk, sk, votes)
+    const result = Voting.tallyVotes(pk, sk, votes)
     setResult(result)
 
-    const sum = ElGamalVoting.getSummary(votes.length, result)
+    const sum = Voting.getSummary(votes.length, result)
     setSummary(sum)
   }
 
@@ -50,7 +53,7 @@ const ElGamalComponent: React.FC = () => {
       Votes: {votes.length}
       {votes.map((vote, i) => (
         <div key={i}>
-          {vote.c1.toNumber()}, {vote.c2.toNumber()} - {ElGamal.decrypt1(vote, sk, pk).toNumber()}
+          {vote.a.toNumber()}, {vote.b.toNumber()} - {Encryption.decrypt1(vote, sk, pk).toNumber()}
         </div>
       ))}
     </div>

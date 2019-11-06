@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 
-import { EccElGamal, EccElGamalVoting, Cipher, Summary } from 'mp-crypto'
+import { ECelGamal, Cipher, Summary } from 'mp-crypto'
+
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
+
+const Encryption = ECelGamal.Encryption
+const Voting = ECelGamal.Voting
 
 const keyPair = ec.genKeyPair()
 const privateKey = keyPair.getPrivate()
@@ -14,22 +18,22 @@ const EccElGamalComponent: React.FC = () => {
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 })
 
   const addYesVote = () => {
-    const newVotes = [...votes, EccElGamalVoting.generateYesVote(publicKey)]
+    const newVotes = [...votes, Voting.generateYesVote(publicKey)]
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const addNoVote = () => {
-    const newVotes = [...votes, EccElGamalVoting.generateNoVote(publicKey)]
+    const newVotes = [...votes, Voting.generateNoVote(publicKey)]
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const getResult = (votes: any[]) => {
-    const result = EccElGamalVoting.tallyVotes(publicKey, privateKey, votes)
+    const result = Voting.tallyVotes(publicKey, privateKey, votes)
     setResult(result)
 
-    const sum = EccElGamalVoting.getSummary(votes.length, result)
+    const sum = Voting.getSummary(votes.length, result)
     setSummary(sum)
   }
 
@@ -54,7 +58,7 @@ const EccElGamalComponent: React.FC = () => {
       Votes: {votes.length}
       {votes.map((vote, i) => (
         <div key={i}>
-          {vote.c1.toNumber()}, {vote.c2.toNumber()} - {JSON.stringify(EccElGamal.decrypt(vote, privateKey))}
+          {vote.a.toNumber()}, {vote.b.toNumber()} - {JSON.stringify(Encryption.decrypt(vote, privateKey))}
         </div>
       ))}
     </div>
