@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
 
 import { ECelGamal, Cipher, Summary, ValidVoteProof } from 'mp-crypto'
-
 const EC = require('elliptic').ec
 const ec = new EC('secp256k1')
 
 const { Encryption, Voting, VoteZKP } = ECelGamal
 
 const keyPair = ec.genKeyPair()
-const privateKey = keyPair.getPrivate()
-const publicKey = keyPair.getPublic()
+const sk = keyPair.getPrivate()
+const pk = keyPair.getPublic()
 
 // used for unique ID's mocking the voters wallet address
 
@@ -27,11 +26,13 @@ const EccElGamalComponent: React.FC = () => {
   const [result, setResult] = useState<number>(0)
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 })
 
+  const [publicKey, setPublicKey] = useState<string>(pk.encode('hex', false))
+  const [privateKey, setPrivateKey] = useState<typeof sk>(sk)
+
   const addYesVote = () => {
-    const vote = Voting.generateYesVote(publicKey)
     const randomWalletAddress = getRandomWalletAddress()
     //const proof = VoteZKP.generateYesProof(vote, publicKey, randomWalletAddress)
-    const newVotes = [...votes]
+    const newVotes = [...votes, Voting.generateYesVote(publicKey)]
 
     setVotes(newVotes)
     getResult(newVotes)
@@ -51,6 +52,13 @@ const EccElGamalComponent: React.FC = () => {
     setSummary(sum)
   }
 
+  const serializeKey = (pk: string): string[] => {
+    const publicKey = ec.keyFromPublic(pk, 'hex').pub
+    const pubX = JSON.parse(JSON.stringify(publicKey))[0]
+    const pubY = JSON.parse(JSON.stringify(publicKey))[1]
+    return [pubX, pubY]
+  }
+
   return (
     <div>
       <h2>ECC Elgamal</h2>
@@ -62,7 +70,7 @@ const EccElGamalComponent: React.FC = () => {
       </button>
       <br></br>
       <br></br>
-      Public Key: {JSON.parse(JSON.stringify(publicKey))[0]} {JSON.parse(JSON.stringify(publicKey))[1]}
+      Public Key: {serializeKey(publicKey)[0]} {serializeKey(publicKey)[1]}
       <br></br>
       Private Key: {JSON.stringify(privateKey)}
       <br></br>
