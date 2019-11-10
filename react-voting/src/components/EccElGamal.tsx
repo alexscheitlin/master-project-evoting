@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { ECelGamal, Cipher, Summary, ValidVoteProof } from 'mp-crypto'
+import { ECelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto'
 const EC = require('elliptic').ec
 const secp256k1 = new EC('secp256k1')
 
@@ -10,10 +10,22 @@ const keyPair = secp256k1.genKeyPair()
 const sk = keyPair.getPrivate()
 const pk = keyPair.getPublic()
 
-// used for unique ID's mocking the voters wallet address
+// https://codepen.io/code_monk/pen/FvpfI
+const randHex = (length: number): string => {
+  const maxLength = 4
+  const min = Math.pow(16, Math.min(length, maxLength) - 1)
+  const max = Math.pow(16, Math.min(length, maxLength)) - 1
+  const n = Math.floor(Math.random() * (max - min + 1)) + min
+  var r = n.toString(16)
+  while (r.length < length) {
+    r = r + randHex(length - maxLength)
+  }
+  return r
+}
 
+// used for unique ID's mocking the voters wallet address
 const getRandomWalletAddress = () => {
-  return '0xAd4E7D8f03904b175a1F8AE0D88154f329ac9329' + getRandomArbitrary(1, Math.pow(2, 16))
+  return '0x' + randHex(32)
 }
 
 const getRandomArbitrary = (min: number, max: number) => {
@@ -21,8 +33,11 @@ const getRandomArbitrary = (min: number, max: number) => {
 }
 
 const EccElGamalComponent: React.FC = () => {
+  const [voterAddresses, setVoterAddresses] = useState<string[]>([])
   const [votes, setVotes] = useState<Cipher[]>([])
   const [proofs, setProofs] = useState<ValidVoteProof[]>([])
+  const [sum, setSum] = useState<Cipher>()
+  const [sumProof, setSumProof] = useState<SumProof>()
   const [result, setResult] = useState<number>(0)
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 })
 
@@ -36,32 +51,68 @@ const EccElGamalComponent: React.FC = () => {
     h: publicKey, // string
   }
 
-  const randomWalletAddress = getRandomWalletAddress()
-
   const addYesVote = () => {
+    const randomWalletAddress = getRandomWalletAddress()
+
     const vote = Voting.generateYesVote(publicKey)
     const proof = Voting.generateYesProof(vote, proofParams, randomWalletAddress)
-    const newVotes = [...votes, vote]
+    const verifiedProof = Voting.verifyZKP(vote, proof, proofParams, randomWalletAddress)
 
+    if (!verifiedProof) {
+      window.alert('Vote Proof Failed!')
+      return
+    }
+
+    const newVotes = [...votes, vote]
     setVotes(newVotes)
+    setProofs([...proofs, proof])
+    setVoterAddresses([...voterAddresses, randomWalletAddress])
+
+    // update voting results
     getResult(newVotes)
   }
 
   const addNoVote = () => {
+    const randomWalletAddress = getRandomWalletAddress()
+
     const vote = Voting.generateNoVote(publicKey)
     const proof = Voting.generateNoProof(vote, proofParams, randomWalletAddress)
-    const newVotes = [...votes, vote]
+    const verifiedProof = Voting.verifyZKP(vote, proof, proofParams, randomWalletAddress)
 
+    if (!verifiedProof) {
+      window.alert('Vote Proof Failed!')
+      return
+    }
+
+    const newVotes = [...votes, vote]
     setVotes(newVotes)
+    setProofs([...proofs, proof])
+    setVoterAddresses([...voterAddresses, randomWalletAddress])
+
+    // update voting results
     getResult(newVotes)
   }
 
   const getResult = (votes: any[]) => {
+    const sum = Voting.addVotes(votes, publicKey)
+    const randomWalletAddress = getRandomWalletAddress()
+    const proof = Voting.generateSumProof(sum, proofParams, sk, randomWalletAddress)
+    const verifiedProof = Voting.verifySumProof(sum, proof, proofParams, publicKey, randomWalletAddress)
+
+    if (!verifiedProof) {
+      window.alert('Sum Proof Failed!')
+      return
+    }
+
+    // store sum and proof
+    setSum(sum)
+    setSumProof(proof)
+
     const result = Voting.tallyVotes(publicKey, privateKey, votes)
     setResult(result)
 
-    const sum = Voting.getSummary(votes.length, result)
-    setSummary(sum)
+    const summary = Voting.getSummary(votes.length, result)
+    setSummary(summary)
   }
 
   const serializeKey = (pk: string): string[] => {
@@ -74,29 +125,52 @@ const EccElGamalComponent: React.FC = () => {
   return (
     <div>
       <h2>ECC Elgamal</h2>
+      <div>
+        Total: {summary.total} Yes: {summary.yes} No: {summary.no}
+      </div>
+      <br />
       <button className="btn" onClick={addYesVote}>
         Vote Yes
-      </button>{' '}
+      </button>
       <button className="btn" onClick={addNoVote}>
         Vote No
       </button>
       <br></br>
+      <h4>Public Key</h4>
+      <PrettyJSON input={serializeKey(publicKey)} />
       <br></br>
-      Public Key: {serializeKey(publicKey)[0]} {serializeKey(publicKey)[1]}
+      <h4>Private Key</h4>
+      <PrettyJSON input={privateKey} />
       <br></br>
-      Private Key: {JSON.stringify(privateKey)}
-      <br></br>
-      <br></br>
-      Total: {summary.total} Yes: {summary.yes} No: {summary.no}
-      <br></br>
-      <br></br>
-      Votes: {votes.length}
+      {sum && sumProof && (
+        <div>
+          <div>
+            <h4>Sum Cipher</h4>
+            <PrettyJSON input={sum} />
+            <h4>Sum Proof</h4>
+            <PrettyJSON input={sumProof} />
+            <h4>Sum Decrypted</h4>
+            <PrettyJSON input={Encryption.decrypt(sum, sk)} />
+          </div>
+        </div>
+      )}
+      <hr></hr>
       {votes.map((vote, i) => (
         <div key={i}>
-          <div style={{ borderBottom: '1px solid white', paddingTop: '1em', paddingBottom: '1em' }}>
-            <div>C1: {JSON.stringify(vote.a)} </div>
-            <div>C2: {JSON.stringify(vote.b)} </div>
-            <div>decrypted: {JSON.stringify(Encryption.decrypt(vote, privateKey))} </div>
+          <div style={{ border: '1px solid white', padding: '1em' }}>
+            <strong>Vote {i}</strong>
+            <h4>Vote Cipher</h4>
+            <div>
+              <PrettyJSON input={vote} />
+            </div>
+            <h4>Decrypted Point</h4>
+            <div>
+              <PrettyJSON input={Encryption.decrypt(vote, privateKey)} />
+            </div>
+            <div>
+              <h4>ETH Address</h4>
+              <PrettyJSON input={voterAddresses[i]} />
+            </div>
           </div>
         </div>
       ))}
@@ -105,3 +179,11 @@ const EccElGamalComponent: React.FC = () => {
 }
 
 export default EccElGamalComponent
+
+interface Props {
+  input: any
+}
+
+const PrettyJSON: React.FC<Props> = ({ input }) => {
+  return <pre>{JSON.stringify(input, null, 2)}</pre>
+}
