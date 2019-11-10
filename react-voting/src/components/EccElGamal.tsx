@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 
 import { ECelGamal, Cipher, Summary, ValidVoteProof } from 'mp-crypto'
 const EC = require('elliptic').ec
-const ec = new EC('secp256k1')
+const secp256k1 = new EC('secp256k1')
 
 const { Encryption, Voting, VoteZKP } = ECelGamal
 
-const keyPair = ec.genKeyPair()
+const keyPair = secp256k1.genKeyPair()
 const sk = keyPair.getPrivate()
 const pk = keyPair.getPublic()
 
@@ -29,17 +29,29 @@ const EccElGamalComponent: React.FC = () => {
   const [publicKey, setPublicKey] = useState<string>(pk.encode('hex', false))
   const [privateKey, setPrivateKey] = useState<typeof sk>(sk)
 
+  const proofParams = {
+    p: secp256k1.curve.p, // BN
+    n: secp256k1.curve.n, // BN
+    g: JSON.stringify(secp256k1.curve.g), // string JSON
+    h: publicKey, // string
+  }
+
+  const randomWalletAddress = getRandomWalletAddress()
+
   const addYesVote = () => {
-    const randomWalletAddress = getRandomWalletAddress()
-    //const proof = VoteZKP.generateYesProof(vote, publicKey, randomWalletAddress)
-    const newVotes = [...votes, Voting.generateYesVote(publicKey)]
+    const vote = Voting.generateYesVote(publicKey)
+    const proof = Voting.generateYesProof(vote, proofParams, randomWalletAddress)
+    const newVotes = [...votes, vote]
 
     setVotes(newVotes)
     getResult(newVotes)
   }
 
   const addNoVote = () => {
-    const newVotes = [...votes, Voting.generateNoVote(publicKey)]
+    const vote = Voting.generateNoVote(publicKey)
+    const proof = Voting.generateNoProof(vote, proofParams, randomWalletAddress)
+    const newVotes = [...votes, vote]
+
     setVotes(newVotes)
     getResult(newVotes)
   }
@@ -53,7 +65,7 @@ const EccElGamalComponent: React.FC = () => {
   }
 
   const serializeKey = (pk: string): string[] => {
-    const publicKey = ec.keyFromPublic(pk, 'hex').pub
+    const publicKey = secp256k1.keyFromPublic(pk, 'hex').pub
     const pubX = JSON.parse(JSON.stringify(publicKey))[0]
     const pubY = JSON.parse(JSON.stringify(publicKey))[1]
     return [pubX, pubY]
