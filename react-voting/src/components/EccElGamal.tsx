@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 
+import { getRandomWalletAddress } from '../helper'
 import { ECelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto'
+
 const EC = require('elliptic').ec
 const secp256k1 = new EC('secp256k1')
 
@@ -9,28 +11,6 @@ const { Encryption, Voting, VoteZKP } = ECelGamal
 const keyPair = secp256k1.genKeyPair()
 const sk = keyPair.getPrivate()
 const pk = keyPair.getPublic()
-
-// https://codepen.io/code_monk/pen/FvpfI
-const randHex = (length: number): string => {
-  const maxLength = 4
-  const min = Math.pow(16, Math.min(length, maxLength) - 1)
-  const max = Math.pow(16, Math.min(length, maxLength)) - 1
-  const n = Math.floor(Math.random() * (max - min + 1)) + min
-  var r = n.toString(16)
-  while (r.length < length) {
-    r = r + randHex(length - maxLength)
-  }
-  return r
-}
-
-// used for unique ID's mocking the voters wallet address
-const getRandomWalletAddress = () => {
-  return '0x' + randHex(32)
-}
-
-const getRandomArbitrary = (min: number, max: number) => {
-  return Math.random() * (max - min) + min
-}
 
 const EccElGamalComponent: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([])

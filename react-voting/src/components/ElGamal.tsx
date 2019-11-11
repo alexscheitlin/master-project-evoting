@@ -1,25 +1,9 @@
 import React, { useState } from 'react'
 
+import { getRandomWalletAddress } from '../helper'
 import { FFelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto'
 
 const { Encryption, Voting, VoteZKP, SumZKP } = FFelGamal
-
-// https://codepen.io/code_monk/pen/FvpfI
-const randHex = (length: number): string => {
-  const maxLength = 4
-  const min = Math.pow(16, Math.min(length, maxLength) - 1)
-  const max = Math.pow(16, Math.min(length, maxLength)) - 1
-  const n = Math.floor(Math.random() * (max - min + 1)) + min
-  var r = n.toString(16)
-  while (r.length < length) {
-    r = r + randHex(length - maxLength)
-  }
-  return r
-}
-
-const getRandomWalletAddress = () => {
-  return '0x' + randHex(32)
-}
 
 const [pk, sk] = Encryption.generateKeys(359, 32)
 
