@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { Cipher, FFelGamal, Summary, SumProof, ValidVoteProof } from 'mp-crypto';
+import React, { useEffect, useState } from 'react';
 
+import ballotABI from '../contracts/Ballot.json';
+import { useWeb3 } from '../hooks/useWeb3';
 import { getRandomWalletAddress } from '../util/helper';
-import { FFelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto';
 
 const { Encryption, Voting, VoteZKP, SumZKP } = FFelGamal;
 
@@ -14,6 +16,8 @@ const ElGamalComponent: React.FC = () => {
   const [sum, setSum] = useState<Cipher>();
   const [sumProof, setSumProof] = useState<SumProof>();
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
+
+  const [web3, contract] = useWeb3(ballotABI);
 
   const getResult = (votes: any[]) => {
     const sum = Voting.addVotes(votes, pk);
@@ -34,7 +38,7 @@ const ElGamalComponent: React.FC = () => {
     setSummary(summary);
   };
 
-  const addYesVote = () => {
+  const addYesVote = async () => {
     const vote = Voting.generateYesVote(pk);
     const randomWalletAddress = getRandomWalletAddress();
     const proof = VoteZKP.generateYesProof(vote, pk, randomWalletAddress);
