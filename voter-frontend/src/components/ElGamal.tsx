@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { getRandomWalletAddress } from '../helper';
+import { getRandomWalletAddress } from '../util/helper';
 import { FFelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto';
 
 const { Encryption, Voting, VoteZKP, SumZKP } = FFelGamal;

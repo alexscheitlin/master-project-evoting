@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { getRandomWalletAddress } from '../helper';
+import { getRandomWalletAddress } from '../util/helper';
 import { ECelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto';
 
 const EC = require('elliptic').ec;
