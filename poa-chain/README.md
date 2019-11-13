@@ -1,6 +1,15 @@
-# Ethereum POA Chain with Parity
+# Parity Ethereum Proof of Authority Chain
+
+Set up the chain in two phases:
+
+1. Create Accounts
+2. Register Nodes
+
+In the first phase, all nodes are started and accounts will be generated. Then, then nodes need to be shut down and restarted with a different configuration. In the second phase, the nodes are connected with each other ant transactions can be made.
 
 ## Prerequisites
+
+### JQ
 
 Install JQ (https://stedolan.github.io/jq/download/) to process JSON in the command-line:
 
@@ -12,7 +21,9 @@ sudo apt-get install jq
 sudo dnf install jq
 ```
 
-Install BC (Basic calculator) to convert hex numbers to decimal numbers:
+### BC
+
+Install BC (Basic Calculator) to convert hex numbers to decimal numbers:
 
 ```bash
 # ubuntu
@@ -22,93 +33,133 @@ sudo apt-get install bc
 sudo dnf install bc
 ```
 
-## Get Parity Ethereum Client Binary
+## Geth (Go Ethereum)
+
+_Only do this step if you want to deploy smart contracts and interact with the deployed contracts._
+
+Install Geth: https://github.com/ethereum/go-ethereum/wiki/Installing-Geth
+
+### Parity Ethereum Client
+
+_Only do this step if you want to run the chain without docker._
 
 1. Download the binary to this project's folder from:
    `https://github.com/paritytech/parity-ethereum/releases/tag/v2.5.9`
-2. Make the binary executable
+2. Make the binary executable:
    `chmod +x parity`
 
-## Install Geth (Go Ethereum)
+### Parity Docker Image
 
-https://github.com/ethereum/go-ethereum/wiki/Installing-Geth
+_Only do this step if you want to run the chain with docker._
 
-## Run chain with simple nodes
+`docker pull parity/parity:stable`
 
-1. Start node 0: `./1/scripts/start-node.sh 0`
+## Configuration
 
-2. Create the address for the first authority (on node 0): `./1/scripts/create-first-authority.sh`
+Within the `use-docker` file, either write `true` or `false` to indicate whether the blockchain should be set up within docker containers or on the localhost.
 
-   output: `{"jsonrpc":"2.0","result":"0x00bd138abd70e2f00903268f3db08f2d25677c9e","id":0}`
+## Phase 1: Create Accounts
 
-3. Start user node: `./1/scripts/start-node.sh user`
+1. Start authority node 1 (using the configuration for phase 1) and create the address for the first authority:
 
-4. Create a user account: `./1/scripts/create-user.sh`
+   ```bash
+   ./start-node.sh auth1 1
+   ./create-account.sh 8541 auth1 auth1
 
-   output: `{"jsonrpc":"2.0","result":"0x004ec07d2329997267ec62b4166639513386f32e","id":0}`
+   # {"jsonrpc":"2.0","result":"0x0019dd4a8857af4969971a352f7b5bdd1fc5f6c0","id":0}
+   ```
 
-5. Start node 1: `./1/scripts/start-node.sh 1`
+2. Start authority node 2 (using the configuration for phase 1) and create the address for the second authority:
 
-6. Create the address for the second authority (on node 1): `./1/scripts/create-second-authority.sh`
+   ```bash
+   ./start-node.sh auth2 1
+   ./create-account.sh 8542 auth2 auth2
 
-    output: `{"jsonrpc":"2.0","result":"0x00aa39d30f0d20ff03a22ccfc30b7efbfca597c2","id":0}`
+   # {"jsonrpc":"2.0","result":"0x000bcd493c3674f754335ae9fed13f206a716cde","id":0}
+   ```
 
-7. Stop all three nodes.
+3. Start authority node 3 (using the configuration for phase 1) and create the address for the third authority:
+
+   ```bash
+   ./start-node.sh auth3 1
+   ./create-account.sh 8543 auth3 auth3
+
+   # {"jsonrpc":"2.0","result":"0x00373f0317411aa5cc7a4005c67bacc3c5c4e7c9","id":0}
+   ```
+
+4. Start the user node (using the configuration for phase 1) and create the address for the user:
+
+   ```bash
+   ./start-node.sh user 1
+   ./create-account.sh 8540 user user
+
+   # {"jsonrpc":"2.0","result":"0x004ec07d2329997267ec62b4166639513386f32e","id":0}
+   ```
+
+5. Stop all four nodes.
+
+Alternative for steps 1 to 4: start all nodes and call `./create-account-all.sh`
 
 Summary:
 
-```
-Node 0 Authority:   0x00bd138abd70e2f00903268f3db08f2d25677c9e
-Node 1 Authority:   0x00aa39d30f0d20ff03a22ccfc30b7efbfca597c2
-User:               0x004ec07d2329997267ec62b4166639513386f32e
-```
-
-## Run Chain with Sealer Nodes
-
-1. Start node 1: `./2/scripts/start-node.sh 0`
-
-2. Start node 1: `./2/scripts/start-node.sh 1`
-
-3. Start user node: `./2/scripts/start-node.sh user`
-
-### Connect the two Nodes
-
-Only do this the first time:
-
 ```bash
-`./2/scripts/connect-nodes.sh`
-`./2/scripts/register-user.sh`
+Authority 1:   0x0019dd4a8857af4969971a352f7b5bdd1fc5f6c0
+Authority 2:   0x000bcd493c3674f754335ae9fed13f206a716cde
+Authority 3:   0x00373f0317411aa5cc7a4005c67bacc3c5c4e7c9
+User:          0x004ec07d2329997267ec62b4166639513386f32e
 ```
 
-### Make Transactions
+## Phase 2: Register Nodes
+
+1. Start all nodes (using the configuration for phase 2):
+
+   ```bash
+   ./start-node.sh auth1 2
+   ./start-node.sh auth2 2
+   ./start-node.sh auth3 2
+   ./start-node.sh user 2
+   ```
+
+2. Register authority nodes 2 and 3 and the user node to authority node 1 at port 8041 (registration will be broadcasted to the other nodes):
+
+    ```bash
+    ./register-node.sh 8542
+    ./register-node.sh 8543
+    ./register-node.sh 8540
+
+    # alternative
+    ./register-node-all.sh
+    ```
+
+## Make Transactions
 
 Check account balances:
 
 ```bash
-$ ./2/scripts/get-balance.sh n0a
-balance of n0a - 0x00bd138abd70e2f00903268f3db08f2d25677c9e is 0 (0x0)
-
-$ ./2/scripts/get-balance.sh n1a
-balance of n1a - 0x00aa39d30f0d20ff03a22ccfc30b7efbfca597c2 is 0 (0x0)
-
-$ ./2/scripts/get-balance.sh user
+$ ./get-balance.sh user
 balance of user - 0x004ec07d2329997267ec62b4166639513386f32e is 10000000000000000000000 (0x21e19e0c9bab2400000)
+
+$ ./get-balance.sh auth1
+balance of auth1 - 0x0019dd4a8857af4969971a352f7b5bdd1fc5f6c0 is 0 (0x0)
 ```
 
-Send Tokens (currently only possible to send from the user account):
+Send Tokens:
 
 ```bash
-$ ./2/scripts/send-tokens.sh user n0a
+./send-tokens.sh user auth1
 balance of sender   (user) 10000000000000000000000
-balance of receiver (n0a) 0
-transaction ...
-{"jsonrpc":"2.0","result":"0x6fafdfb3d7596b2392ca8e52ba3065a6b50dfbdeff00a90ab8e87b93cf700d82","id":1}
+balance of receiver (auth1) 0
+transaction ......
+balance of sender   (user) 9999999999999999999000
+balance of receiver (auth1) 1000
 
-$ ./2/scripts/get-balance.sh user
-balance of user - 0x004ec07d2329997267ec62b4166639513386f32e is 9999999999999999999000 (0x21e19e0c9bab23ffc18)
 
-$ ./2/scripts/get-balance.sh n0a
-balance of n0a - 0x00bd138abd70e2f00903268f3db08f2d25677c9e is 1000 (0x3e8)
+./send-tokens.sh user auth2
+balance of sender   (user) 9999999999999999999000
+balance of receiver (auth2) 0
+transaction ......
+balance of sender   (user) 9999999999999999989000
+balance of receiver (auth2) 10000
 ```
 
 ## Deploy Smart Contract
