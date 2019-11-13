@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Web3 from 'web3';
+
 import { BallotIF } from '../contract-interfaces/Ballot';
 import ballotABI from '../contracts/Ballot.json';
-import styled from 'styled-components';
+import { useWeb3 } from '../hooks/useWeb3';
 
 const Wrapper = styled.div`
   padding: 1em;
@@ -11,34 +13,20 @@ const Wrapper = styled.div`
   borde-radius: 5px;
 `;
 
-const provider = new Web3.providers.HttpProvider('http://localhost:8545');
-const contract = require('@truffle/contract');
-
-interface Props {
-  web3: Web3 | undefined;
-}
-
-export const ChainInfo: React.FC<Props> = ({ web3 }) => {
+export const ChainInfo: React.FC = () => {
   const [res, setRes] = useState('');
 
-  const loadContract = async () => {
-    if (web3 !== undefined) {
-      const MyContract = contract(ballotABI);
-      MyContract.setProvider(provider);
-      let instance: BallotIF;
-      try {
-        instance = await MyContract.deployed();
-        const res = await instance.test();
-        setRes(res.toNumber().toString());
-      } catch (err) {
-        alert(err);
-        return;
-      }
+  const [web3, contract] = useWeb3(ballotABI);
+
+  const testContract = async () => {
+    if (contract !== undefined) {
+      const res = await contract.test();
+      setRes(res.toNumber().toString());
     }
   };
 
   useEffect(() => {
-    loadContract();
+    testContract();
   });
 
   return (
