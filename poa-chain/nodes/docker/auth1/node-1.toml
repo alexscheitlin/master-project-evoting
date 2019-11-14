@@ -1,6 +1,5 @@
 [parity]
 chain = "/home/parity/spec.json"
-base_path = "/tmp/parity/auth1"
 [network]
 port = 30301
 [rpc]
