@@ -5,8 +5,10 @@ import './SumProofVerifier.sol';
 
 contract Ballot {
 
+	event VotingSuccessEvent(address indexed from, bool success, string reason);
+
 	// CONSTANTS
-	bool private IS_VOTING_OPEN;
+	bool private IS_VOTING_OPEN = false;
 
 	struct SystemParameters {
     uint p; // prime
@@ -61,6 +63,8 @@ contract Ballot {
 		voteVerifier = new VoteProofVerifier();
 		sumVerifier = new SumProofVerifier();
 
+		IS_VOTING_OPEN = true;
+
 		// initialize empty Election struct
 		election.nrOfVoters = 0;
 		election.voters.length = 0;
@@ -89,33 +93,48 @@ contract Ballot {
 		sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
 	}
 
-	function vote(		
+	function getVote(uint256 idx) public view returns(uint256, uint256) {
+		return (election.voters[idx].cipher.a, election.voters[idx].cipher.b);
+	}
+
+	function getNumberOfVotes() public view returns(uint256) {
+		return election.voters.length;
+	}
+
+	function vote(
 		uint[2] calldata cipher, // a, b
     uint[2] calldata a,
     uint[2] calldata b,
     uint[2] calldata c,
     uint[2] calldata f,
-		address id) external returns (bool){
+		address id) external returns(bool, string memory) {
 
 		if(!IS_VOTING_OPEN) {
-			// TODO: emit Event
-			return false;
+			emit VotingSuccessEvent(msg.sender, false, "Vote not open");
+			return (false, "Vote not open");
 		}
 
+		// TODO: Enable once system is ready
+		// if(election.hasVoted[msg.sender]) {
+		// 	emit VotingSuccessEvent(msg.sender, false, "Voter already voted");
+		// 	return (false, "Voter already voted");
+		// }
+
 		if(!verifyVote(cipher, a, b, c, f, msg.sender)) {
-			// TODO: emit Event
-			return false;
+			emit VotingSuccessEvent(msg.sender, false, "Proof not correct");
+			return (false, "Proof not correct");
 		}
 
 		VoteProof memory voteProof = VoteProof(a,b,c,f);
 		Cipher memory _cipher = Cipher(cipher[0], cipher[1]);
-		Voter memory voter = Voter({voterAddress : msg.sender, cipher : _cipher, voteProof : voteProof});
+		Voter memory voter = Voter(msg.sender, _cipher, voteProof);
 
 		election.voters.push(voter);
-		election.nrOfVoters = election.nrOfVoters + 1;
+		election.nrOfVoters += 1;
 		election.hasVoted[msg.sender] = true;
 
-		return true;
+		emit VotingSuccessEvent(msg.sender, true, "Vote was accepted");
+		return (true, "Vote was accepted");
 	}
 
 	function verifyVote(
