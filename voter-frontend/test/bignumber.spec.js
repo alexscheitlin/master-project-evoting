@@ -11,7 +11,7 @@ const bigInt = require("big-integer");
 
 const { createRandomInputVariable, createBN, createEncodedValue, createBitLength } = require("./helper/helper")
 
-contract.only('BigNumber Mock Testing', function (accounts) {
+contract('BigNumber Mock Testing', function (accounts) {
   const init_runs = 1;
   for (let run = init_runs; run > 0; run--) {
     it("is prime function:\tRun " + (init_runs - run) + " - create random prime value, assert contract returns true", async function () {

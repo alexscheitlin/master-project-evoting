@@ -170,21 +170,31 @@ library BigNumber {
             }
 
             switch eq(carry,0)
-                case 1{ result_start := add(result_start,0x20) }           // if carry is 0, increment result_start, ie. length word for result is now one word position ahead.
-                default { mstore(result_ptr, 1) }                          // else if carry is 1, store 1; overflow has occured, so length word remains in the same position.
+                // if carry is 0, increment result_start, ie. length word for result is now one word position ahead.
+                case 1{ result_start := add(result_start,0x20) }
 
-            result := result_start                                         // point 'result' bytes value to the correct address in memory
-            mstore(result,add(mload(max),mul(0x20,carry)))                   // store length of result. we are finished with the byte array.
+                // else if carry is 1, store 1; overflow has occured, so length word remains in the same position.
+                default { mstore(result_ptr, 1) }
 
-            mstore(0x40, add(result,add(mload(result),0x20)))                // Update freemem pointer to point to new end of memory.
+            // point 'result' bytes value to the correct address in memory
+            result := result_start
+            // store length of result. we are finished with the byte array.
+            mstore(result,add(mload(max),mul(0x20,carry)))
+
+            // Update freemem pointer to point to new end of memory.
+            mstore(0x40, add(result,add(mload(result),0x20)))
         }
 
         //we now calculate the result's bit length.
         //with addition, if we assume that some a is at least equal to some b, then the resulting bit length will be a's bit length or (a's bit length)+1, depending on carry bit.
         //this is cheaper than calling get_bit_length.
         uint msword;
-        assembly {msword := mload(add(result,0x20))}                          // get most significant word of result
-        if(msword>>(max_bitlen % 256)==1 || msword==1) ++max_bitlen;          // if msword's bit length is 1 greater than max_bitlen, OR overflow occured, new bitlen is max_bitlen+1.
+
+        // get most significant word of result
+        assembly {msword := mload(add(result,0x20))}
+
+        // if msword's bit length is 1 greater than max_bitlen, OR overflow occured, new bitlen is max_bitlen+1.
+        if(msword>>(max_bitlen % 256)==1 || msword==1) ++max_bitlen;
 
         return (result, max_bitlen);
     }

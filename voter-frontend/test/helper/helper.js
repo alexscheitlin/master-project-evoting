@@ -1,13 +1,16 @@
 const BN = require("bn.js")
 const crypto = require("crypto")
 
+const random = require("random")
+
 function createRandomInputVariable() {
   //assuming we can have up to 31 leading zeroes.
   const zeros = "0".repeat((Math.floor(Math.random() * 31) + 1) * 2)
   const size = ((Math.floor(Math.random() * 10) + 1) * 32) - (zeros.length / 2)
 
   //create random hex strings with leading zeroes
-  let value = zeros + crypto.randomBytes(size).toString('hex');
+  const rand = crypto.randomBytes(size).toString('hex');
+  let value = zeros + rand.toString('hex');
 
   while (zeros.length == 63 && value[62] == "0" && value[63] == "0") {
     value = value.substring(0, 62) + crypto.randomBytes(1).toString('hex') + value.substring(64)
@@ -17,6 +20,13 @@ function createRandomInputVariable() {
   const neg = Math.random() >= 0.5;
 
   return { value, size, zeros, neg }
+}
+
+function smallRandom() {
+  const zeros = "0".repeat(63);
+  const size = 1;
+  const value = zeros + random.int(1, 15).toString(16);
+  return { value, size, zeros, neg: false }
 }
 
 function createBN(a_val, a_neg) {
@@ -37,6 +47,7 @@ function createEncodedValue(val, neg, msb_enc) {
 
 module.exports = {
   createRandomInputVariable,
+  smallRandom,
   createBN,
   createBitLength,
   createEncodedValue
