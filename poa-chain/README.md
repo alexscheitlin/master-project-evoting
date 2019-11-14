@@ -5,7 +5,11 @@ Set up the chain in two phases:
 1. Create Accounts
 2. Register Nodes
 
-In the first phase, all nodes are started and accounts will be generated. Then, then nodes need to be shut down and restarted with a different configuration. In the second phase, the nodes are connected with each other ant transactions can be made.
+In the first phase, all nodes are started and accounts will be generated. Then, then nodes need to be shut down and restarted with a different configuration. In the second phase, the nodes are connected with each other and transactions can be made.
+
+**Instead of doing _Phase 1_ and _Phase 2_ below with docker, you can run: `./all-in-one.sh`**
+
+**If you run the script the first time, always answer with 'y'.**
 
 ## Prerequisites
 

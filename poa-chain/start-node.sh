@@ -61,6 +61,7 @@ if [[ $(cat use-docker) == 'true' ]]; then
     local_dir=$(pwd)
     mount_dir="/home/parity"
 
+    # start docker container
     docker run -ti -p $port:$port \
         -v $local_dir/chain/spec-$2.json:$mount_dir/spec.json:ro \
         -v $local_dir/nodes/docker/$1/node.pwd:$mount_dir/node.pwd:ro \
