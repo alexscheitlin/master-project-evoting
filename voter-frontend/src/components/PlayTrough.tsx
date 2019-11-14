@@ -18,6 +18,14 @@ const PlayTrough: React.FC = () => {
   // set by kanton locally
   const [proofState, setProofState] = useState(false);
 
+  const openBallot = async () => {
+    await ballot.openBallot({ from: defaultAccount });
+  };
+
+  const closeBallot = async () => {
+    await ballot.closeBallot({ from: defaultAccount });
+  };
+
   const generateAndSetSystemParams = async () => {
     const keys = Encryption.generateKeysZKP(23, 2);
     const pk = keys[0];
@@ -74,9 +82,14 @@ const PlayTrough: React.FC = () => {
         (res: any) => {
           for (let i = 0; i < res.logs.length; i++) {
             const log = res.logs[i];
-
             if (log.event == 'VotingSuccessEvent' && log.args[1] === true) {
+              console.log(log.args.reason);
               setProofState(true);
+              break;
+            }
+            if (log.event == 'VotingSuccessEvent' && log.args[1] === false) {
+              console.log(log.args.reason);
+              setProofState(false);
               break;
             }
           }
@@ -126,9 +139,12 @@ const PlayTrough: React.FC = () => {
         (res: any) => {
           for (let i = 0; i < res.logs.length; i++) {
             const log = res.logs[i];
-
             if (log.event == 'SumEvent' && log.args[1] === true) {
-              console.log('Sum Proof TRUE');
+              console.log(log.args.reason);
+              break;
+            }
+            if (log.event == 'SumEvent' && log.args[1] === false) {
+              console.log(log.args.reason);
               break;
             }
           }
@@ -140,6 +156,10 @@ const PlayTrough: React.FC = () => {
   return (
     <div>
       <h1>Playthrough</h1>
+      <div>
+        <button onClick={openBallot}>openBallot</button>
+        <button onClick={closeBallot}>closeBallot</button>
+      </div>
       <div>
         <button onClick={generateAndSetSystemParams}>generateSystemParams</button>
         {systemParametersLoaded ? <span>OK</span> : null}

@@ -59,14 +59,14 @@ contract Ballot {
 	SystemParameters private systemParameters;
 	PublicKey private publicKey;
 	Election private election;
-	bool private IS_VOTING_OPEN = false;
+	bool private IS_VOTING_OPEN;
 	address private _owner;
 
 	constructor() public{
 		voteVerifier = new VoteProofVerifier();
 		sumVerifier = new SumProofVerifier();
 
-		IS_VOTING_OPEN = true;
+		IS_VOTING_OPEN = false;
 		_owner = msg.sender;
 
 		// initialize empty Election struct
@@ -103,6 +103,12 @@ contract Ballot {
 
 	function getNumberOfVotes() public view returns(uint256) {
 		return election.voters.length;
+	}
+
+	function openBallot() public {
+		require(msg.sender == _owner);
+
+		IS_VOTING_OPEN = true;
 	}
 
 	function closeBallot() public {
@@ -156,11 +162,10 @@ contract Ballot {
 		uint f,
 		address id) external returns(bool, string memory) {
 		
-		// TODO: Enable once system is ready
-		// if(IS_VOTING_OPEN) {
-		// 	emit SumEvent(msg.sender, false, "Vote is still ongoing");
-		// 	return (false, "Vote is still ongoing");
-		// }
+		if(IS_VOTING_OPEN) {
+			emit SumEvent(msg.sender, false, "Vote is still ongoing");
+			return (false, "Vote is still ongoing");
+		}
 
 		if(!verifySum(a, b, a1, b1, d, f, msg.sender)) {
 			emit SumEvent(msg.sender, false, "Proof not correct");
