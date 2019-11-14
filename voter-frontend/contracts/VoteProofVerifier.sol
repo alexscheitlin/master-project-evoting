@@ -19,11 +19,15 @@ contract VoteProofVerifier {
 
   PublicKey publicKey;
 
-  address constant UNIQUEID = 0x71C7656EC7ab88b098defB751B7401B5f6d8976F;
+  constructor() public {
+    publicKey = PublicKey(0,0,0,0);
+  }
 
-
-  constructor(uint p, uint q, uint g, uint h) public {
-    publicKey = PublicKey(p, q, g, h);
+  function initialize(uint p, uint q, uint g, uint h) public payable {
+    publicKey.p = p;
+    publicKey.q = q;
+    publicKey.g = g;
+    publicKey.h = h;
   }
 
   function verifyProof(
@@ -31,7 +35,8 @@ contract VoteProofVerifier {
     uint[2] memory a,
     uint[2] memory b,
     uint[2] memory c,
-    uint[2] memory f
+    uint[2] memory f,
+    address id
     ) public view returns(bool) {
 
     // create a proof object
@@ -52,7 +57,7 @@ contract VoteProofVerifier {
     bool v4 = verifyV4(proof.b[1], proof.c[1], proof.f[1], proof.cipher[1]);
 
     // recompute the hash and verify
-    bool v5 = verifyV5(proof.a, proof.b, proof.c, proof.cipher);
+    bool v5 = verifyV5(proof.a, proof.b, proof.c, proof.cipher, id);
 
     return v1 && v2 && v3 && v4 && v5;
   }
@@ -82,12 +87,9 @@ contract VoteProofVerifier {
   }
 
   // verifies the challenge/hash
-  function verifyV5(uint[2] memory a, uint[2] memory b, uint[2] memory c, uint[2] memory cipher) public view returns (bool) {
+  function verifyV5(uint[2] memory a, uint[2] memory b, uint[2] memory c, uint[2] memory cipher, address uniqueID) public view returns (bool) {
     // use the address of the sender once the verification call comes from the frontend
     // address of the caller provides a unique nonce for the hash
-    // address uniqueID = msg.sender;
-    address uniqueID = UNIQUEID;
-
     uint256 lc = (c[1] + c[0]) % publicKey.q;
     bytes32 rc = keccak256(abi.encodePacked(uniqueID, cipher[0], cipher[1], a[0], b[0], a[1], b[1]));
     return lc == (uint(rc) % publicKey.q);
@@ -96,7 +98,7 @@ contract VoteProofVerifier {
   //////////////////////////////////////
   // HELPER FUNCTIONS
   //////////////////////////////////////
-      // modulo operations
+  // modulo operations
   function add(uint a, uint b) public view returns (uint res){
     return (a + b) % publicKey.q;
   }
