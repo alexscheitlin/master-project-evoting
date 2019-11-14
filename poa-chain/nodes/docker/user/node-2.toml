@@ -8,7 +8,7 @@ apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc
 [websockets]
 port = 8450
 [account]
-password = ["/home/parity/.local/share/io.parity.ethereum/nodes/docker/user/node.pwd"]
+password = ["/home/parity/node.pwd"]
 [mining]
 engine_signer = "0x004ec07d2329997267ec62b4166639513386f32e"
 reseal_on_txs = "none"
