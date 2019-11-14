@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 import './VoteProofVerifier.sol';
+import './SumProofVerifier.sol';
 
 contract Ballot {
 
@@ -15,11 +16,13 @@ contract Ballot {
 	}
 
 	VoteProofVerifier voteVerifier;
+	SumProofVerifier sumVerifier;
 	SystemParameters systemParameters;
 	PublicKey publicKey;
 
 	constructor() public{
 		voteVerifier = new VoteProofVerifier();
+		sumVerifier = new SumProofVerifier();
 	}
 
   function setParameters(uint[3] memory params) public {
@@ -40,6 +43,7 @@ contract Ballot {
 
 	function createVerifiers() public {
 		voteVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
+		sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
 	}
 
 	function verifyVote(
@@ -51,5 +55,17 @@ contract Ballot {
 		address id
 	) public view returns(bool) {
 		return voteVerifier.verifyProof(cipher, a, b, c, f, id);
+	}
+
+	function verifySum(
+		uint a,
+		uint b, // a, b
+		uint a1,
+		uint b1,
+		uint d,
+		uint f,
+		address id
+	) public view returns(bool) {
+		return sumVerifier.verifyProof(a, b, a1, b1, d, f, id);
 	}
 }

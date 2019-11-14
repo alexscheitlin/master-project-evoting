@@ -12,12 +12,5 @@ module.exports = function(deployer) {
   deployer.deploy(Ballot);
   deployer.deploy(Verifier);
   deployer.deploy(VoteProofVerifier);
-
-  deployer.deploy(
-    SumProofVerifier,
-    params.params.ff.PublicKey.p,
-    params.params.ff.PublicKey.q,
-    params.params.ff.PublicKey.h,
-    params.params.ff.PublicKey.g,
-  );
+  deployer.deploy(SumProofVerifier);
 };
