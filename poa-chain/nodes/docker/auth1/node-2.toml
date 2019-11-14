@@ -1,5 +1,5 @@
 [parity]
-chain = "/home/parity/.local/share/io.parity.ethereum/chain/spec-2.json"
+chain = "/home/parity/spec.json"
 base_path = "/tmp/parity/auth1"
 [network]
 port = 30301
@@ -9,7 +9,7 @@ apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc
 [websockets]
 port = 8451
 [account]
-password = ["/home/parity/.local/share/io.parity.ethereum/nodes/docker/auth1/node.pwd"]
+password = ["/home/parity/node.pwd"]
 [mining]
 engine_signer = "0x0019dd4a8857af4969971a352f7b5bdd1fc5f6c0"
 reseal_on_txs = "none"

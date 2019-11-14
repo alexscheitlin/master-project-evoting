@@ -1,5 +1,5 @@
 [parity]
-chain = "/home/parity/.local/share/io.parity.ethereum/chain/spec-1.json"
+chain = "/home/parity/spec.json"
 base_path = "/tmp/parity/auth2"
 [network]
 port = 30302

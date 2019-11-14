@@ -59,14 +59,18 @@ if [[ $(cat use-docker) == 'true' ]]; then
     esac
 
     local_dir=$(pwd)
-    mount_dir="/home/parity/.local/share/io.parity.ethereum"
+    mount_dir="/home/parity"
 
-    sudo docker run -ti -p $port:$port \
-        --volume $local_dir/:$mount_dir/ parity/parity:stable \
+    docker run -ti -p $port:$port \
+        -v $local_dir/chain/spec-$2.json:$mount_dir/spec.json:ro \
+        -v $local_dir/nodes/docker/$1/node.pwd:$mount_dir/node.pwd:ro \
+        -v $local_dir/nodes/docker/$1/node-$2.toml:$mount_dir/node.toml:ro \
+        -v $local_dir/storage/$1/:$mount_dir/storage/$1/ \
+        parity/parity:stable \
         --base-path $mount_dir/storage/$1/ \
-        --config $mount_dir/nodes/docker/$1/node-$2.toml \
-        --ui-interface all \
+        --config $mount_dir/node.toml \
         --jsonrpc-interface all
+        #--ui-interface all
 else
     echo "starting $1 node on localhost ..."
 

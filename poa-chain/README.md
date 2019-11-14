@@ -56,7 +56,9 @@ _Only do this step if you want to run the chain with docker._
 
 ## Configuration
 
-Within the `use-docker` file, either write `true` or `false` to indicate whether the blockchain should be set up within docker containers or on the localhost.
+1. Within the `use-docker` file, either write `true` or `false` to indicate whether the blockchain should be set up within docker containers or on the localhost.
+
+2. Run `./reset.sh` to delete existing blockchain data and create the storage folders for the chains (to persist data between multiple docker runs).
 
 ## Phase 1: Create Accounts
 
