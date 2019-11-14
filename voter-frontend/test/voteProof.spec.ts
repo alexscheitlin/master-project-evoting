@@ -10,7 +10,7 @@ const uniqueID = '0x05f5E01f2D2073C8872Aca4213fD85F382CA681A';
 const testCases = [[7, 2], [11, 3], [23, 2], [23, 6], [23, 8]];
 const defaultAccount = '0x05f5E01f2D2073C8872Aca4213fD85F382CA681A';
 
-contract.only('VoteProofVerifier.sol', () => {
+contract('VoteProofVerifier.sol', () => {
   // run 10 tests for each test case
   for (let i = 0; i < 10; i++) {
     // create a test case for each pair of p,g values
