@@ -1,4 +1,4 @@
-import { FFelGamal } from 'mp-crypto';
+import { FFelGamal, Cipher } from 'mp-crypto';
 import React, { useState } from 'react';
 
 import ballotABI from '../contracts/Ballot.json';
@@ -9,11 +9,11 @@ const { Encryption, Voting, VoteZKP, SumZKP } = FFelGamal;
 
 const PlayTrough: React.FC = () => {
   const defaultAccount = '0x05f5E01f2D2073C8872Aca4213fD85F382CA681A';
-  const [web3, verifier] = useWeb3(voteVerifierABI);
-  const [_, ballot] = useWeb3(ballotABI);
+  const [web3, ballot] = useWeb3(ballotABI);
 
-  // set by bund
+  // set by bund and only known by bund
   const [systemParameters, setSystemParameters] = useState();
+  const [privateKey, setPrivateKey] = useState();
   const [publicKey, setPublicKey] = useState();
   const [systemParametersLoaded, setSystemParametersLoaded] = useState(false);
   const [verifiersLoaded, setVerifiersLoaded] = useState(false);
@@ -25,8 +25,13 @@ const PlayTrough: React.FC = () => {
   const [localPublicKeyLoaded, setLocalPublicKeyLoaded] = useState(false);
   const [proofVerified, setProofVerified] = useState(false);
 
+  // local store -> move to contract later
+  const [votes, setVotes] = useState<Cipher[]>([]);
+
   const generateAndSetSystemParams = async () => {
-    const pk = Encryption.generateKeysZKP(23, 2)[0];
+    const keys = Encryption.generateKeysZKP(23, 2);
+    const pk = keys[0];
+    const sk = keys[1];
 
     // set local state
     setSystemParameters({
@@ -35,6 +40,7 @@ const PlayTrough: React.FC = () => {
       g: pk.g,
     });
     setPublicKey(pk.h);
+    setPrivateKey(sk);
 
     // set in contracts
     await ballot.setParameters([pk.p, pk.q, pk.g], { from: defaultAccount });
@@ -82,9 +88,24 @@ const PlayTrough: React.FC = () => {
       walletAddress,
     );
 
+    setVotes([...votes, vote]);
     setProofVerified(yesBallot);
 
     console.log('ballot.verifyVote verified -->', yesBallot);
+  };
+
+  const endVoting = () => {
+    const params: FFelGamal.PublicKey = {
+      p: localSystemParams[0],
+      q: localSystemParams[1],
+      g: localSystemParams[2],
+      h: localPublicKey,
+    };
+    const sum = Voting.addVotes(votes, params);
+    const proof = SumZKP.generateSumProof(sum, params, privateKey, defaultAccount);
+    const verifiedProof = SumZKP.verifySumProof(sum, proof, params, defaultAccount);
+
+    console.log('sum proof correct -> ', verifiedProof);
   };
 
   const allInOne = async () => {
@@ -143,6 +164,9 @@ const PlayTrough: React.FC = () => {
         ) : (
           <span>Proof NOT verified</span>
         )}
+      </div>
+      <div>
+        <button onClick={endVoting}>End Voting, calculate sum and sum-proof</button>
       </div>
       <hr></hr>
       <div>
