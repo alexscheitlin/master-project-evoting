@@ -2,7 +2,6 @@ import { FFelGamal, Cipher, ValidVoteProof } from 'mp-crypto';
 import React, { useState } from 'react';
 
 import ballotABI from '../contracts/Ballot.json';
-import voteVerifierABI from '../contracts/VoteProofVerifier.json';
 import { useWeb3 } from '../hooks/useWeb3';
 
 const { Encryption, Voting, VoteZKP, SumZKP } = FFelGamal;
@@ -17,7 +16,7 @@ const PlayTrough: React.FC = () => {
   const [verifiersLoaded, setVerifiersLoaded] = useState(false);
 
   // set by kanton locally
-  const [proofVerified, setProofVerified] = useState(false);
+  const [proofState, setProofState] = useState(false);
 
   const generateAndSetSystemParams = async () => {
     const keys = Encryption.generateKeysZKP(23, 2);
@@ -77,7 +76,7 @@ const PlayTrough: React.FC = () => {
             const log = res.logs[i];
 
             if (log.event == 'VotingSuccessEvent' && log.args[1] === true) {
-              console.log('Voting successful');
+              setProofState(true);
               break;
             }
           }
@@ -112,8 +111,30 @@ const PlayTrough: React.FC = () => {
     const sum = Voting.addVotes(_votes, params);
     const proof = SumZKP.generateSumProof(sum, params, privateKey, defaultAccount);
 
-    // TODO: verify in contract
-    const verifiedProof = SumZKP.verifySumProof(sum, proof, params, defaultAccount);
+    await ballot
+      .submitSumProof(
+        web3.utils.toBN(sum.a).toString(),
+        web3.utils.toBN(sum.b).toString(),
+        web3.utils.toBN(proof.a1).toString(),
+        web3.utils.toBN(proof.b1).toString(),
+        web3.utils.toBN(proof.d).toString(),
+        web3.utils.toBN(proof.f).toString(),
+        defaultAccount,
+        { from: defaultAccount },
+      )
+      .then(
+        (res: any) => {
+          for (let i = 0; i < res.logs.length; i++) {
+            const log = res.logs[i];
+
+            if (log.event == 'SumEvent' && log.args[1] === true) {
+              console.log('Sum Proof TRUE');
+              break;
+            }
+          }
+        },
+        (error: any) => console.log('something went wrong: ', error),
+      );
   };
 
   return (
@@ -129,12 +150,10 @@ const PlayTrough: React.FC = () => {
       </div>
       <div>
         <button onClick={() => castVote(0)}>submit NO VOTE with Proof</button>
-      </div>
-      <div>
         <button onClick={() => castVote(1)}>submit YES VOTE with Proof</button>
-        {proofVerified ? (
+        {proofState ? (
           <span>
-            <strong>Proof verified</strong>
+            <strong>Vote Proof Verified</strong>
           </span>
         ) : (
           <span>Proof NOT verified</span>

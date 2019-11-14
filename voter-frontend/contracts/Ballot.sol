@@ -3,12 +3,12 @@ pragma solidity ^0.5.0;
 import './VoteProofVerifier.sol';
 import './SumProofVerifier.sol';
 
+// TODO: remove id from call signatures, try to use msg.sender
+
 contract Ballot {
 
 	event VotingSuccessEvent(address indexed from, bool success, string reason);
-
-	// CONSTANTS
-	bool private IS_VOTING_OPEN = false;
+	event SumEvent(address indexed from, bool success, string reason);
 
 	struct SystemParameters {
     uint p; // prime
@@ -55,15 +55,19 @@ contract Ballot {
 
 	VoteProofVerifier voteVerifier;
 	SumProofVerifier sumVerifier;
-	SystemParameters systemParameters;
-	PublicKey publicKey;
-	Election election;
+
+	SystemParameters private systemParameters;
+	PublicKey private publicKey;
+	Election private election;
+	bool private IS_VOTING_OPEN = false;
+	address private _owner;
 
 	constructor() public{
 		voteVerifier = new VoteProofVerifier();
 		sumVerifier = new SumProofVerifier();
 
 		IS_VOTING_OPEN = true;
+		_owner = msg.sender;
 
 		// initialize empty Election struct
 		election.nrOfVoters = 0;
@@ -101,6 +105,12 @@ contract Ballot {
 		return election.voters.length;
 	}
 
+	function closeBallot() public {
+		require(msg.sender == _owner);
+
+		IS_VOTING_OPEN = false;
+	}
+
 	function vote(
 		uint[2] calldata cipher, // a, b
     uint[2] calldata a,
@@ -135,6 +145,34 @@ contract Ballot {
 
 		emit VotingSuccessEvent(msg.sender, true, "Vote was accepted");
 		return (true, "Vote was accepted");
+	}
+
+	function submitSumProof(
+		uint a,
+		uint b,
+		uint a1,
+		uint b1,
+		uint d,
+		uint f,
+		address id) external returns(bool, string memory) {
+		
+		// TODO: Enable once system is ready
+		// if(IS_VOTING_OPEN) {
+		// 	emit SumEvent(msg.sender, false, "Vote is still ongoing");
+		// 	return (false, "Vote is still ongoing");
+		// }
+
+		if(!verifySum(a, b, a1, b1, d, f, msg.sender)) {
+			emit SumEvent(msg.sender, false, "Proof not correct");
+			return (false, "Proof not correct");
+		}
+
+		SumProof memory sumProof = SumProof(a1, b1, d, f);
+		election.sumProof = sumProof;
+
+		emit SumEvent(msg.sender, true, "Sumproof accepted");
+		return (true, "Sumproof accepted");
+
 	}
 
 	function verifyVote(
