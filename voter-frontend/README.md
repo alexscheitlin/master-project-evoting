@@ -1,44 +1,46 @@
-# Parity PoA - Truffle - React - Typescript
+# Voter Frontend & Solidity Testing
 
-### 1) Run Parity PoA Chain Locally
+## How to run Voter Frontend
 
-All you need is to run some `npm` scripts one after the other:
+1. run `npm install`
+2. run `npm run ganache:dev` to spin up a local dev chain. **The accounts are always the same, as the chain is started with a mnemonic**
+3. run `npm run truffle:dev` to compile, migrate contracts and start the react frontend
 
-```bash
-> npm run chain:reset # deletes existing blockchain from memory
-> npm run chain:start:node0 # runs a default node without any accounts (we don't have any yet)
-> npm run chain:createAccounts:node0 # creates validator account + user account on node0
-> npm run chain:start:node1 # runs a default node without any accounts (we don't have any yet)
-> npm run chain:createAccounts:node1 # creates validator account on node1
-# now stop all running nodes
+## How to run Tests
 
-# start the PoA blockchain in two separate terminals
-> npm run chain:validator:node0 # spin up full validator node
-> npm run chain:validator:node1 # spin up full validator node
+**Run all Tests**
+
+All tests are located inside `/test` and can all be run at the same time with `npm run truffle:test`.
+
+**Run single Tests**
+
+_Method 1_
+
+If you wish to only run a single test, then the property `.only` can be set on the `contracts`, e.g.,:
+
+```javascript
+contract.only('VoteProofVerifier.sol', () => {
+  ...
+  const verifierInstance = await Ballot.new();
+  await verifierInstance.setParameters([pk.p, pk.q, pk.g]);
+  await verifierInstance.setPublicKey(pk.h);
+  await verifierInstance.createVerifiers();
+  ..
+
+  assert.isTrue(someReturnValueFromContract, 'test failed');
+}
+
 ```
 
-### 2) Compile and Migrate Contracts
+_Method 2_
 
-```bash
-npm run truffle:dev # cleans, compiles, migrates contracts and starts the client
-```
+Install truffle globally with `npm i -g truffle`.
 
-This command includes multiple smaller commands, such as:
+Then run `truffle test test/nameOfTest.spec.ts` to only run tests in this file.
 
-- `npm run truffle:deploy` - cleans, compiles and migrates contracts
+## How to add new Contracts for Testing
 
-- `npm run truffle:clean` - remove `src/contracts`
-
-- `npm run truffle:compile` - compile contracts into `src/contracts`
-
-- `npm run truffle:migrate` - migrates contracts in `src/contracts` onto the running chain
-
-- `npm run truffle:test` - runs all tests
-
-### 3) Start Client
-
-If not already started above with the `npm run truffle:dev` command, then the client can be started with:
-
-```bash
-npm run start
-```
+1. Add contract to `/contracts`
+2. Add the contract to the deploy script in `migrations/2_deploy_contracts.js` (same as the others)
+3. Add a test file in `/test/nameOfTest.spec.ts`
+4. Run your test with the commands specified above (`npm run truffle:test`)
