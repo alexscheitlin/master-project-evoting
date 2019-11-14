@@ -79,13 +79,14 @@ const PlayTrough: React.FC = () => {
     const walletAddress = defaultAccount;
     const proof = VoteZKP.generateYesProof(vote, params, walletAddress);
 
-    const yesBallot = await ballot.verifyVote(
+    const yesBallot = await ballot.vote(
       [web3.utils.toBN(vote.a).toString(), web3.utils.toBN(vote.b).toString()],
       [web3.utils.toBN(proof.a0).toString(), web3.utils.toBN(proof.a1).toString()],
       [web3.utils.toBN(proof.b0).toString(), web3.utils.toBN(proof.b1).toString()],
       [web3.utils.toBN(proof.c0).toString(), web3.utils.toBN(proof.c1).toString()],
       [web3.utils.toBN(proof.f0).toString(), web3.utils.toBN(proof.f1).toString()],
       walletAddress,
+      { from: defaultAccount },
     );
 
     setVotes([...votes, vote]);
@@ -156,7 +157,7 @@ const PlayTrough: React.FC = () => {
         {verifiersLoaded ? <span>OK</span> : null}
       </div>
       <div>
-        <button onClick={castYesVote}>castYesVote</button>
+        <button onClick={castYesVote}>create Proof and cast Vote</button>
         {proofVerified ? (
           <span>
             <strong>Proof verified</strong>
