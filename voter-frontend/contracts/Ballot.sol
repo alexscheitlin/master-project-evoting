@@ -7,8 +7,7 @@ import './SumProofVerifier.sol';
 
 contract Ballot {
 
-	event VotingSuccessEvent(address indexed from, bool success, string reason);
-	event SumEvent(address indexed from, bool success, string reason);
+	event VoteStatusEvent(address indexed from, bool success, string reason);
 
 	struct SystemParameters {
     uint p; // prime
@@ -126,18 +125,18 @@ contract Ballot {
 		address id) external returns(bool, string memory) {
 
 		if(!IS_VOTING_OPEN) {
-			emit VotingSuccessEvent(msg.sender, false, "Vote not open");
+			emit VoteStatusEvent(msg.sender, false, "Vote not open");
 			return (false, "Vote not open");
 		}
 
 		// TODO: Enable once system is ready
 		// if(election.hasVoted[msg.sender]) {
-		// 	emit VotingSuccessEvent(msg.sender, false, "Voter already voted");
+		// 	emit VoteStatusEvent(msg.sender, false, "Voter already voted");
 		// 	return (false, "Voter already voted");
 		// }
 
 		if(!verifyVote(cipher, a, b, c, f, msg.sender)) {
-			emit VotingSuccessEvent(msg.sender, false, "Proof not correct");
+			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 			return (false, "Proof not correct");
 		}
 
@@ -149,7 +148,7 @@ contract Ballot {
 		election.nrOfVoters += 1;
 		election.hasVoted[msg.sender] = true;
 
-		emit VotingSuccessEvent(msg.sender, true, "Vote was accepted");
+		emit VoteStatusEvent(msg.sender, true, "Vote was accepted");
 		return (true, "Vote was accepted");
 	}
 
@@ -163,19 +162,19 @@ contract Ballot {
 		address id) external returns(bool, string memory) {
 		
 		if(IS_VOTING_OPEN) {
-			emit SumEvent(msg.sender, false, "Vote is still ongoing");
+			emit VoteStatusEvent(msg.sender, false, "Vote is still ongoing");
 			return (false, "Vote is still ongoing");
 		}
 
 		if(!verifySum(a, b, a1, b1, d, f, msg.sender)) {
-			emit SumEvent(msg.sender, false, "Proof not correct");
+			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 			return (false, "Proof not correct");
 		}
 
 		SumProof memory sumProof = SumProof(a1, b1, d, f);
 		election.sumProof = sumProof;
 
-		emit SumEvent(msg.sender, true, "Sumproof accepted");
+		emit VoteStatusEvent(msg.sender, true, "Sumproof accepted");
 		return (true, "Sumproof accepted");
 
 	}
@@ -192,8 +191,8 @@ contract Ballot {
 	}
 
 	function verifySum(
-		uint a,
-		uint b, // a, b
+		uint a, // cipher
+		uint b, // cipher
 		uint a1,
 		uint b1,
 		uint d,

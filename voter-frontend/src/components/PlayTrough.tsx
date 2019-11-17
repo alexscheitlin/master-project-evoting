@@ -82,12 +82,12 @@ const PlayTrough: React.FC = () => {
         (res: any) => {
           for (let i = 0; i < res.logs.length; i++) {
             const log = res.logs[i];
-            if (log.event === 'VotingSuccessEvent' && log.args[1] === true) {
+            if (log.event === 'VoteStatusEvent' && log.args[1] === true) {
               console.log(log.args.reason);
               setProofState(true);
               break;
             }
-            if (log.event === 'VotingSuccessEvent' && log.args[1] === false) {
+            if (log.event === 'VoteStatusEvent' && log.args[1] === false) {
               console.log(log.args.reason);
               setProofState(false);
               break;
@@ -139,11 +139,11 @@ const PlayTrough: React.FC = () => {
         (res: any) => {
           for (let i = 0; i < res.logs.length; i++) {
             const log = res.logs[i];
-            if (log.event === 'SumEvent' && log.args[1] === true) {
+            if (log.event === 'VoteStatusEvent' && log.args[1] === true) {
               console.log(log.args.reason);
               break;
             }
-            if (log.event === 'SumEvent' && log.args[1] === false) {
+            if (log.event === 'VoteStatusEvent' && log.args[1] === false) {
               console.log(log.args.reason);
               break;
             }
