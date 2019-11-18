@@ -1,6 +1,6 @@
 {
   "lerna": "3.18.4",
-  "packages": ["packages/*"],
+  "packages": ["crypto/**", "voter-frontend/**"],
   "npmClient": "npm",
   "version": "3.18.4"
 }

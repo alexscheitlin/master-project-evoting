@@ -9,6 +9,7 @@
     }
   },
   "scripts": {
-    "lerna:format": "lerna run format --stream"
+    "lerna:format": "lerna run format --stream",
+    "lerna:install": "lerna bootstrap"
   }
 }
