@@ -3,32 +3,10 @@ const Ballot = artifacts.require('./Ballot.sol');
 
 import { assert } from 'chai';
 import { FFelGamal, Cipher } from 'mp-crypto';
-import BN = require('bn.js');
+import BN from 'bn.js';
+import { toSystemParams, toParamsWithPubKey, toHex } from './helper';
 
 const { KeyGeneration, Voting, VoteZKP, SumZKP } = FFelGamal;
-
-const toHex = (bigNumber: BN) => {
-  return bigNumber.toNumber().toString(16);
-};
-
-const toSystemParams = (params: BN[]) => {
-  const systemParams: FFelGamal.SystemParameters = {
-    p: params[0],
-    q: params[1],
-    g: params[2],
-  };
-  return systemParams;
-};
-
-const toParamsWithPubKey = (sysParams: BN[], pubKey: BN) => {
-  const params: FFelGamal.PublicKey = {
-    p: sysParams[0],
-    q: sysParams[1],
-    g: sysParams[2],
-    h: pubKey,
-  };
-  return params;
-};
 
 //@ts-ignore
 contract('Ballot.sol', () => {
