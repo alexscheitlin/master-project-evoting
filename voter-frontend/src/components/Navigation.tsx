@@ -13,10 +13,7 @@ export const Navigation: React.FC = () => {
   return (
     <Nav>
       <NavButton>
-        <NavLink to={'/'}>PLaytrough</NavLink>
-      </NavButton>
-      <NavButton>
-        <NavLink to={'/finite'}>FiniteField</NavLink>
+        <NavLink to={'/'}>FiniteField</NavLink>
       </NavButton>
       <NavButton>
         <NavLink to={'/curve'}>EcElGamal</NavLink>
