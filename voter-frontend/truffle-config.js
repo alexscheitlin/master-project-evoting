@@ -33,7 +33,4 @@ module.exports = {
       version: '0.5.0', // ex:  "0.4.20". (Default: Truffle's installed solc)
     },
   },
-  mocha: {
-    require: ['ts-node/register'],
-  },
 };

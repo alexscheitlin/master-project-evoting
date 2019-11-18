@@ -55,7 +55,7 @@
     "truffle:compile": "./node_modules/.bin/truffle compile",
     "truffle:migrate:dev": "./node_modules/.bin/truffle migrate --network ganache --reset",
     "truffle:migrate:parity": "./node_modules/.bin/truffle migrate --network parity --reset",
-    "truffle:test": "./node_modules/.bin/truffle test --network ganache",
+    "truffle:test": "cd test && ../node_modules/.bin/truffle test --network ganache",
     "truffle:dev": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start",
     "truffle:dev:parity": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start"
   },
