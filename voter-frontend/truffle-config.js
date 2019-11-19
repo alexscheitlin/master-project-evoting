@@ -1,4 +1,9 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/camelcase */
 const path = require('path');
+
+// this allows to use import from statements in tests
+require('ts-node/register');
 
 module.exports = {
   contracts_build_directory: path.join(__dirname, 'src/contracts'),

@@ -20,10 +20,15 @@ contract SumProofVerifier {
 
   PublicKey publicKey;
 
-  address constant UNIQUEID = 0x71C7656EC7ab88b098defB751B7401B5f6d8976F;
+  constructor() public {
+    publicKey = PublicKey(0,0,0,0);
+  }
 
-  constructor(uint p, uint q, uint g, uint h) public {
-    publicKey = PublicKey(p, q, g, h);
+  function initialize(uint p, uint q, uint g, uint h) public payable {
+    publicKey.p = p;
+    publicKey.q = q;
+    publicKey.g = g;
+    publicKey.h = h;
   }
 
   function verifyProof(
@@ -32,7 +37,8 @@ contract SumProofVerifier {
       uint a1,
       uint b1,
       uint d,
-      uint f
+      uint f,
+      address id
       ) public view returns(bool) {
 
     // create a proof object
@@ -41,7 +47,7 @@ contract SumProofVerifier {
     Proof memory proof = Proof(a, b, a1, b1, d, f);
 
     // recompute the challenge
-    uint c = generateChallenge(proof.a, proof.b, proof.a1, proof.b1);
+    uint c = generateChallenge(proof.a, proof.b, proof.a1, proof.b1, id);
 
     // verification a^f == a1 * d^c
     uint l1 = pow(proof.a, proof.f);
@@ -59,8 +65,7 @@ contract SumProofVerifier {
   //////////////////////////////////////
   // HELPER FUNCTIONS
   //////////////////////////////////////
-  function generateChallenge(uint a, uint b, uint a1, uint b1) internal view returns(uint) {
-    address uniqueID = UNIQUEID;
+  function generateChallenge(uint a, uint b, uint a1, uint b1, address uniqueID) internal view returns(uint) {
     bytes32 h = keccak256(abi.encodePacked(uniqueID, a, b, a1, b1));
     return uint(h) % publicKey.q;
   }

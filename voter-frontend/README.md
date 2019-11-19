@@ -8,6 +8,8 @@
 
 ## How to run Tests
 
+#### !! Ganache must be running !! `npm run ganache:dev` !!
+
 **Run all Tests**
 
 All tests are located inside `/test` and can all be run at the same time with `npm run truffle:test`.
