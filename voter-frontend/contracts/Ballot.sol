@@ -276,7 +276,7 @@ contract Ballot {
 
 
 	//////////////////////////////////////////
-	// SUM SHARES (decrypted sum share)
+	// DECRYPTED SHARE OF THE SUM
 	//////////////////////////////////////////
 	function submitDecryptedShare(
 		uint share,
@@ -303,6 +303,11 @@ contract Ballot {
 		DecryptedShareProof memory proof = DecryptedShareProof(a1, b1, d, f);
 		election.decryptedShares.push(DecryptedShare(share, proof));
 
+		// TODO: figure out how to do this properly, this is needed in
+		// combineDecryptedShares, but it's not elegant if it's overwritten
+		// each time some authority submits a decrypted share
+		election.sumCipher = Cipher(a, b);
+
 		emit VoteStatusEvent(msg.sender, true, "DecryptedShareProof accepted");
 		return (true, "Sumproof accepted");
 	}
@@ -326,4 +331,32 @@ contract Ballot {
 	) public view returns(bool) {
 		return sumVerifier.verifyProof(a, b, a1, b1, d, f, id);
 	}
+
+	function combineDecryptedShares() public {
+		require(election.decryptedShares.length > 0);
+
+		uint256 res = election.decryptedShares[0].share;
+
+		for(uint i = 1; i < election.decryptedShares.length; i++) {
+			res = (res * election.decryptedShares[i].share) % systemParameters.p;
+		}
+
+		uint256 mh = (election.sumCipher.b / res) % systemParameters.p;
+
+		// decode message (** is power operator)
+		uint256 m = 0;
+		uint256 g = systemParameters.g;
+		uint256 p = systemParameters.p;
+		while( ( g**m % p ) != mh ) {
+			m = m + 1;
+		}
+
+		election.yesVotes = m;
+	}
+
+	function getVoteResult() public view returns (uint) {
+		return election.yesVotes;
+	}
+
+
 }

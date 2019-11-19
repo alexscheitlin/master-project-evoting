@@ -9,7 +9,7 @@ import { toSystemParams, toParamsWithPubKey, toHex } from './helper';
 const { KeyGeneration, Voting, VoteZKP, SumZKP } = FFelGamal;
 
 //@ts-ignore
-contract('Ballot.sol', () => {
+contract.only('Ballot.sol', () => {
   it('Ballot.sol e2e Test', async () => {
     // ganache-cli needs to be running with `npm run ganache:dev` such that the sender account is the same (for the verifiers)
     const address = '0x05f5e01f2d2073c8872aca4213fd85f382ca681a';
@@ -254,38 +254,14 @@ contract('Ballot.sol', () => {
     assert(toHex(nrOfSumShares) === toHex(new BN(2)), 'there should be 1 share in the contract');
 
     /**
-     * 7. BUND computes the final result
+     * 7. BUND - final voting result
      *
-     * the Bund gets all decrypted shares (can be done by anyone)
-     * the Bund combines the decrypted shares and finds the final tally result
+     * the Bund triggers combineDecryptedShares() in contract to compute
+     * final result of the vote
      */
-    const bund_votes = [];
-    const bund_votesCount = await ballotContract.getNumberOfVotes();
+    await ballotContract.combineDecryptedShares();
+    const finalResult = await ballotContract.getVoteResult();
 
-    for (let i = 0; i < bund_votesCount.toNumber(); i++) {
-      const vote = await ballotContract.getVote(i);
-      const c: Cipher = {
-        a: vote[0],
-        b: vote[1],
-      };
-      bund_votes.push(c);
-    }
-
-    const bund_publicKey = await ballotContract.getPublicKey();
-    const bund_paramsFromContract = await ballotContract.getParameters();
-    const bund_paramsWithPublicKey: FFelGamal.PublicKey = toParamsWithPubKey(bund_paramsFromContract, bund_publicKey);
-
-    // homomorphically add votes
-    const bund_sumCipher = Voting.addVotes(bund_votes, bund_paramsWithPublicKey);
-
-    const bund_sumShares = [];
-    for (let i = 0; i < nrOfSumShares.toNumber(); i++) {
-      const sumShare = await ballotContract.getDecryptedShare(i);
-      bund_sumShares.push(sumShare);
-    }
-
-    // finish decryption by combining decrypted shares
-    const nrOfYesVotes = KeyGeneration.combineDecryptedShares(bund_systemParams, bund_sumCipher, [...bund_sumShares]);
-    assert(toHex(nrOfYesVotes) === toHex(new BN(1)), 'wrong voting result');
+    assert(toHex(finalResult) === toHex(new BN(1)), 'wrong voting result');
   });
 });
