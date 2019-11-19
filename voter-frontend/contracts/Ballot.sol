@@ -295,8 +295,11 @@ contract Ballot {
 			return (false, "Vote is still ongoing");
 		}
 
-		// TODO: Enable once figured out how to verify sum proofs with the
-		// distributed key generation logic
+		// TODO: FAILS WITH PROOFS GENERATED WITH SECRET KEY SHARE
+		// it is because the proof is not generated with the system-wide
+		// private key? -> tests pass with a system-wide private key
+		// in sumProof.spec.ts
+
 		// if(!verifySum(a, b, a1, b1, d, f, msg.sender)) {
 		// 	emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 		// 	return (false, "Proof not correct");
