@@ -18,7 +18,7 @@ contract Ballot {
 	//////////////////////////////////////////
 	// CONSTANTS
 	//////////////////////////////////////////
-	// The number of key shares needed to create the publicKey (# of authorities)
+	// The number of PublicKeyShare needed to create the publicKey (# of authorities)
 	uint constant NR_OF_AUTHORITY_NODES = 2;
 
 
@@ -40,9 +40,9 @@ contract Ballot {
 		KeyShareProof keyShareProof;
 	}
 
-	struct SumShare {
+	struct DecryptedShare {
 		uint share;
-		SumProof sumProof;
+		DecryptedShareProof decryptedShareProof;
 	}
 
 	struct Election {
@@ -50,10 +50,9 @@ contract Ballot {
 		Voter[] voters;
 		mapping(address => bool) hasVoted;
 		string votingQuestion;
-		SumProof sumProof;
 		Cipher sumCipher;
-		PublicKeyShare[] shares;
-		SumShare[] sumShares;
+		PublicKeyShare[] publicKeyShares;
+		DecryptedShare[] decryptedShares;
 		uint yesVotes;
 	}
 
@@ -75,7 +74,7 @@ contract Ballot {
     uint[2] f;
   }
 
-	struct SumProof {
+	struct DecryptedShareProof {
     uint a1;
     uint b1;
     uint d;
@@ -116,9 +115,8 @@ contract Ballot {
 		election.nrOfVoters = 0;
 		election.voters.length = 0;
 		election.votingQuestion = "REPLACEME";
-		election.sumProof = SumProof(0,0,0,0);
-		election.shares.length = 0;
-		election.sumShares.length = 0;
+		election.publicKeyShares.length = 0;
+		election.decryptedShares.length = 0;
 		election.yesVotes = 0;
 	}
 
@@ -148,7 +146,7 @@ contract Ballot {
 			return (false, "Key Generation Proof is not correct.");
 		}
 
-		election.shares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
+		election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
 	}
 
 		// checks if the proof for the submitted key share is correct
@@ -157,21 +155,21 @@ contract Ballot {
 		return true;
 	}
 
-	function getSharesLength() public view returns(uint) {
-		return election.shares.length;
+	function getPublicKeyShareLength() public view returns(uint) {
+		return election.publicKeyShares.length;
 	}
 
 	function generatePublicKey() external {
 		require(msg.sender == _owner);
 		require(!IS_PUBKEY_SET);
-		require(election.shares.length > 0);
-		require(NR_OF_AUTHORITY_NODES == election.shares.length);
+		require(election.publicKeyShares.length > 0);
+		require(NR_OF_AUTHORITY_NODES == election.publicKeyShares.length);
 
-		uint256 key = election.shares[0].share;
+		uint256 key = election.publicKeyShares[0].share;
 
 		// create the combines public key
-		for(uint256 i = 1; i< election.shares.length; i++) {
-			key *= election.shares[i].share;
+		for(uint256 i = 1; i< election.publicKeyShares.length; i++) {
+			key *= election.publicKeyShares[i].share;
 		}
 
 		key = key % systemParameters.p;
@@ -280,7 +278,7 @@ contract Ballot {
 	//////////////////////////////////////////
 	// SUM SHARES (decrypted sum share)
 	//////////////////////////////////////////
-	function submitSumShare(
+	function submitDecryptedShare(
 		uint share,
 		uint a,
 		uint b,
@@ -295,32 +293,29 @@ contract Ballot {
 			return (false, "Vote is still ongoing");
 		}
 
-		// TODO: FAILS WITH PROOFS GENERATED WITH SECRET KEY SHARE
-		// it is because the proof is not generated with the system-wide
-		// private key? -> tests pass with a system-wide private key
-		// in sumProof.spec.ts
-
-		// if(!verifySum(a, b, a1, b1, d, f, msg.sender)) {
+		// TODO: Enable once figured out how to verify sum proofs with the
+		// distributed key generation logic
+		// if(!verifyStandardZKP(a, b, a1, b1, d, f, msg.sender)) {
 		// 	emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 		// 	return (false, "Proof not correct");
 		// }
 
-		SumProof memory sumProof = SumProof(a1, b1, d, f);
-		election.sumShares.push(SumShare(share, sumProof));
+		DecryptedShareProof memory proof = DecryptedShareProof(a1, b1, d, f);
+		election.decryptedShares.push(DecryptedShare(share, proof));
 
-		emit VoteStatusEvent(msg.sender, true, "Sumproof accepted");
+		emit VoteStatusEvent(msg.sender, true, "DecryptedShareProof accepted");
 		return (true, "Sumproof accepted");
 	}
 
-	function getNrOfSumShares() public view returns(uint) {
-		return election.sumShares.length;
+	function getNrOfDecryptedShares() public view returns(uint) {
+		return election.decryptedShares.length;
 	}
 
-	function getSumShare(uint idx) public view returns(uint) {
-		return election.sumShares[idx].share;
+	function getDecryptedShare(uint idx) public view returns(uint) {
+		return election.decryptedShares[idx].share;
 	}
 
-	function verifySum(
+	function verifyStandardZKP(
 		uint a, // cipher
 		uint b, // cipher
 		uint a1,

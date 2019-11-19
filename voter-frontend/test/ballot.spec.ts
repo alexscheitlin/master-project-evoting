@@ -41,7 +41,7 @@ contract('Ballot.sol', () => {
     await ballotContract.submitPublicKeyShare(auth1_keyShare.h_, auth1_keyGenProof.d, auth1_keyGenProof.d);
 
     // assert the correct numbers of key shares
-    let nrOfShares = await ballotContract.getSharesLength();
+    let nrOfShares = await ballotContract.getPublicKeyShareLength();
     assert(toHex(nrOfShares) === toHex(new BN(1)), 'election.shares is not incremented properly');
 
     /**
@@ -57,7 +57,7 @@ contract('Ballot.sol', () => {
     await ballotContract.submitPublicKeyShare(auth2_keyShare.h_, auth2_keyGenProof.d, auth2_keyGenProof.d);
 
     // assert the correct numbers of key shares
-    nrOfShares = await ballotContract.getSharesLength();
+    nrOfShares = await ballotContract.getPublicKeyShareLength();
     assert(toHex(nrOfShares) === toHex(new BN(2)), 'election.shares is not incremented properly');
 
     /**
@@ -183,7 +183,7 @@ contract('Ballot.sol', () => {
     );
 
     // submit decrypted share to the contract with a proof
-    await ballotContract.submitSumShare(
+    await ballotContract.submitDecryptedShare(
       auth1_decryptedShare,
       auth1_sumCipher.a,
       auth1_sumCipher.b,
@@ -195,7 +195,7 @@ contract('Ballot.sol', () => {
     );
 
     // assert correct number of shares are saved in the contract
-    let nrOfSumShares = await ballotContract.getNrOfSumShares();
+    let nrOfSumShares = await ballotContract.getNrOfDecryptedShares();
     assert(toHex(nrOfSumShares) === toHex(new BN(1)), 'there should be 1 share in the contract');
 
     /**
@@ -238,7 +238,7 @@ contract('Ballot.sol', () => {
     );
 
     // submit decrypted share to the contract with a proof
-    await ballotContract.submitSumShare(
+    await ballotContract.submitDecryptedShare(
       auth2_decryptedShare,
       auth2_sumCipher.a,
       auth2_sumCipher.b,
@@ -250,7 +250,7 @@ contract('Ballot.sol', () => {
     );
 
     // assert correct number of shares are saved in the contract
-    nrOfSumShares = await ballotContract.getNrOfSumShares();
+    nrOfSumShares = await ballotContract.getNrOfDecryptedShares();
     assert(toHex(nrOfSumShares) === toHex(new BN(2)), 'there should be 1 share in the contract');
 
     /**
@@ -280,7 +280,7 @@ contract('Ballot.sol', () => {
 
     const bund_sumShares = [];
     for (let i = 0; i < nrOfSumShares.toNumber(); i++) {
-      const sumShare = await ballotContract.getSumShare(i);
+      const sumShare = await ballotContract.getDecryptedShare(i);
       bund_sumShares.push(sumShare);
     }
 
