@@ -320,37 +320,6 @@ contract Ballot {
 		return election.sumShares[idx].share;
 	}
 
-
-	//////////////////////////////////////////
-	// SUBMIT FINAL SUM PROOF
-	//////////////////////////////////////////
-	function submitFinalSum(
-		uint sum,
-		uint a,
-		uint b,
-		uint a1,
-		uint b1,
-		uint d,
-		uint f,
-		address id) external returns(bool, string memory) {
-		
-		if(IS_VOTING_OPEN) {
-			emit VoteStatusEvent(msg.sender, false, "Vote is still ongoing");
-			return (false, "Vote is still ongoing");
-		}
-
-		if(!verifySum(a, b, a1, b1, d, f, msg.sender)) {
-			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
-			return (false, "Proof not correct");
-		}
-
-		SumProof memory sumProof = SumProof(a1, b1, d, f);
-		election.yesVotes += sum;
-
-		emit VoteStatusEvent(msg.sender, true, "Sumproof accepted");
-		return (true, "Sumproof accepted");
-	}
-
 	function verifySum(
 		uint a, // cipher
 		uint b, // cipher
