@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "husky": "^3.1.0",
+    "lerna": "^3.18.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lerna run pre-commit --stream"
+    }
+  },
+  "scripts": {
+    "lerna:format": "lerna run format --stream",
+    "lerna:install": "lerna bootstrap"
+  }
+}
