@@ -1,19 +1,13 @@
 import { ECelGamal } from '../index'
 import { ValidVoteProof } from '../models'
 import { ECParams, ECCipher } from './models'
+import { ECmul, ECdiv, ECpow, BNmul, BNadd, BNsub, curvePointsToString } from './helper'
+
 import BN = require('bn.js')
-import { curve, ec } from 'elliptic'
+import { curve } from 'elliptic'
 import { activeCurve } from './activeCurve'
 
 const printConsole = false
-
-const BNadd = (a: BN, b: BN, params: ECParams) => a.add(b).mod(params.n)
-const BNsub = (a: BN, b: BN, params: ECParams) => a.sub(b).mod(params.n)
-const BNmul = (a: BN, b: BN, params: ECParams) => a.mul(b).mod(params.n)
-
-const ECpow = (a: curve.base.BasePoint, b: BN): curve.base.BasePoint => a.mul(b)
-const ECmul = (a: curve.base.BasePoint, b: curve.base.BasePoint): curve.base.BasePoint => a.add(b)
-const ECdiv = (a: curve.base.BasePoint, b: curve.base.BasePoint): curve.base.BasePoint => a.add(b.neg())
 
 // Generates a proof for an encrypted yes vote.
 export function generateYesProof(encryptedVote: ECCipher, params: ECParams, id: string): ValidVoteProof {
@@ -25,8 +19,8 @@ export function generateYesProof(encryptedVote: ECCipher, params: ECParams, id: 
   }
 
   // generate fake values for m=0 part
-  const c0: BN = ECelGamal.Helper.getSecureRandomValue()
-  const f0: BN = ECelGamal.Helper.getSecureRandomValue()
+  const c0: BN = ECelGamal.Helper.getSecureRandomValue(n)
+  const f0: BN = ECelGamal.Helper.getSecureRandomValue(n)
 
   // compute fake a0. g^f0/a^c0
   const a0 = ECdiv(ECpow(g, f0), ECpow(a, c0))
@@ -35,18 +29,18 @@ export function generateYesProof(encryptedVote: ECCipher, params: ECParams, id: 
   const b0 = ECdiv(ECpow(h, f0), ECpow(b, c0))
 
   // generate proof for m=1 part
-  const x: BN = ECelGamal.Helper.getSecureRandomValue()
+  const x: BN = ECelGamal.Helper.getSecureRandomValue(n)
 
   const a1 = ECpow(g, x)
   const b1 = ECpow(h, x)
 
   // generate the challenge
   const c = generateChallenge(n, id, a, b, a0, b0, a1, b1)
-  const c1 = BNadd(n, BNsub(c, c0, params), params)
+  const c1 = BNadd(n, BNsub(c, c0, n), n)
 
   // compute f1 = x + c1 * r (NOTE: mod q!) => in the EC case this is (mod n) instead of (mod p)
-  const c1r = BNmul(c1, r, params)
-  const f1 = BNadd(x, c1r, params)
+  const c1r = BNmul(c1, r, n)
+  const f1 = BNadd(x, c1r, n)
 
   printConsole && console.log('a0 is on the curve?\t', activeCurve.curve.validate(a0))
   printConsole && console.log('b0 is on the curve?\t', activeCurve.curve.validate(b0))
@@ -74,8 +68,8 @@ export function generateNoProof(encryptedVote: ECCipher, params: ECParams, id: s
   }
 
   // generate fake values for m=0 part
-  const c1: BN = ECelGamal.Helper.getSecureRandomValue()
-  const f1: BN = ECelGamal.Helper.getSecureRandomValue()
+  const c1: BN = ECelGamal.Helper.getSecureRandomValue(n)
+  const f1: BN = ECelGamal.Helper.getSecureRandomValue(n)
 
   // compute fake b: b/g
   const b_ = ECdiv(b, g)
@@ -87,18 +81,18 @@ export function generateNoProof(encryptedVote: ECCipher, params: ECParams, id: s
   const b1 = ECdiv(ECpow(h, f1), ECpow(b_, c1))
 
   // generate proof for m=1 part
-  const x: BN = ECelGamal.Helper.getSecureRandomValue()
+  const x: BN = ECelGamal.Helper.getSecureRandomValue(n)
 
   const a0 = ECpow(g, x)
   const b0 = ECpow(h, x)
 
   // generate the challenge
   const c = generateChallenge(n, id, a, b, a0, b0, a1, b1)
-  const c0 = BNadd(n, BNsub(c, c1, params), params)
+  const c0 = BNadd(n, BNsub(c, c1, n), n)
 
   // compute f0 = x + c0 * r (NOTE: mod q!) => in the EC case this is (mod n) instead of (mod p)
-  const c0r = BNmul(c0, r, params)
-  const f0 = BNadd(x, c0r, params)
+  const c0r = BNmul(c0, r, n)
+  const f0 = BNadd(x, c0r, n)
 
   printConsole && console.log('a1 is on the curve?\t', activeCurve.curve.validate(a1))
   printConsole && console.log('b1 is on the curve?\t', activeCurve.curve.validate(b1))
@@ -143,7 +137,7 @@ export function verifyZKP(encryptedVote: ECCipher, proof: ValidVoteProof, params
   const v4 = l4.eq(r4)
 
   // recompute the hash and verify
-  const lc = BNadd(c0, c1, params)
+  const lc = BNadd(c0, c1, n)
   const rc = generateChallenge(n, id, a, b, a0, b0, a1, b1)
   const v5 = lc.eq(rc)
 
@@ -157,8 +151,17 @@ export function verifyZKP(encryptedVote: ECCipher, proof: ValidVoteProof, params
   return v1 && v2 && v3 && v4 && v5
 }
 
-export function generateChallenge(n: BN, id: any, c1: any, c2: any, a1: any, a2: any, b1: any, b2: any) {
-  const pointsAsString = convertAllECPointsToString([c1, c2, a1, a2, b1, b2])
+export function generateChallenge(
+  n: BN,
+  id: string,
+  c1: curve.base.BasePoint,
+  c2: curve.base.BasePoint,
+  a1: curve.base.BasePoint,
+  a2: curve.base.BasePoint,
+  b1: curve.base.BasePoint,
+  b2: curve.base.BasePoint
+) {
+  const pointsAsString = curvePointsToString([c1, c2, a1, a2, b1, b2])
   const input = id + pointsAsString
 
   let c = activeCurve
@@ -170,19 +173,4 @@ export function generateChallenge(n: BN, id: any, c1: any, c2: any, a1: any, a2:
   c = c.mod(n)
 
   return c
-}
-
-export function convertECPointToString(point: any) {
-  const pointAsJSON = point.toJSON()
-  const Px = pointAsJSON[0].toString('hex')
-  const Py = pointAsJSON[1].toString('hex')
-  return Px + Py
-}
-
-export function convertAllECPointsToString(points: any[]) {
-  let asString = ''
-  for (const point of points) {
-    asString += convertECPointToString(point)
-  }
-  return asString
 }
