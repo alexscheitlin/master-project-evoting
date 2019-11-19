@@ -7,9 +7,9 @@ const params = {
       p: '', // prime
       q: '', // prime factor: p = 2*q+1
       g: '', // generator
-      h: ''
-    }
-  }
+      h: '',
+    },
+  },
 };
 
 module.exports.params = params;
