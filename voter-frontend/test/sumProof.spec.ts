@@ -67,8 +67,7 @@ contract('SumProofVerifier.sol', () => {
         const privateKey = KeyGeneration.combinePrivateKeys(systemParams, [keyShareAuth1.sk_, keyShareAuth2.sk_]);
         const proof = FFelGamal.SumZKP.generateSumProof(sumEnc, systemParamsWithPubKey, privateKey, uniqueID);
 
-        // const verifiedSumProof = FFelGamal.SumZKP.verifySumProof(sumEnc, proof, pk, uniqueID)
-        const verifiedSumProof = await ballotContract.verifySum(
+        const verifiedSumProof = await ballotContract.verifyStandardZKP(
           sumEnc.a,
           sumEnc.b,
           proof.a1,
