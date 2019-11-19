@@ -67,20 +67,26 @@ import BN = require('bn.js')
 
 export const getSecureRandomValue = (q: BN): BN => {
   const one = new BN(1, 10)
-
-  // TODO: Fix upper limit to q-1
   const UPPER_BOUND_RANDOM: BN = q.sub(one)
-  const RAND_SIZE_BYTES = 1
+  const byte_size = getByteSizeForDecimalNumber(q)
 
-  let randomBytes = crypto.randomBytes(RAND_SIZE_BYTES)
-  let randomValue = new BN(randomBytes)
+  let randomBytes: Buffer = crypto.randomBytes(byte_size)
+  let randomValue: BN = new BN(randomBytes)
 
   // ensure that the random value is in range [1,n-1]
   while (!(randomValue.lte(UPPER_BOUND_RANDOM) && randomValue.gte(one))) {
-    randomBytes = crypto.randomBytes(RAND_SIZE_BYTES)
-    randomValue = new BN(randomBytes, 'hex')
+    randomBytes = crypto.randomBytes(byte_size)
+    randomValue = new BN(randomBytes)
   }
   return randomValue
+}
+
+// Computes the required number of bytes to store a decimal
+export const getByteSizeForDecimalNumber = (q: BN): number => {
+  const modulus: BN = q.mod(new BN(256, 10))
+  const smallerHalf: boolean = modulus.lt(new BN(128, 10))
+  const result: number = q.divRound(new BN(256, 10)).toNumber()
+  return smallerHalf ? result + 1 : result
 }
 
 export const newBN = (num: number, base: number = 10): BN => new BN(num, base)
