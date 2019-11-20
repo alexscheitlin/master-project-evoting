@@ -57,3 +57,6 @@ typings/
 .env
 .env.development
 .env.production
+
+# database file
+db.json

@@ -7,6 +7,7 @@ import { config } from 'dotenv'
 import { resolve } from 'path'
 
 import logger from './logger'
+import register from './register'
 
 // load environment variables based on NODE_ENV
 const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
@@ -18,12 +19,8 @@ server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(logger)
 
-// default route to test
-server.get('/', (req, res) => {
-  res.json({
-    test: 'Test',
-  })
-})
+// add all routers
+server.use('/', register)
 
 if (isProduction) {
   // adds the "Strict-Transport-Security" header.
