@@ -113,7 +113,6 @@ contract.only('Ballot.sol', () => {
       [yesProof.b0, yesProof.b1],
       [yesProof.c0, yesProof.c1],
       [yesProof.f0, yesProof.f1],
-      client_uniqueID,
       { from: client_uniqueID },
     );
 
@@ -133,7 +132,6 @@ contract.only('Ballot.sol', () => {
       [noProof.b0, noProof.b1],
       [noProof.c0, noProof.c1],
       [noProof.f0, noProof.f1],
-      client_uniqueID,
       { from: client_uniqueID },
     );
 
@@ -209,7 +207,7 @@ contract.only('Ballot.sol', () => {
       auth1_decryptedShareProof.b1,
       auth1_decryptedShareProof.d,
       auth1_decryptedShareProof.f,
-      auth1_uniqueID,
+      { from: auth1_address },
     );
 
     // assert correct number of shares are saved in the contract
@@ -273,7 +271,7 @@ contract.only('Ballot.sol', () => {
       auth2_decryptedShareProof.b1,
       auth2_decryptedShareProof.d,
       auth2_decryptedShareProof.f,
-      auth2_uniqueID,
+      { from: auth2_address },
     );
 
     // assert correct number of shares are saved in the contract

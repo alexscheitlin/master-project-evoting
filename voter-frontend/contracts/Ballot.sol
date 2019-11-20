@@ -205,8 +205,8 @@ contract Ballot {
     uint[2] calldata a,
     uint[2] calldata b,
     uint[2] calldata c,
-    uint[2] calldata f,
-		address id) external returns(bool, string memory) {
+    uint[2] calldata f
+		) external returns(bool, string memory) {
 
 		if(!IS_VOTING_OPEN) {
 			emit VoteStatusEvent(msg.sender, false, "Vote not open");
@@ -286,15 +286,14 @@ contract Ballot {
 		uint a1,
 		uint b1,
 		uint d,
-		uint f,
-		address id) external returns(bool, string memory) {
+		uint f) external returns(bool, string memory) {
 		
 		if(IS_VOTING_OPEN) {
 			emit VoteStatusEvent(msg.sender, false, "Vote is still ongoing");
 			return (false, "Vote is still ongoing");
 		}
 
-		if(!verifyStandardZKP(a, b, a1, b1, d, f, id)) {
+		if(!verifyStandardZKP(a, b, a1, b1, d, f, msg.sender)) {
 			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 			return (false, "Proof not correct");
 		}
