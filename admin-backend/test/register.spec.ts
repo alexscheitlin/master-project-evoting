@@ -3,14 +3,15 @@ import { expect } from 'chai'
 import { describe } from 'mocha'
 import sinon from 'sinon'
 import * as Registration from '../src/register'
+import * as DB from '../src/database/database'
 
 describe('Voter Registration Tests', () => {
   describe('Ethereum Address Validation Tests', () => {
     beforeEach(() => {
       // stub for the DB call -> returns an empty list
       sinon
-        .stub(Registration, 'getFromDB')
-        .withArgs('registeredAddresses')
+        .stub(DB, 'getListFromDB')
+        .withArgs('voters')
         .returns([''])
     })
 
@@ -43,7 +44,7 @@ describe('Voter Registration Tests', () => {
       // -> returns an empty list for table: usedSignupTokens
       // -> returns ['ab34920'] for table: validSignupTokens
       sinon
-        .stub(Registration, 'getFromDB')
+        .stub(DB, 'getListFromDB')
         .withArgs('usedSignupTokens')
         .returns([''])
         .withArgs('validSignupTokens')

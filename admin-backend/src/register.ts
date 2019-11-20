@@ -1,21 +1,12 @@
 import express from 'express'
 import { isAddress } from 'web3-utils'
-import { AdapterSync } from 'lowdb'
-
-import low from 'lowdb'
-import FileSync from 'lowdb/adapters/FileSync'
+import { getListFromDB, addToList } from './database/database'
 
 const router: express.Router = express.Router()
 
-const adapter: AdapterSync = new FileSync('./src/database/db.json')
-const db = low(adapter)
-
-// Set some defaults (required if your JSON file is empty)
-db.defaults({ registeredAddresses: [], usedSignupTokens: [], validSignupTokens: ['1', '2', '3', '4'] }).write()
-
 // database table names
 const USED_TOKENS: string = 'usedSignupTokens'
-const REGISTERED_ADDRESSES: string = 'registeredAddresses'
+const REGISTERED_VOTERS: string = 'voters'
 const VALID_TOKENS: string = 'validSignupTokens'
 
 // http response messages
@@ -29,39 +20,25 @@ export const verifyVoterToken = (token: string): boolean => {
 }
 
 export const isTokenValid = (token: string): boolean => {
-  // needs to be done in two steps -> includes cannot be chained, otherwise getFromDB won't work any more
-  const validTokens = getFromDB(VALID_TOKENS)
+  // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
+  const validTokens = getListFromDB(VALID_TOKENS)
   return validTokens.includes(token)
 }
 
 export const hasTokenAlreadyBeenUsed = (token: string): boolean => {
-  // needs to be done in two steps -> includes cannot be chained, otherwise getFromDB won't work any more
-  const usedTokens = getFromDB(USED_TOKENS)
+  // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
+  const usedTokens = getListFromDB(USED_TOKENS)
   return !usedTokens.includes(token)
 }
 
 export const hasAddressAlreadyBeenRegistered = (token: string): boolean => {
-  // needs to be done in two steps -> includes cannot be chained, otherwise getFromDB won't work any more
-  const registeredAddressess = getFromDB(REGISTERED_ADDRESSES)
+  // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
+  const registeredAddressess = getListFromDB(REGISTERED_VOTERS)
   return !registeredAddressess.includes(token)
 }
 
 export const verifyAddress = (address: string): boolean => {
   return isAddress(address) && hasAddressAlreadyBeenRegistered(address)
-}
-
-export const addToDB = (table: string, value: string) => {
-  // read content from DB + add the new value
-  const tableContent: string[] = getFromDB(table)
-  tableContent.push(value)
-
-  // write the content to the DB
-  db.set(table, tableContent).value()
-  db.write()
-}
-
-export const getFromDB = (table: string): string[] => {
-  return db.get(table).value()
 }
 
 router.post('/register', (req, res) => {
@@ -73,8 +50,8 @@ router.post('/register', (req, res) => {
   const success: boolean = isTokenValid && isAddressValid
 
   if (success) {
-    addToDB(USED_TOKENS, voterToken)
-    addToDB(REGISTERED_ADDRESSES, voterAddress)
+    addToList(USED_TOKENS, voterToken)
+    addToList(REGISTERED_VOTERS, voterAddress)
 
     // TODO: FUND REGISTERED ADDRESS
     // Make sure that you have access to the Ethereum account of the Bund

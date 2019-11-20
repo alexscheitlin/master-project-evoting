@@ -8,6 +8,7 @@ import { resolve } from 'path'
 
 import logger from './logger'
 import register from './register'
+import { setupDB } from './database/database'
 
 // load environment variables based on NODE_ENV
 const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
@@ -21,6 +22,9 @@ server.use(logger)
 
 // add all routers
 server.use('/', register)
+
+// setup the database
+setupDB()
 
 if (isProduction) {
   // adds the "Strict-Transport-Security" header.
