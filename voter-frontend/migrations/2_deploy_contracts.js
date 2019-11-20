@@ -3,7 +3,7 @@ const EllipticLib = artifacts.require('EllipticCurve');
 const VoteProofVerifierEC = artifacts.require('VoteProofVerifierEC');
 const VoteProofVerifier = artifacts.require('VoteProofVerifier');
 const SumProofVerifier = artifacts.require('SumProofVerifier');
-const ModuloMathLib = artifacts.require('ModuloMath');
+const ModuloMathLib = artifacts.require('ModuloMathLib');
 
 module.exports = function(deployer) {
   // link the ModuloMath library

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 // Modulo math function used by the contracts in the eVoting system
-library ModuloMath {
+library ModuloMathLib {
   
   function modAdd(uint a, uint b, uint modulus) public view returns (uint res){
     return (a + b) % modulus;

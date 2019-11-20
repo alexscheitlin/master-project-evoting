@@ -1,10 +1,10 @@
 pragma solidity ^0.5.0;
 
-import './ModuloMath.sol';
+import './ModuloMathLib.sol';
 
 contract VoteProofVerifier {
 
-  using ModuloMath for uint;
+  using ModuloMathLib for uint;
 
   struct Proof {
     uint[2] cipher; // a, b
