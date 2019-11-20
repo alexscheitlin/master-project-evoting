@@ -1,10 +1,8 @@
 //@ts-ignore
-const Ballot = artifacts.require('Ballot');
-//@ts-ignore
 const SumProofVerifier = artifacts.require('SumProofVerifier');
 
 import { FFelGamal } from 'mp-crypto';
-import { toSystemParams, toParamsWithPubKey, unlockedAddresses } from './helper';
+import { unlockedAddresses } from './helper';
 import { assert } from 'chai';
 import BN = require('bn.js');
 
