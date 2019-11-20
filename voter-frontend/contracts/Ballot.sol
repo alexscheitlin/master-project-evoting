@@ -341,7 +341,7 @@ contract Ballot {
 			res = (res * election.decryptedShares[i].share) % systemParameters.p;
 		}
 
-		uint256 mh = (election.sumCipher.b / res) % systemParameters.p;
+		uint256 mh = (election.sumCipher.b * invm(res, systemParameters.p)) % systemParameters.p;
 
 		// decode message (** is power operator)
 		uint256 m = 0;
@@ -358,5 +358,29 @@ contract Ballot {
 		return election.yesVotes;
 	}
 
-
+	// TODO: Put into helper Contract
+	/// @dev Modular inverse of a (mod p) using euclid.
+  /// "a" and "p" must be co-prime.
+  /// @param a The number.
+  /// @param p The mmodulus.
+  /// @return x such that ax = 1 (mod p)
+  // inspired by: https://github.com/stonecoldpat/anonymousvoting/blob/master/LocalCrypto.sol
+  function invm(uint a, uint p) public pure returns (uint res){
+      if (a == 0 || a == p || p == 0)
+          revert();
+      if (a > p)
+          a = a % p;
+      int t1;
+      int t2 = 1;
+      uint r1 = p;
+      uint r2 = a;
+      uint q;
+      while (r2 != 0) {
+          q = r1 / r2;
+          (t1, t2, r1, r2) = (t2, t1 - int(q) * t2, r2, r1 - q * r2);
+      }
+      if (t1 < 0)
+          return (p - uint(-t1));
+      return uint(t1);
+  }
 }
