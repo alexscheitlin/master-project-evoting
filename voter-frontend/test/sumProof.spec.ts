@@ -1,80 +1,95 @@
 //@ts-ignore
 const Ballot = artifacts.require('Ballot');
+//@ts-ignore
+const SumProofVerifier = artifacts.require('SumProofVerifier');
+
 import { FFelGamal } from 'mp-crypto';
-import { toSystemParams, toParamsWithPubKey } from './helper';
+import { toSystemParams, toParamsWithPubKey, unlockedAddresses } from './helper';
 import { assert } from 'chai';
+import BN = require('bn.js');
 
 const { KeyGeneration } = FFelGamal;
 
 //@ts-ignore
 contract('SumProofVerifier.sol', () => {
-  // this is a ETH address
-  // is needed for creating a proof
-  // this address is currently hardcoded
-  // in the future, this would be set as the currently active wallet address
-  const uniqueID = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
-
   const testCases = [[23, 2], [23, 6], [23, 8]];
 
   // run 10 tests for each test case
   for (let i = 0; i < 10; i++) {
     for (const testCase of testCases) {
       it(`ZKP Sum Verification for (p: ${testCase[0]}, g: ${testCase[1]})`, async () => {
-        const ballotContract = await Ballot.new();
         const p_: number = testCase[0];
         const q_: number = (p_ - 1) / 2;
         const g_: number = testCase[1];
 
         const systemWideParams: FFelGamal.SystemParameters = KeyGeneration.generateSystemParameters(p_, q_, g_);
-        await ballotContract.setParameters([systemWideParams.p, systemWideParams.q, systemWideParams.g]);
 
         // Authority 1
-        const paramsInContractAuth1 = await ballotContract.getParameters();
-        const systemParamsAuth1 = toSystemParams(paramsInContractAuth1);
-        const keyShareAuth1: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(systemParamsAuth1);
-        const uniqueIdAuth1 = 'IamReallyUnique;-)';
-        const keyGenProofAuth_1 = KeyGeneration.generateKeyGenerationProof(
-          systemParamsAuth1,
-          keyShareAuth1,
-          uniqueIdAuth1,
+        const auth1_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(systemWideParams);
+        const auth1_uniqueID = unlockedAddresses.auth1;
+        const auth1_keyGenProof = KeyGeneration.generateKeyGenerationProof(
+          systemWideParams,
+          auth1_keyShare,
+          auth1_uniqueID,
         );
-        await ballotContract.submitPublicKeyShare(keyShareAuth1.h_, keyGenProofAuth_1.d, keyGenProofAuth_1.d);
+        const auth1_isKeyGenProofValid = KeyGeneration.verifyKeyGenerationProof(
+          systemWideParams,
+          auth1_keyGenProof,
+          auth1_keyShare.h_,
+          auth1_uniqueID,
+        );
+
+        assert.isTrue(auth1_isKeyGenProofValid, 'key generation proof is not valid');
 
         // Authority 2
-        const paramsInContractAuth2 = await ballotContract.getParameters();
-        const systemParamsAuth2 = toSystemParams(paramsInContractAuth2);
-        const keyShareAuth2: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(systemParamsAuth2);
-        const uniqueIdAuth2 = 'IamReallyUnique;-)';
-        const keyGenProofAuth_2 = KeyGeneration.generateKeyGenerationProof(
-          systemParamsAuth2,
-          keyShareAuth2,
-          uniqueIdAuth2,
+        const auth2_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(systemWideParams);
+        const auth2_uniqueID = unlockedAddresses.auth2;
+        const auth2_keyGenProof = KeyGeneration.generateKeyGenerationProof(
+          systemWideParams,
+          auth2_keyShare,
+          auth2_uniqueID,
         );
-        await ballotContract.submitPublicKeyShare(keyShareAuth2.h_, keyGenProofAuth_2.d, keyGenProofAuth_2.d);
+        const auth2_isKeyGenProofValid = KeyGeneration.verifyKeyGenerationProof(
+          systemWideParams,
+          auth2_keyGenProof,
+          auth2_keyShare.h_,
+          auth2_uniqueID,
+        );
 
-        await ballotContract.generatePublicKey();
-        await ballotContract.createVerifiers();
-        await ballotContract.openBallot();
+        assert.isTrue(auth2_isKeyGenProofValid, 'key generation proof is not valid');
 
-        const systemParamsFromContract = await ballotContract.getParameters();
-        const systemParams = toSystemParams(systemParamsFromContract);
-        const publicKey = await ballotContract.getPublicKey();
-        const systemParamsWithPubKey = toParamsWithPubKey(systemParamsFromContract, publicKey);
+        const publicKey = KeyGeneration.combinePublicKeys(systemWideParams, [auth1_keyShare.h_, auth2_keyShare.h_]);
+
+        const sumProofContract = await SumProofVerifier.new();
+        await sumProofContract.initialize(p_, q_, g_, publicKey);
 
         const sum = Math.floor(Math.random() * ((p_ - 1) / 2 - 1)) + 1;
-
+        const systemParamsWithPubKey = {
+          p: new BN(p_),
+          q: new BN(q_),
+          g: new BN(g_),
+          h: publicKey,
+        };
         const sumEnc = FFelGamal.Encryption.encrypt(sum, systemParamsWithPubKey);
-        const privateKey = KeyGeneration.combinePrivateKeys(systemParams, [keyShareAuth1.sk_, keyShareAuth2.sk_]);
-        const proof = FFelGamal.SumZKP.generateSumProof(sumEnc, systemParamsWithPubKey, privateKey, uniqueID);
 
-        const verifiedSumProof = await ballotContract.verifyStandardZKP(
+        const privateKey = KeyGeneration.combinePrivateKeys(systemWideParams, [auth1_keyShare.sk_, auth2_keyShare.sk_]);
+
+        const proof = FFelGamal.SumZKP.generateSumProof(
+          sumEnc,
+          systemParamsWithPubKey,
+          privateKey,
+          unlockedAddresses.bund,
+        );
+
+        const verifiedSumProof = await sumProofContract.verifyProof(
           sumEnc.a,
           sumEnc.b,
           proof.a1,
           proof.b1,
           proof.d,
           proof.f,
-          uniqueID,
+          unlockedAddresses.bund,
+          publicKey,
         );
 
         assert.isTrue(verifiedSumProof, 'Sum proof could not be verified by the contract');
