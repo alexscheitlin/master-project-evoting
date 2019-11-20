@@ -8,6 +8,7 @@ import { resolve } from 'path'
 
 import logger from './logger'
 import register from './register'
+import chainspec from './chainspec/chainspec'
 import { setupDB } from './database/database'
 
 // load environment variables based on NODE_ENV
@@ -15,13 +16,15 @@ const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : fal
 const DOTENV_FILE: string = isProduction ? '.production' : '.development'
 config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
 
+// setup express server with request body parsing and logging
 const server = express()
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(logger)
 
-// add all routers
+// add all routes
 server.use('/', register)
+server.use('/', chainspec)
 
 // setup the database
 setupDB()

@@ -11,7 +11,7 @@ export const setupDB = () => {
   db = low(adapter)
 
   // set defaults (if JSON is empty)
-  db.defaults({ voters: [], usedSignupTokens: [], validSignupTokens: [], cantons: [], state: 'PRE_VOTING' }).write()
+  db.defaults({ voters: [], usedSignupTokens: [], validSignupTokens: [], authorities: [], state: 'PRE_VOTING' }).write()
 }
 
 export const addToList = (table: string, value: string) => {

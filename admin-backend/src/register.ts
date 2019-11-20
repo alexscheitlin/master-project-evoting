@@ -1,5 +1,5 @@
 import express from 'express'
-import { isAddress } from 'web3-utils'
+import { verifyAddress } from './utils'
 import { getListFromDB, addToList } from './database/database'
 
 const router: express.Router = express.Router()
@@ -31,22 +31,12 @@ export const hasTokenAlreadyBeenUsed = (token: string): boolean => {
   return !usedTokens.includes(token)
 }
 
-export const hasAddressAlreadyBeenRegistered = (token: string): boolean => {
-  // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
-  const registeredAddressess = getListFromDB(REGISTERED_VOTERS)
-  return !registeredAddressess.includes(token)
-}
-
-export const verifyAddress = (address: string): boolean => {
-  return isAddress(address) && hasAddressAlreadyBeenRegistered(address)
-}
-
 router.post('/register', (req, res) => {
   const voterToken: string = req.body.token
   const voterAddress: string = req.body.address
 
   const isTokenValid: boolean = verifyVoterToken(voterToken)
-  const isAddressValid: boolean = verifyAddress(voterAddress)
+  const isAddressValid: boolean = verifyAddress(REGISTERED_VOTERS, voterAddress)
   const success: boolean = isTokenValid && isAddressValid
 
   if (success) {
