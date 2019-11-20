@@ -58,7 +58,7 @@ contract('KeyGenProofVerifier.sol', () => {
         const publicKey = KeyGeneration.combinePublicKeys(systemWideParams, [auth1_keyShare.h_, auth2_keyShare.h_]);
 
         const keyGenProofVerifier = await KeyGenProofVerifier.new();
-        await keyGenProofVerifier.initialize(p_, q_, g_, publicKey);
+        await keyGenProofVerifier.initialize(p_, q_, g_);
 
         const auth1_isKeyGenProofValidContract = await keyGenProofVerifier.verifyProof(
           auth1_keyGenProof.c,

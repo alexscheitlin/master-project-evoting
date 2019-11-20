@@ -9,7 +9,7 @@ import { toSystemParams, toParamsWithPubKey, toHex, unlockedAddresses } from './
 const { KeyGeneration, Voting, VoteZKP, SumZKP } = FFelGamal;
 
 //@ts-ignore
-contract.only('Ballot.sol', () => {
+contract('Ballot.sol', () => {
   it('Ballot.sol e2e Test', async () => {
     // ganache-cli needs to be running with `npm run ganache:dev` such that the sender account is the same (for the verifiers)
 
