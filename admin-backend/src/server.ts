@@ -21,14 +21,27 @@ server.get('/', (req, res) => {
 })
 
 if (isProduction) {
-  // adds helmet middleware for security
-  server.use(helmet())
+  // adds the "Strict-Transport-Security" header.
+  server.use(
+    helmet.hsts({
+      // one year
+      maxAge: 31536000,
+      includeSubDomains: true,
+      force: true,
+    })
+  )
 
   // certificates need to be loaded as well
-  const options = {
-    key: fs.readFileSync('./certs/key.pem'),
-    cert: fs.readFileSync('./certs/cert.pem'),
+  const options: https.ServerOptions = {
+    key: fs.readFileSync('./keys/cert/localhost.key'),
+    cert: fs.readFileSync('./keys/cert/localhost.crt'),
     passphrase: process.env.passphrase,
+    minVersion: 'TLSv1.2',
+    ciphers: ['ECDHE-ECDSA-AES256-GCM-SHA384', 'ECDHE-ECDSA-AES128-GCM-SHA256', '!RC4', '!MD5', '!aNULL'].join(':'),
+    ecdhCurve: 'prime256v1',
+
+    // must be enabled if client certificate shall be requested
+    requestCert: false,
   }
 
   // we will pass our 'server' to 'https'
