@@ -182,6 +182,15 @@ contract.only('Ballot.sol', () => {
       auth1_uniqueID,
     );
 
+    const auth1_isDecryptedShareProofValid = SumZKP.verifySumProof(
+      auth1_sumCipher,
+      auth1_decryptedShareProof,
+      auth1_sysParamsWithPubKey,
+      auth1_uniqueID,
+    );
+
+    assert.isTrue(auth1_isDecryptedShareProofValid, 'auth1_isDecryptedShareProofValid false');
+
     // submit decrypted share to the contract with a proof
     await ballotContract.submitDecryptedShare(
       auth1_decryptedShare,
@@ -218,13 +227,13 @@ contract.only('Ballot.sol', () => {
       auth2_votes.push(c);
     }
 
-    const auth2_paramsWithPublicKey: FFelGamal.PublicKey = toParamsWithPubKey(
+    const auth2_sysParamsWithPublicKey: FFelGamal.PublicKey = toParamsWithPubKey(
       auth2_sysParamsFromContract,
       auth2_keyShare.h_,
     );
 
     // homomorphically add votes
-    const auth2_sumCipher = Voting.addVotes(auth2_votes, auth2_paramsWithPublicKey);
+    const auth2_sumCipher = Voting.addVotes(auth2_votes, auth2_sysParamsWithPublicKey);
 
     // create decrypted share
     const auth2_decryptedShare = KeyGeneration.decryptShare(auth2_sysParams, auth2_sumCipher, auth2_keyShare.sk_);
@@ -232,10 +241,19 @@ contract.only('Ballot.sol', () => {
     // create proof for homomorphic sum
     const auth2_decryptedShareProof: SumProof = SumZKP.generateSumProof(
       auth2_sumCipher,
-      auth2_paramsWithPublicKey,
+      auth2_sysParamsWithPublicKey,
       auth2_keyShare.sk_,
       auth2_uniqueID,
     );
+
+    const auth2_isDecryptedShareProofValid = SumZKP.verifySumProof(
+      auth2_sumCipher,
+      auth2_decryptedShareProof,
+      auth2_sysParamsWithPublicKey,
+      auth2_uniqueID,
+    );
+
+    assert.isTrue(auth2_isDecryptedShareProofValid, 'auth2_isDecryptedShareProofValid false');
 
     // submit decrypted share to the contract with a proof
     await ballotContract.submitDecryptedShare(
