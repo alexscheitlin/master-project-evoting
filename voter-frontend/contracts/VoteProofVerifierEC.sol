@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "./EllipticCurve.sol";
 
-contract Verifier is EllipticCurve {
+contract VoteProofVerifierEC is EllipticCurve {
 
     // Public Key of the elGamal System, in the future, this should probably be set in a contructor
     // or passed as additional function argument to the verifyProof()
