@@ -49,6 +49,7 @@ contract Ballot {
 		uint nrOfVoters;
 		Voter[] voters;
 		mapping(address => bool) hasVoted;
+		mapping(address => uint256) pubKeyShareMapping;
 		string votingQuestion;
 		Cipher sumCipher;
 		PublicKeyShare[] publicKeyShares;
@@ -145,7 +146,7 @@ contract Ballot {
 			emit SystemStatusEvent(msg.sender, false, "Key Generation Proof is not correct.");
 			return (false, "Key Generation Proof is not correct.");
 		}
-
+		election.pubKeyShareMapping[msg.sender] = key;
 		election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
 	}
 
@@ -293,12 +294,10 @@ contract Ballot {
 			return (false, "Vote is still ongoing");
 		}
 
-		// TODO: Enable once figured out how to verify sum proofs with the
-		// distributed key generation logic
-		// if(!verifyStandardZKP(a, b, a1, b1, d, f, msg.sender)) {
-		// 	emit VoteStatusEvent(msg.sender, false, "Proof not correct");
-		// 	return (false, "Proof not correct");
-		// }
+		if(!verifyStandardZKP(a, b, a1, b1, d, f, id)) {
+			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
+			return (false, "Proof not correct");
+		}
 
 		DecryptedShareProof memory proof = DecryptedShareProof(a1, b1, d, f);
 		election.decryptedShares.push(DecryptedShare(share, proof));
@@ -329,7 +328,8 @@ contract Ballot {
 		uint f,
 		address id
 	) public view returns(bool) {
-		return sumVerifier.verifyProof(a, b, a1, b1, d, f, id);
+		uint256 publicKeyShare = election.pubKeyShareMapping[id];
+		return sumVerifier.verifyProof(a, b, a1, b1, d, f, id, publicKeyShare);
 	}
 
 	function combineDecryptedShares() public {
