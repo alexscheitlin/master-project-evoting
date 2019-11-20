@@ -38,7 +38,8 @@ contract SumProofVerifier {
       uint b1,
       uint d,
       uint f,
-      address id
+      address id,
+      uint pubKey
       ) public view returns(bool) {
 
     // create a proof object
@@ -56,7 +57,7 @@ contract SumProofVerifier {
 
     // verification g^f == b1 * h^c
     uint l2 = pow(publicKey.g, proof.f);
-    uint r2 = mul(proof.b1, pow(publicKey.h, c));
+    uint r2 = mul(proof.b1, pow(pubKey, c));
     bool v2 = l2 == r2;
 
     return v1 && v2;
