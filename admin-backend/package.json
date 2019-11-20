@@ -10,7 +10,10 @@
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
     "ts-mocha": "./node_modules/.bin/ts-mocha",
     "tsc": "./node_modules/.bin/tsc",
-    "serve": "NODE_ENV=production ts-node-dev --respawn --transpileOnly ./src/server.ts"
+    "serve": "NODE_ENV=production ts-node-dev --respawn --transpileOnly ./src/server.ts",
+    "contracts:compile": "./node_modules/.bin/ts-node solidity/scripts/compile.ts",
+    "contracts:deploy": "./node_modules/.bin/ts-node solidity/scripts/deploy.ts",
+    "contracts": "./node_modules/.bin/ts-node solidity/scripts/init.ts"
   },
   "license": "MIT",
   "devDependencies": {
@@ -29,6 +32,7 @@
     "nyc": "^14.1.1",
     "prettier": "^1.19.1",
     "sinon": "^7.5.0",
+    "solc": "^0.5.13",
     "ts-mocha": "^6.0.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.2"
@@ -42,6 +46,7 @@
     "helmet": "^3.21.2",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
+    "web3": "^1.2.4",
     "web3-utils": "^1.2.4"
   },
   "lint-staged": {
