@@ -15,24 +15,23 @@ contract KeyGenProofVerifier {
     uint p; // prime
     uint q; // prime factor: p = 2*q+1
     uint g; // generator
-    uint h;
   }
 
   Parameters parameters;
 
   constructor() public {
-    parameters = Parameters(0,0,0,0);
+    parameters = Parameters(0,0,0);
   }
 
-  function initialize(uint p, uint q, uint g, uint h) public payable {
+  function initialize(uint p, uint q, uint g) public payable {
     parameters.p = p;
     parameters.q = q;
     parameters.g = g;
-    parameters.h = h;
   }
 
   function verifyProof(
-    uint[2] memory proof, // proof {c, d}
+    uint c,
+    uint d,
     uint h_, // public key share
     address id // msg sender
     ) public view returns(bool) {
@@ -41,7 +40,7 @@ contract KeyGenProofVerifier {
     uint q = parameters.q;
     uint g = parameters.g;
 
-    Proof memory _proof = Proof(proof[0], proof[1]);
+    Proof memory _proof = Proof(c, d);
 
     uint b = computeB(g, p, h_, _proof.d, _proof.c);
 

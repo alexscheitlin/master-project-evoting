@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 
 import './VoteProofVerifier.sol';
 import './SumProofVerifier.sol';
+import './KeyGenProofVerifier.sol';
 import './ModuloMathLib.sol';
 
 contract Ballot {
@@ -98,6 +99,7 @@ contract Ballot {
 	// /////////////////////////////////
 	VoteProofVerifier voteVerifier;
 	SumProofVerifier sumVerifier;
+	KeyGenProofVerifier keyGenProofVerifier;
 
 	SystemParameters private systemParameters;
 	PublicKey private publicKey;
@@ -114,6 +116,7 @@ contract Ballot {
 	constructor() public{
 		voteVerifier = new VoteProofVerifier();
 		sumVerifier = new SumProofVerifier();
+		keyGenProofVerifier = new KeyGenProofVerifier();
 
 		IS_PARAMETERS_SET = false;
 		IS_VOTING_OPEN = false;
@@ -138,6 +141,7 @@ contract Ballot {
 		require(msg.sender == _owner);
 		require(!IS_PARAMETERS_SET);
 		systemParameters = SystemParameters(params[0], params[1], params[2]);
+		keyGenProofVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g);
 		IS_PARAMETERS_SET = true;
   }
 
@@ -205,12 +209,17 @@ contract Ballot {
 	// KANTON core functions 
 	// /////////////////////////////////
 	function submitPublicKeyShare(uint key, uint proof_c, uint proof_d) external returns (bool, string memory) {
-		if(!verifyKeyShare()) {
+		
+		bool proofValid = keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender);
+
+		if(!proofValid) {
 			emit SystemStatusEvent(msg.sender, false, "Key Generation Proof is not correct.");
 			return (false, "Key Generation Proof is not correct.");
 		}
+
 		election.pubKeyShareMapping[msg.sender] = key;
 		election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
+		return (true, "Key Generation Proof is valid.");
 	}
 
 	function submitDecryptedShare(
@@ -332,16 +341,5 @@ contract Ballot {
 		require(!IS_VOTING_OPEN);
 
 		return election.yesVotes;
-	}
-
-
-	// /////////////////////////////////
-	// private functions
-	// /////////////////////////////////
-
-	// checks if the proof for the submitted key share is correct
-	function verifyKeyShare() private view returns (bool) {
-		// TODO: implement proof verification 
-		return true;
 	}
 }

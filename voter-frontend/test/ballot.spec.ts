@@ -9,7 +9,7 @@ import { toSystemParams, toParamsWithPubKey, toHex, unlockedAddresses } from './
 const { KeyGeneration, Voting, VoteZKP, SumZKP } = FFelGamal;
 
 //@ts-ignore
-contract('Ballot.sol', () => {
+contract.only('Ballot.sol', () => {
   it('Ballot.sol e2e Test', async () => {
     // ganache-cli needs to be running with `npm run ganache:dev` such that the sender account is the same (for the verifiers)
 
@@ -39,7 +39,7 @@ contract('Ballot.sol', () => {
     const auth1_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(auth1_sysParams);
     const auth1_uniqueID = unlockedAddresses.auth1;
     const auth1_keyGenProof = KeyGeneration.generateKeyGenerationProof(auth1_sysParams, auth1_keyShare, auth1_uniqueID);
-    await ballotContract.submitPublicKeyShare(auth1_keyShare.h_, auth1_keyGenProof.d, auth1_keyGenProof.d, {
+    await ballotContract.submitPublicKeyShare(auth1_keyShare.h_, auth1_keyGenProof.c, auth1_keyGenProof.d, {
       from: unlockedAddresses.auth1,
     });
 
@@ -53,7 +53,7 @@ contract('Ballot.sol', () => {
     const auth2_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(auth2_sysParams);
     const auth2_uniqueID = unlockedAddresses.auth2;
     const auth2_keyGenProof = KeyGeneration.generateKeyGenerationProof(auth2_sysParams, auth2_keyShare, auth2_uniqueID);
-    await ballotContract.submitPublicKeyShare(auth2_keyShare.h_, auth2_keyGenProof.d, auth2_keyGenProof.d, {
+    await ballotContract.submitPublicKeyShare(auth2_keyShare.h_, auth2_keyGenProof.c, auth2_keyGenProof.d, {
       from: unlockedAddresses.auth2,
     });
 
