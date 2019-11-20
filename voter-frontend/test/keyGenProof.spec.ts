@@ -8,7 +8,7 @@ import { assert } from 'chai';
 const { KeyGeneration } = FFelGamal;
 
 //@ts-ignore
-contract.only('KeyGenProofVerifier.sol', () => {
+contract('KeyGenProofVerifier.sol', () => {
   const testCases = [[23, 2], [23, 6], [23, 8]];
 
   // run 10 tests for each test case
@@ -61,13 +61,15 @@ contract.only('KeyGenProofVerifier.sol', () => {
         await keyGenProofVerifier.initialize(p_, q_, g_, publicKey);
 
         const auth1_isKeyGenProofValidContract = await keyGenProofVerifier.verifyProof(
-          [auth1_keyGenProof.c, auth1_keyGenProof.d],
+          auth1_keyGenProof.c,
+          auth1_keyGenProof.d,
           auth1_keyShare.h_,
           auth1_uniqueID,
         );
 
         const auth2_isKeyGenProofValidContract = await keyGenProofVerifier.verifyProof(
-          [auth2_keyGenProof.c, auth2_keyGenProof.d],
+          auth2_keyGenProof.c,
+          auth2_keyGenProof.d,
           auth2_keyShare.h_,
           auth2_uniqueID,
         );
