@@ -4,8 +4,6 @@ import './VoteProofVerifier.sol';
 import './SumProofVerifier.sol';
 import './ModuloMathLib.sol';
 
-// TODO: learn more about revert(), assert() and require(), their differences and when to use which keyword...
-
 contract Ballot {
 
 	// /////////////////////////////////
@@ -162,7 +160,7 @@ contract Ballot {
 		IS_PUBKEY_SET = true;
 	}
 
-		function createVerifiers() public {
+	function createVerifiers() public {
 		require(msg.sender == _owner);
 		voteVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
 		sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
