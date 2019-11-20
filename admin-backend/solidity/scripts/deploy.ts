@@ -1,5 +1,5 @@
 const Web3 = require('web3')
-const compiledContract = require('../_compiled/SimpleStorage.json')
+const compiledContract = require('../compiled/SimpleStorage.json')
 
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 const web3 = new Web3(provider)
@@ -29,3 +29,5 @@ export const deployContract = async () => {
 
   console.log(`Contract deployed at address: ${deployedContract.options.address}`)
 }
+
+deployContract()

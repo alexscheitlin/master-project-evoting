@@ -2,23 +2,18 @@ const path = require('path')
 const fs = require('fs-extra')
 const solc = require('solc')
 
-const builPath = path.resolve('solidity/_compiled')
+const builPath = path.resolve('solidity/compiled')
 const contractsFolderPath = path.resolve('solidity/contracts')
 
-interface ContractSource {
-  [key: string]: any
-}
-
-export const createBuildFolder = () => {
+const createBuildFolder = () => {
   fs.emptyDirSync(builPath)
 }
 
 const buildSources = () => {
-  const sources: ContractSource = {}
-
+  const sources: any = {}
   const contractsFiles = fs.readdirSync(contractsFolderPath)
 
-  contractsFiles.forEach((file: any) => {
+  contractsFiles.forEach((file: string) => {
     const contractFullPath = path.resolve(contractsFolderPath, file)
     sources[file] = {
       content: fs.readFileSync(contractFullPath, 'utf8'),
@@ -40,7 +35,7 @@ const input = {
   },
 }
 
-export const compileContracts = () => {
+const compileContracts = () => {
   const compiledContracts = JSON.parse(solc.compile(JSON.stringify(input))).contracts
 
   for (let contract in compiledContracts) {
@@ -51,3 +46,7 @@ export const compileContracts = () => {
     }
   }
 }
+;(function run() {
+  createBuildFolder()
+  compileContracts()
+})()

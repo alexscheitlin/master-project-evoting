@@ -62,4 +62,4 @@ typings/
 db.json
 
 # solidity compiled contracts
-solidity/_compiled
+solidity/compiled
