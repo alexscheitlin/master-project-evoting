@@ -1,6 +1,10 @@
 pragma solidity ^0.5.0;
 
+import './ModuloMath.sol';
+
 contract VoteProofVerifier {
+
+  using ModuloMath for uint;
 
   struct Proof {
     uint[2] cipher; // a, b
@@ -63,26 +67,28 @@ contract VoteProofVerifier {
   }
 
   function verifyV1(uint a0, uint c0, uint f0, uint cipher0) public view returns (bool) {
-    uint l1 = pow(publicKey.g, f0);
-    uint r1 = mul(a0, pow(cipher0, c0));
+    uint l1 = publicKey.g.modPow(f0, publicKey.p);
+    uint r1 = a0.modMul( cipher0.modPow(c0, publicKey.p), publicKey.p);
     return l1 == r1;
   }
 
   function verifyV2(uint a1, uint f1, uint c1, uint cipher0) public view returns (bool) {
-    uint l2 = pow(publicKey.g, f1);
-    uint r2 = mul(a1, pow(cipher0, c1));
+    uint l2 = publicKey.g.modPow(f1, publicKey.p);
+    uint r2 = a1.modMul(cipher0.modPow(c1, publicKey.p), publicKey.p);
     return l2 == r2;
   }
 
   function verifyV3(uint b0, uint c0, uint f0, uint cipher1) public view returns (bool) {
-    uint l3 = pow(publicKey.h, f0);
-    uint r3 = mul(b0, pow(cipher1, c0));
+    uint l3 = publicKey.h.modPow(f0, publicKey.p);
+    uint r3 = b0.modMul(cipher1.modPow(c0, publicKey.p), publicKey.p);
     return l3 == r3;
   }
 
   function verifyV4(uint b1, uint c1, uint f1, uint cipher1) public view returns (bool) {
-    uint l4 = pow(publicKey.h, f1);
-    uint r4 = mul(b1, pow(div(cipher1, publicKey.g), c1));
+    uint l4 = publicKey.h.modPow(f1, publicKey.p);    
+    uint r4_1 = cipher1.modDiv(publicKey.g, publicKey.p);
+    uint r4_2 = r4_1.modPow(c1, publicKey.p);
+    uint r4 = b1.modMul(r4_2, publicKey.p);
     return l4 == r4;
   }
 
@@ -90,57 +96,8 @@ contract VoteProofVerifier {
   function verifyV5(uint[2] memory a, uint[2] memory b, uint[2] memory c, uint[2] memory cipher, address uniqueID) public view returns (bool) {
     // use the address of the sender once the verification call comes from the frontend
     // address of the caller provides a unique nonce for the hash
-    uint256 lc = (c[1] + c[0]) % publicKey.q;
+    uint256 lc = c[1].modAdd(c[0], publicKey.q);
     bytes32 rc = keccak256(abi.encodePacked(uniqueID, cipher[0], cipher[1], a[0], b[0], a[1], b[1]));
     return lc == (uint(rc) % publicKey.q);
-  }
-
-  //////////////////////////////////////
-  // HELPER FUNCTIONS
-  //////////////////////////////////////
-  // modulo operations
-  function add(uint a, uint b) public view returns (uint res){
-    return (a + b) % publicKey.q;
-  }
-
-  function sub(uint a, uint b) public view returns (uint res){
-    return (a - b) % publicKey.q;
-  }
-
-  function mul(uint a, uint b) public view returns (uint res){
-    return (a * b) % publicKey.p;
-  }
-
-  function div(uint a, uint b) public view returns (uint res){
-    return mul(a, invm(b, publicKey.p)) % publicKey.p;
-  }
-
-  function pow(uint a, uint b) public view returns (uint res){
-    return (a**b) % publicKey.p;
-  }
-
-  /// @dev Modular inverse of a (mod p) using euclid.
-  /// "a" and "p" must be co-prime.
-  /// @param a The number.
-  /// @param p The mmodulus.
-  /// @return x such that ax = 1 (mod p)
-  // inspired by: https://github.com/stonecoldpat/anonymousvoting/blob/master/LocalCrypto.sol
-  function invm(uint a, uint p) public pure returns (uint res){
-      if (a == 0 || a == p || p == 0)
-          revert();
-      if (a > p)
-          a = a % p;
-      int t1;
-      int t2 = 1;
-      uint r1 = p;
-      uint r2 = a;
-      uint q;
-      while (r2 != 0) {
-          q = r1 / r2;
-          (t1, t2, r1, r2) = (t2, t1 - int(q) * t2, r2, r1 - q * r2);
-      }
-      if (t1 < 0)
-          return (p - uint(-t1));
-      return uint(t1);
   }
 }
