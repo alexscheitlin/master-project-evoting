@@ -4,30 +4,19 @@ import './VoteProofVerifier.sol';
 import './SumProofVerifier.sol';
 import './ModuloMathLib.sol';
 
-// TODO: remove id from call signatures, try to use msg.sender
 // TODO: learn more about revert(), assert() and require(), their differences and when to use which keyword...
 
 contract Ballot {
 
+	// /////////////////////////////////
+	// libraries
+	// /////////////////////////////////
 	using ModuloMathLib for uint;
 
-	//////////////////////////////////////////
-	// EVENTS
-	//////////////////////////////////////////
-	event VoteStatusEvent(address indexed from, bool success, string reason);
-	event SystemStatusEvent(address indexed from, bool success, string reason);
 
-
-	//////////////////////////////////////////
-	// CONSTANTS
-	//////////////////////////////////////////
-	// The number of PublicKeyShare needed to create the publicKey (# of authorities)
-	uint constant NR_OF_AUTHORITY_NODES = 2;
-
-
-	//////////////////////////////////////////
-	// STRUCTS
-	//////////////////////////////////////////
+	// /////////////////////////////////
+	// structs
+	// /////////////////////////////////
 	struct SystemParameters {
     uint p; // prime
     uint q; // prime factor: p = 2*q+1
@@ -90,6 +79,25 @@ contract Ballot {
 		uint d;
 	}
 
+
+	// /////////////////////////////////
+	// constants
+	// /////////////////////////////////
+
+	// The number of PublicKeyShare needed to create the publicKey (# of authorities)
+	uint constant NR_OF_AUTHORITY_NODES = 2;
+
+
+	// /////////////////////////////////
+	// events
+	// /////////////////////////////////
+	event VoteStatusEvent(address indexed from, bool success, string reason);
+	event SystemStatusEvent(address indexed from, bool success, string reason);
+
+
+	// /////////////////////////////////
+	// variables
+	// /////////////////////////////////
 	VoteProofVerifier voteVerifier;
 	SumProofVerifier sumVerifier;
 
@@ -102,9 +110,9 @@ contract Ballot {
 	address private _owner;
 
 
-	//////////////////////////////////////////
-	// CONSTRUCTOR
-	//////////////////////////////////////////
+	// /////////////////////////////////
+	// constructor
+	// /////////////////////////////////
 	constructor() public{
 		voteVerifier = new VoteProofVerifier();
 		sumVerifier = new SumProofVerifier();
@@ -125,43 +133,15 @@ contract Ballot {
 	}
 
 
-	//////////////////////////////////////////
-	// SYSTEM PARAMETERS
-	//////////////////////////////////////////
+	// /////////////////////////////////
+	// BUND core functions (owner)
+	// /////////////////////////////////
   function setParameters(uint[3] calldata params) external {
-			require(!IS_PARAMETERS_SET);
-			require(msg.sender == _owner);
-      systemParameters = SystemParameters(params[0], params[1], params[2]);
-			IS_PARAMETERS_SET = true;
+		require(msg.sender == _owner);
+		require(!IS_PARAMETERS_SET);
+		systemParameters = SystemParameters(params[0], params[1], params[2]);
+		IS_PARAMETERS_SET = true;
   }
-
-  function getParameters() external view returns (uint[3] memory) {
-			require(IS_PARAMETERS_SET);
-      return [systemParameters.p, systemParameters.q, systemParameters.g];
-  }
-
-
-	//////////////////////////////////////////
-	// SYSTEM WIDE PUBLIC KEY GENERATIOn
-	//////////////////////////////////////////
-	function submitPublicKeyShare(uint key, uint proof_c, uint proof_d) external returns (bool, string memory) {
-		if(!verifyKeyShare()) {
-			emit SystemStatusEvent(msg.sender, false, "Key Generation Proof is not correct.");
-			return (false, "Key Generation Proof is not correct.");
-		}
-		election.pubKeyShareMapping[msg.sender] = key;
-		election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
-	}
-
-		// checks if the proof for the submitted key share is correct
-	function verifyKeyShare() private view returns (bool) {
-		// TODO: implement proof verification 
-		return true;
-	}
-
-	function getPublicKeyShareLength() public view returns(uint) {
-		return election.publicKeyShares.length;
-	}
 
 	function generatePublicKey() external {
 		require(msg.sender == _owner);
@@ -182,27 +162,97 @@ contract Ballot {
 		IS_PUBKEY_SET = true;
 	}
 
-	function getPublicKey() public view returns (uint) {
-		require(IS_PUBKEY_SET, "Public Key of the System not yet set");
-		return publicKey.h;
-	}
-
-
-	//////////////////////////////////////////
-	// VERIFIER CREATION
-	//////////////////////////////////////////
-	function createVerifiers() public {
+		function createVerifiers() public {
 		require(msg.sender == _owner);
 		voteVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
 		sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
 	}
 
+	function openBallot() public {
+		require(msg.sender == _owner);
 
-	//////////////////////////////////////////
-	// VOTING
-	//////////////////////////////////////////
+		IS_VOTING_OPEN = true;
+	}
+
+	function closeBallot() public {
+		require(msg.sender == _owner);
+
+		IS_VOTING_OPEN = false;
+	}
+
+	function combineDecryptedShares() public {
+		require(election.decryptedShares.length == NR_OF_AUTHORITY_NODES);
+
+		uint256 res = election.decryptedShares[0].share;
+
+		for(uint i = 1; i < election.decryptedShares.length; i++) {
+			res = res.modMul(election.decryptedShares[i].share, systemParameters.p);
+		}
+
+		uint256 mh = election.sumCipher.b.modMul(res.modInv(systemParameters.p) ,systemParameters.p);
+
+		// decode message (** is power operator)
+		uint256 m = 0;
+		uint256 g = systemParameters.g;
+		uint256 p = systemParameters.p;
+		while( ( g.modPow(m, p) ) != mh ) {
+			m = m + 1;
+		}
+
+		election.yesVotes = m;
+	}
+
+
+	// /////////////////////////////////
+	// KANTON core functions 
+	// /////////////////////////////////
+	function submitPublicKeyShare(uint key, uint proof_c, uint proof_d) external returns (bool, string memory) {
+		if(!verifyKeyShare()) {
+			emit SystemStatusEvent(msg.sender, false, "Key Generation Proof is not correct.");
+			return (false, "Key Generation Proof is not correct.");
+		}
+		election.pubKeyShareMapping[msg.sender] = key;
+		election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
+	}
+
+	function submitDecryptedShare(
+		uint share,
+		uint a,
+		uint b,
+		uint a1,
+		uint b1,
+		uint d,
+		uint f) external returns(bool, string memory) {
+		
+		if(IS_VOTING_OPEN) {
+			emit VoteStatusEvent(msg.sender, false, "Vote is still ongoing");
+			return (false, "Vote is still ongoing");
+		}
+
+		uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender];
+		if(!sumVerifier.verifyProof(a, b, a1, b1, d, f, msg.sender, publicKeyShare)) {
+			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
+			return (false, "Proof not correct");
+		}
+
+		DecryptedShareProof memory proof = DecryptedShareProof(a1, b1, d, f);
+		election.decryptedShares.push(DecryptedShare(share, proof));
+
+		// TODO: figure out how to do this properly, this is needed in
+		// combineDecryptedShares, but it's not elegant if it's overwritten
+		// each time some authority submits a decrypted share
+		election.sumCipher = Cipher(a, b);
+
+		emit VoteStatusEvent(msg.sender, true, "DecryptedShareProof accepted");
+		return (true, "Sumproof accepted");
+	}
+
+
+	// /////////////////////////////////
+	// VOTER core functions 
+	// /////////////////////////////////
 	function vote(
-		uint[2] calldata cipher, // a, b
+		uint[2] calldata cipher,
     uint[2] calldata a,
     uint[2] calldata b,
     uint[2] calldata c,
@@ -237,101 +287,63 @@ contract Ballot {
 		return (true, "Vote was accepted");
 	}
 
+
+	// /////////////////////////////////
+	// getters
+	// /////////////////////////////////
+
+	// get system parameters
+	function getParameters() external view returns (uint[3] memory) {
+		require(IS_PARAMETERS_SET);
+		return [systemParameters.p, systemParameters.q, systemParameters.g];
+  }
+
+	// get combined public key of the system
+	function getPublicKey() public view returns (uint) {
+		require(IS_PUBKEY_SET, "Public Key of the System not yet set");
+		return publicKey.h;
+	}
+
+	// get a vote cipher at a specific index
 	function getVote(uint256 idx) public view returns(uint256, uint256) {
 		return (election.voters[idx].cipher.a, election.voters[idx].cipher.b);
 	}
 
+	// get the total number of votes in election.voters
 	function getNumberOfVotes() public view returns(uint256) {
 		return election.voters.length;
 	}
 
-
-	//////////////////////////////////////////
-	// BALLOT open/close/getStatus
-	//////////////////////////////////////////
-	function openBallot() public {
-		require(msg.sender == _owner);
-
-		IS_VOTING_OPEN = true;
-	}
-
-	function closeBallot() public {
-		require(msg.sender == _owner);
-
-		IS_VOTING_OPEN = false;
-	}
-
+	// get the status of the ballot {open | closed}
 	function getBallotStatus() public view returns(bool) {
 		return IS_VOTING_OPEN;
 	}
 
-
-	//////////////////////////////////////////
-	// DECRYPTED SHARE OF THE SUM
-	//////////////////////////////////////////
-	function submitDecryptedShare(
-		uint share,
-		uint a,
-		uint b,
-		uint a1,
-		uint b1,
-		uint d,
-		uint f) external returns(bool, string memory) {
-		
-		if(IS_VOTING_OPEN) {
-			emit VoteStatusEvent(msg.sender, false, "Vote is still ongoing");
-			return (false, "Vote is still ongoing");
-		}
-
-		uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender];
-		if(!sumVerifier.verifyProof(a, b, a1, b1, d, f, msg.sender, publicKeyShare)) {
-			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
-			return (false, "Proof not correct");
-		}
-
-		DecryptedShareProof memory proof = DecryptedShareProof(a1, b1, d, f);
-		election.decryptedShares.push(DecryptedShare(share, proof));
-
-		// TODO: figure out how to do this properly, this is needed in
-		// combineDecryptedShares, but it's not elegant if it's overwritten
-		// each time some authority submits a decrypted share
-		election.sumCipher = Cipher(a, b);
-
-		emit VoteStatusEvent(msg.sender, true, "DecryptedShareProof accepted");
-		return (true, "Sumproof accepted");
-	}
-
+	// get the total number of decrypted shares
 	function getNrOfDecryptedShares() public view returns(uint) {
 		return election.decryptedShares.length;
 	}
 
+	// get a decrypted share at a specific index
 	function getDecryptedShare(uint idx) public view returns(uint) {
 		return election.decryptedShares[idx].share;
 	}
 
-	function combineDecryptedShares() public {
-		require(election.decryptedShares.length > 0);
+	// get vote result
+	function getVoteResult() public view returns (uint) {
+		require(!IS_VOTING_OPEN);
 
-		uint256 res = election.decryptedShares[0].share;
-
-		for(uint i = 1; i < election.decryptedShares.length; i++) {
-			res = res.modMul(election.decryptedShares[i].share, systemParameters.p);
-		}
-
-		uint256 mh = election.sumCipher.b.modMul(res.modInv(systemParameters.p) ,systemParameters.p);
-
-		// decode message (** is power operator)
-		uint256 m = 0;
-		uint256 g = systemParameters.g;
-		uint256 p = systemParameters.p;
-		while( ( g.modPow(m, p) ) != mh ) {
-			m = m + 1;
-		}
-
-		election.yesVotes = m;
+		return election.yesVotes;
 	}
 
-	function getVoteResult() public view returns (uint) {
-		return election.yesVotes;
+
+	// /////////////////////////////////
+	// private functions
+	// /////////////////////////////////
+
+	// checks if the proof for the submitted key share is correct
+	function verifyKeyShare() private view returns (bool) {
+		// TODO: implement proof verification 
+		return true;
 	}
 }
