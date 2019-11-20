@@ -4,18 +4,14 @@ const Ballot = artifacts.require('./Ballot.sol');
 import { assert } from 'chai';
 import { FFelGamal, Cipher, SumProof } from 'mp-crypto';
 import BN from 'bn.js';
-import { toSystemParams, toParamsWithPubKey, toHex } from './helper';
+import { toSystemParams, toParamsWithPubKey, toHex, unlockedAddresses } from './helper';
 
 const { KeyGeneration, Voting, VoteZKP, SumZKP } = FFelGamal;
 
 //@ts-ignore
-contract.only('Ballot.sol', () => {
+contract('Ballot.sol', () => {
   it('Ballot.sol e2e Test', async () => {
     // ganache-cli needs to be running with `npm run ganache:dev` such that the sender account is the same (for the verifiers)
-    const bund_address = '0x05f5e01f2d2073c8872aca4213fd85f382ca681a'; // owner of contracts
-    const client_address = '0xA5Dc6DF6DE43Ece449542808A2E0F8f566b5762b';
-    const auth1_address = '0x14e1Ab3be44A7B4397D3750Ffa71Ee30d58316a1';
-    const auth2_address = '0xaF87cfA812cA199f3118d3Fcb3D4B427Aa857cA2';
 
     /**
      * 1. SETUP BUND
@@ -30,7 +26,7 @@ contract.only('Ballot.sol', () => {
 
     const bund_systemParams: FFelGamal.SystemParameters = KeyGeneration.generateSystemParameters(p_, q_, g_);
     await ballotContract.setParameters([bund_systemParams.p, bund_systemParams.q, bund_systemParams.g], {
-      from: bund_address,
+      from: unlockedAddresses.bund,
     });
 
     /**
@@ -41,10 +37,10 @@ contract.only('Ballot.sol', () => {
     const auth1_sysParamsFromContract = await ballotContract.getParameters();
     const auth1_sysParams = toSystemParams(auth1_sysParamsFromContract);
     const auth1_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(auth1_sysParams);
-    const auth1_uniqueID = auth1_address;
+    const auth1_uniqueID = unlockedAddresses.auth1;
     const auth1_keyGenProof = KeyGeneration.generateKeyGenerationProof(auth1_sysParams, auth1_keyShare, auth1_uniqueID);
     await ballotContract.submitPublicKeyShare(auth1_keyShare.h_, auth1_keyGenProof.d, auth1_keyGenProof.d, {
-      from: auth1_address,
+      from: unlockedAddresses.auth1,
     });
 
     /**
@@ -55,10 +51,10 @@ contract.only('Ballot.sol', () => {
     const auth2_sysParamsFromContract = await ballotContract.getParameters();
     const auth2_sysParams = toSystemParams(auth2_sysParamsFromContract);
     const auth2_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(auth2_sysParams);
-    const auth2_uniqueID = auth2_address;
+    const auth2_uniqueID = unlockedAddresses.auth2;
     const auth2_keyGenProof = KeyGeneration.generateKeyGenerationProof(auth2_sysParams, auth2_keyShare, auth2_uniqueID);
     await ballotContract.submitPublicKeyShare(auth2_keyShare.h_, auth2_keyGenProof.d, auth2_keyGenProof.d, {
-      from: auth2_address,
+      from: unlockedAddresses.auth2,
     });
 
     /**
@@ -82,7 +78,7 @@ contract.only('Ballot.sol', () => {
      * 4.2 the voter creates a vote + proof and submits it to the contract
      */
 
-    const client_uniqueID = client_address;
+    const client_uniqueID = unlockedAddresses.client;
 
     // Client/Voter queries the system parameters from the Ballot contract
     const client_sysParamsFromContract = await ballotContract.getParameters();
@@ -199,7 +195,7 @@ contract.only('Ballot.sol', () => {
       auth1_decryptedShareProof.b1,
       auth1_decryptedShareProof.d,
       auth1_decryptedShareProof.f,
-      { from: auth1_address },
+      { from: unlockedAddresses.auth1 },
     );
 
     // assert correct number of shares are saved in the contract
@@ -263,7 +259,7 @@ contract.only('Ballot.sol', () => {
       auth2_decryptedShareProof.b1,
       auth2_decryptedShareProof.d,
       auth2_decryptedShareProof.f,
-      { from: auth2_address },
+      { from: unlockedAddresses.auth2 },
     );
 
     // assert correct number of shares are saved in the contract
