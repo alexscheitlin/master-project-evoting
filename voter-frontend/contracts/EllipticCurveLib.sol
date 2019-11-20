@@ -7,7 +7,7 @@ pragma solidity ^0.5.0;
  * @author Witnet Foundation
  * based on contracts found here: https://github.com/witnet/elliptic-curve-solidity
  */
-contract EllipticCurve {
+library EllipticCurveLib {
 
   /// @dev Modular euclidean inverse of a number (mod p).
   /// @param _x The number

@@ -1,8 +1,8 @@
 pragma solidity ^0.5.0;
 
-import "./EllipticCurve.sol";
+import "./EllipticCurveLib.sol";
 
-contract VoteProofVerifierEC is EllipticCurve {
+contract VoteProofVerifierEC {
 
     // Public Key of the elGamal System, in the future, this should probably be set in a contructor
     // or passed as additional function argument to the verifyProof()
@@ -38,15 +38,15 @@ contract VoteProofVerifierEC is EllipticCurve {
     // - such that the constants of the curve don't have to be passed with every call.
     ///////////////////////////////////////////////////////////////////////////////////
     function isPointOnCurve(uint256 x_1, uint256 y_1)private pure returns (bool) {
-        return isOnCurve(x_1, y_1, AA, BB, PP);
+        return EllipticCurveLib.isOnCurve(x_1, y_1, AA, BB, PP);
     }
 
     function addTwoPoints(uint256 x_1, uint256 y_1, uint256 x_2, uint256 y_2) private pure returns(uint256, uint256) {
-        return ecAdd(x_1, y_1, x_2, y_2, AA, PP);
+        return EllipticCurveLib.ecAdd(x_1, y_1, x_2, y_2, AA, PP);
     }
 
     function multiplyPointWithScalar(uint256 scalar, uint256 x_1, uint256 y_1)private pure returns(uint256, uint256)  {
-        return ecMul(scalar, x_1, y_1, AA, PP);
+        return EllipticCurveLib.ecMul(scalar, x_1, y_1, AA, PP);
     }
     ///////////////////////////////
 
@@ -151,7 +151,7 @@ contract VoteProofVerifierEC is EllipticCurve {
         (uint256 pubKTr2_1, uint256 pubKTr2_2) = multiplyPointWithScalar(r2, pkX, pkX);
 
         // const generator_inverted = ec.curve.g.neg()
-        (uint256 ginv_x, uint256 ginv_y) = ecInv(GX, GY, PP);
+        (uint256 ginv_x, uint256 ginv_y) = EllipticCurveLib.ecInv(GX, GY, PP);
 
         // const yMinusG = y.add(generator_inverted)
         (uint256 yMinusG_1, uint256 yMinusG_2) = addTwoPoints(y[0], y[1], ginv_x, ginv_y);
