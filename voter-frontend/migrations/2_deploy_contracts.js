@@ -7,13 +7,13 @@ const ModuloMathLib = artifacts.require('ModuloMath');
 
 module.exports = function(deployer) {
   deployer.deploy(ModuloMathLib);
-  deployer.link(ModuloMathLib, [SumProofVerifier, Ballot]);
+  deployer.link(ModuloMathLib, [SumProofVerifier, VoteProofVerifier, Ballot]);
   deployer.deploy(SumProofVerifier);
+  deployer.deploy(VoteProofVerifier);
   deployer.deploy(Ballot);
 
   deployer.deploy(EllipticLib);
   deployer.link(EllipticLib, Verifier);
 
   deployer.deploy(Verifier);
-  deployer.deploy(VoteProofVerifier);
 };
