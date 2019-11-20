@@ -47,10 +47,6 @@ contract.only('Ballot.sol', () => {
       from: auth1_address,
     });
 
-    // assert the correct numbers of key shares
-    let nrOfShares = await ballotContract.getPublicKeyShareLength();
-    assert(toHex(nrOfShares) === toHex(new BN(1)), 'election.shares is not incremented properly');
-
     /**
      * 2.2 SETUP AUTHORITY 2 (KANTON)
      *
@@ -64,10 +60,6 @@ contract.only('Ballot.sol', () => {
     await ballotContract.submitPublicKeyShare(auth2_keyShare.h_, auth2_keyGenProof.d, auth2_keyGenProof.d, {
       from: auth2_address,
     });
-
-    // assert the correct numbers of key shares
-    nrOfShares = await ballotContract.getPublicKeyShareLength();
-    assert(toHex(nrOfShares) === toHex(new BN(2)), 'election.shares is not incremented properly');
 
     /**
      * 3. BUND triggers public key generation & verifiers in contract
