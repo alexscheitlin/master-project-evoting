@@ -220,7 +220,7 @@ contract Ballot {
 		// 	return (false, "Voter already voted");
 		// }
 
-		if(!verifyVote(cipher, a, b, c, f, msg.sender)) {
+		if(!voteVerifier.verifyProof(cipher, a, b, c, f, msg.sender)) {
 			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 			return (false, "Proof not correct");
 		}
@@ -235,17 +235,6 @@ contract Ballot {
 
 		emit VoteStatusEvent(msg.sender, true, "Vote was accepted");
 		return (true, "Vote was accepted");
-	}
-
-	function verifyVote(
-		uint[2] memory cipher, // a, b
-    uint[2] memory a,
-    uint[2] memory b,
-    uint[2] memory c,
-    uint[2] memory f,
-		address id
-	) private view returns(bool) {
-		return voteVerifier.verifyProof(cipher, a, b, c, f, id);
 	}
 
 	function getVote(uint256 idx) public view returns(uint256, uint256) {
@@ -294,7 +283,8 @@ contract Ballot {
 			return (false, "Vote is still ongoing");
 		}
 
-		if(!verifyStandardZKP(a, b, a1, b1, d, f, msg.sender)) {
+		uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender];
+		if(!sumVerifier.verifyProof(a, b, a1, b1, d, f, msg.sender, publicKeyShare)) {
 			emit VoteStatusEvent(msg.sender, false, "Proof not correct");
 			return (false, "Proof not correct");
 		}
@@ -317,19 +307,6 @@ contract Ballot {
 
 	function getDecryptedShare(uint idx) public view returns(uint) {
 		return election.decryptedShares[idx].share;
-	}
-
-	function verifyStandardZKP(
-		uint a, // cipher
-		uint b, // cipher
-		uint a1,
-		uint b1,
-		uint d,
-		uint f,
-		address id
-	) public view returns(bool) {
-		uint256 publicKeyShare = election.pubKeyShareMapping[id];
-		return sumVerifier.verifyProof(a, b, a1, b1, d, f, id, publicKeyShare);
 	}
 
 	function combineDecryptedShares() public {
