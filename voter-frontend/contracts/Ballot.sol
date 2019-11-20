@@ -2,14 +2,14 @@ pragma solidity ^0.5.0;
 
 import './VoteProofVerifier.sol';
 import './SumProofVerifier.sol';
-import './ModuloMath.sol';
+import './ModuloMathLib.sol';
 
 // TODO: remove id from call signatures, try to use msg.sender
 // TODO: learn more about revert(), assert() and require(), their differences and when to use which keyword...
 
 contract Ballot {
 
-	using ModuloMath for uint;
+	using ModuloMathLib for uint;
 
 	//////////////////////////////////////////
 	// EVENTS
