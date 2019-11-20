@@ -14,24 +14,24 @@ contract VoteProofVerifier {
     uint[2] f;
   }
 
-  struct PublicKey {
+  struct Parameters {
     uint p; // prime
     uint q; // prime factor: p = 2*q+1
     uint g; // generator
     uint h;
   }
 
-  PublicKey publicKey;
+  Parameters parameters;
 
   constructor() public {
-    publicKey = PublicKey(0,0,0,0);
+    parameters = Parameters(0,0,0,0);
   }
 
   function initialize(uint p, uint q, uint g, uint h) public payable {
-    publicKey.p = p;
-    publicKey.q = q;
-    publicKey.g = g;
-    publicKey.h = h;
+    parameters.p = p;
+    parameters.q = q;
+    parameters.g = g;
+    parameters.h = h;
   }
 
   function verifyProof(
@@ -66,38 +66,38 @@ contract VoteProofVerifier {
     return v1 && v2 && v3 && v4 && v5;
   }
 
-  function verifyV1(uint a0, uint c0, uint f0, uint cipher0) public view returns (bool) {
-    uint l1 = publicKey.g.modPow(f0, publicKey.p);
-    uint r1 = a0.modMul( cipher0.modPow(c0, publicKey.p), publicKey.p);
+  function verifyV1(uint a0, uint c0, uint f0, uint cipher0) private view returns (bool) {
+    uint l1 = parameters.g.modPow(f0, parameters.p);
+    uint r1 = a0.modMul( cipher0.modPow(c0, parameters.p), parameters.p);
     return l1 == r1;
   }
 
-  function verifyV2(uint a1, uint f1, uint c1, uint cipher0) public view returns (bool) {
-    uint l2 = publicKey.g.modPow(f1, publicKey.p);
-    uint r2 = a1.modMul(cipher0.modPow(c1, publicKey.p), publicKey.p);
+  function verifyV2(uint a1, uint f1, uint c1, uint cipher0) private view returns (bool) {
+    uint l2 = parameters.g.modPow(f1, parameters.p);
+    uint r2 = a1.modMul(cipher0.modPow(c1, parameters.p), parameters.p);
     return l2 == r2;
   }
 
-  function verifyV3(uint b0, uint c0, uint f0, uint cipher1) public view returns (bool) {
-    uint l3 = publicKey.h.modPow(f0, publicKey.p);
-    uint r3 = b0.modMul(cipher1.modPow(c0, publicKey.p), publicKey.p);
+  function verifyV3(uint b0, uint c0, uint f0, uint cipher1) private view returns (bool) {
+    uint l3 = parameters.h.modPow(f0, parameters.p);
+    uint r3 = b0.modMul(cipher1.modPow(c0, parameters.p), parameters.p);
     return l3 == r3;
   }
 
-  function verifyV4(uint b1, uint c1, uint f1, uint cipher1) public view returns (bool) {
-    uint l4 = publicKey.h.modPow(f1, publicKey.p);    
-    uint r4_1 = cipher1.modDiv(publicKey.g, publicKey.p);
-    uint r4_2 = r4_1.modPow(c1, publicKey.p);
-    uint r4 = b1.modMul(r4_2, publicKey.p);
+  function verifyV4(uint b1, uint c1, uint f1, uint cipher1) private view returns (bool) {
+    uint l4 = parameters.h.modPow(f1, parameters.p);    
+    uint r4_1 = cipher1.modDiv(parameters.g, parameters.p);
+    uint r4_2 = r4_1.modPow(c1, parameters.p);
+    uint r4 = b1.modMul(r4_2, parameters.p);
     return l4 == r4;
   }
 
   // verifies the challenge/hash
-  function verifyV5(uint[2] memory a, uint[2] memory b, uint[2] memory c, uint[2] memory cipher, address uniqueID) public view returns (bool) {
+  function verifyV5(uint[2] memory a, uint[2] memory b, uint[2] memory c, uint[2] memory cipher, address uniqueID) private view returns (bool) {
     // use the address of the sender once the verification call comes from the frontend
     // address of the caller provides a unique nonce for the hash
-    uint256 lc = c[1].modAdd(c[0], publicKey.q);
+    uint256 lc = c[1].modAdd(c[0], parameters.q);
     bytes32 rc = keccak256(abi.encodePacked(uniqueID, cipher[0], cipher[1], a[0], b[0], a[1], b[1]));
-    return lc == (uint(rc) % publicKey.q);
+    return lc == (uint(rc) % parameters.q);
   }
 }
