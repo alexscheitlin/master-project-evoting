@@ -2,11 +2,14 @@ pragma solidity ^0.5.0;
 
 import './VoteProofVerifier.sol';
 import './SumProofVerifier.sol';
+import './ModuloMath.sol';
 
 // TODO: remove id from call signatures, try to use msg.sender
 // TODO: learn more about revert(), assert() and require(), their differences and when to use which keyword...
 
 contract Ballot {
+
+	using ModuloMath for uint;
 
 	//////////////////////////////////////////
 	// EVENTS
@@ -170,10 +173,8 @@ contract Ballot {
 
 		// create the combines public key
 		for(uint256 i = 1; i< election.publicKeyShares.length; i++) {
-			key *= election.publicKeyShares[i].share;
+			key = key.modMul(election.publicKeyShares[i].share, systemParameters.p);
 		}
-
-		key = key % systemParameters.p;
 
 		// set the public key
 		publicKey = PublicKey(key);
@@ -337,16 +338,16 @@ contract Ballot {
 		uint256 res = election.decryptedShares[0].share;
 
 		for(uint i = 1; i < election.decryptedShares.length; i++) {
-			res = (res * election.decryptedShares[i].share) % systemParameters.p;
+			res = res.modMul(election.decryptedShares[i].share, systemParameters.p);
 		}
 
-		uint256 mh = (election.sumCipher.b * invm(res, systemParameters.p)) % systemParameters.p;
+		uint256 mh = election.sumCipher.b.modMul(res.modInv(systemParameters.p) ,systemParameters.p);
 
 		// decode message (** is power operator)
 		uint256 m = 0;
 		uint256 g = systemParameters.g;
 		uint256 p = systemParameters.p;
-		while( ( g**m % p ) != mh ) {
+		while( ( g.modPow(m, p) ) != mh ) {
 			m = m + 1;
 		}
 
@@ -356,30 +357,4 @@ contract Ballot {
 	function getVoteResult() public view returns (uint) {
 		return election.yesVotes;
 	}
-
-	// TODO: Put into helper Contract
-	/// @dev Modular inverse of a (mod p) using euclid.
-  /// "a" and "p" must be co-prime.
-  /// @param a The number.
-  /// @param p The mmodulus.
-  /// @return x such that ax = 1 (mod p)
-  // inspired by: https://github.com/stonecoldpat/anonymousvoting/blob/master/LocalCrypto.sol
-  function invm(uint a, uint p) public pure returns (uint res){
-      if (a == 0 || a == p || p == 0)
-          revert();
-      if (a > p)
-          a = a % p;
-      int t1;
-      int t2 = 1;
-      uint r1 = p;
-      uint r2 = a;
-      uint q;
-      while (r2 != 0) {
-          q = r1 / r2;
-          (t1, t2, r1, r2) = (t2, t1 - int(q) * t2, r2, r1 - q * r2);
-      }
-      if (t1 < 0)
-          return (p - uint(-t1));
-      return uint(t1);
-  }
 }
