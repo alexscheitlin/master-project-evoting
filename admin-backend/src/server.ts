@@ -6,12 +6,17 @@ import helmet from 'helmet'
 import { config } from 'dotenv'
 import { resolve } from 'path'
 
+import logger from './logger'
+
 // load environment variables based on NODE_ENV
 const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
 const DOTENV_FILE: string = isProduction ? '.production' : '.development'
 config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
 
 const server = express()
+server.use(express.json())
+server.use(express.urlencoded({ extended: true }))
+server.use(logger)
 
 // default route to test
 server.get('/', (req, res) => {
