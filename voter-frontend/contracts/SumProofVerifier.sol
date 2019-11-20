@@ -1,6 +1,10 @@
 pragma solidity ^0.5.0;
 
+import './ModuloMath.sol';
+
 contract SumProofVerifier {
+
+  using ModuloMath for uint;
 
   struct Proof {
     uint a; // cipher
@@ -48,41 +52,23 @@ contract SumProofVerifier {
     Proof memory proof = Proof(a, b, a1, b1, d, f);
 
     // recompute the challenge
-    uint c = generateChallenge(proof.a, proof.b, proof.a1, proof.b1, id);
+    uint c = generateChallenge(proof.a, proof.b, proof.a1, proof.b1, id, publicKey.q);
 
     // verification a^f == a1 * d^c
-    uint l1 = pow(proof.a, proof.f);
-    uint r1 = mul(proof.a1, pow(proof.d, c));
+    uint l1 = proof.a.modPow(proof.f, publicKey.p);
+    uint r1 = proof.a1.modMul(proof.d.modPow(c, publicKey.p), publicKey.p);
     bool v1 = l1 == r1;
 
     // verification g^f == b1 * h^c
-    uint l2 = pow(publicKey.g, proof.f);
-    uint r2 = mul(proof.b1, pow(pubKey, c));
+    uint l2 = publicKey.g.modPow(proof.f, publicKey.p);
+    uint r2 = proof.b1.modMul( pubKey.modPow(c, publicKey.p), publicKey.p);
     bool v2 = l2 == r2;
 
     return v1 && v2;
   }
 
-  //////////////////////////////////////
-  // HELPER FUNCTIONS
-  //////////////////////////////////////
-  function generateChallenge(uint a, uint b, uint a1, uint b1, address uniqueID) internal view returns(uint) {
+  function generateChallenge(uint a, uint b, uint a1, uint b1, address uniqueID, uint modulus) internal pure returns(uint) {
     bytes32 h = keccak256(abi.encodePacked(uniqueID, a, b, a1, b1));
-    return uint(h) % publicKey.q;
-  }
-
-  //////////////////////////////////////
-  // MODULO HELPER FUNCTIONS
-  //////////////////////////////////////
-  function add(uint a, uint b) public view returns (uint res){
-    return (a + b) % publicKey.q;
-  }
-
-  function mul(uint a, uint b) public view returns (uint res){
-    return (a * b) % publicKey.p;
-  }
-
-  function pow(uint a, uint b) public view returns (uint res){
-    return (a**b) % publicKey.p;
+    return uint(h) % modulus;
   }
 }
