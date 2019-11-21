@@ -7,16 +7,16 @@ import { getRandomWalletAddress } from '../util/helper';
 import ballotABI from '../contracts/Ballot.json';
 import { useWeb3 } from '../hooks/useWeb3';
 
-const { SystemSetup, Encryption, Voting, DecryptionProof, MembershipProof } = FFelGamal;
+const { SystemSetup, Encryption, Voting } = FFelGamal;
 
 const [sp, { h: pk, sk }] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
 
 const ElGamalComponent: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
   const [votes, setVotes] = useState<FFelGamal.Cipher[]>([]);
-  const [voteProofs, setVoteProofs] = useState<FFelGamal.ValidVoteProof[]>([]);
+  const [voteProofs, setVoteProofs] = useState<FFelGamal.Proof.MembershipProof[]>([]);
   const [sum, setSum] = useState<FFelGamal.Cipher>();
-  const [sumProof, setSumProof] = useState<FFelGamal.SumProof>();
+  const [sumProof, setSumProof] = useState<FFelGamal.Proof.DecryptionProof>();
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
   const [web3, contract] = useWeb3(ballotABI);
@@ -24,8 +24,8 @@ const ElGamalComponent: React.FC = () => {
   const getResult = (votes: any[]) => {
     const sum = Voting.addVotes(votes, sp);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = DecryptionProof.generate(sum, sp, sk, randomWalletAddress);
-    const verifiedProof = DecryptionProof.verify(sum, proof, sp, pk, randomWalletAddress);
+    const proof = FFelGamal.Proof.Decryption.generate(sum, sp, sk, randomWalletAddress);
+    const verifiedProof = FFelGamal.Proof.Decryption.verify(sum, proof, sp, pk, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Sum Proof Failed!');
@@ -43,8 +43,8 @@ const ElGamalComponent: React.FC = () => {
   const addYesVote = async () => {
     const vote = Voting.generateYesVote(sp, pk);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = MembershipProof.generateYesProof(vote, sp, pk, randomWalletAddress);
-    const verifiedProof = MembershipProof.verify(vote, proof, sp, pk, randomWalletAddress);
+    const proof = FFelGamal.Proof.Membership.generateYesProof(vote, sp, pk, randomWalletAddress);
+    const verifiedProof = FFelGamal.Proof.Membership.verify(vote, proof, sp, pk, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
@@ -64,8 +64,8 @@ const ElGamalComponent: React.FC = () => {
   const addNoVote = () => {
     const vote = Voting.generateNoVote(sp, pk);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = MembershipProof.generateNoProof(vote, sp, pk, randomWalletAddress);
-    const verifiedProof = MembershipProof.verify(vote, proof, sp, pk, randomWalletAddress);
+    const proof = FFelGamal.Proof.Membership.generateNoProof(vote, sp, pk, randomWalletAddress);
+    const verifiedProof = FFelGamal.Proof.Membership.verify(vote, proof, sp, pk, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
