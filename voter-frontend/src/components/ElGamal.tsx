@@ -1,29 +1,31 @@
-import { Cipher, FFelGamal, Summary, SumProof, ValidVoteProof } from 'mp-crypto';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+
+import { FFelGamal, Summary } from 'mp-crypto';
+
+import { getRandomWalletAddress } from '../util/helper';
 
 import ballotABI from '../contracts/Ballot.json';
 import { useWeb3 } from '../hooks/useWeb3';
-import { getRandomWalletAddress } from '../util/helper';
 
-const { Encryption, Voting, VoteZKP, SumZKP } = FFelGamal;
+const { SystemSetup, Encryption, Voting, DecryptionProof, MembershipProof } = FFelGamal;
 
-const [pk, sk] = Encryption.generateKeys(359, 32);
+const [sp, { h: pk, sk }] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
 
 const ElGamalComponent: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
-  const [votes, setVotes] = useState<Cipher[]>([]);
-  const [voteProofs, setVoteProofs] = useState<ValidVoteProof[]>([]);
-  const [sum, setSum] = useState<Cipher>();
-  const [sumProof, setSumProof] = useState<SumProof>();
+  const [votes, setVotes] = useState<FFelGamal.Cipher[]>([]);
+  const [voteProofs, setVoteProofs] = useState<FFelGamal.ValidVoteProof[]>([]);
+  const [sum, setSum] = useState<FFelGamal.Cipher>();
+  const [sumProof, setSumProof] = useState<FFelGamal.SumProof>();
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
   const [web3, contract] = useWeb3(ballotABI);
 
   const getResult = (votes: any[]) => {
-    const sum = Voting.addVotes(votes, pk);
+    const sum = Voting.addVotes(votes, sp);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = SumZKP.generateSumProof(sum, pk, sk, randomWalletAddress);
-    const verifiedProof = SumZKP.verifySumProof(sum, proof, pk, randomWalletAddress);
+    const proof = DecryptionProof.generate(sum, sp, sk, randomWalletAddress);
+    const verifiedProof = DecryptionProof.verify(sum, proof, sp, pk, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Sum Proof Failed!');
@@ -34,15 +36,15 @@ const ElGamalComponent: React.FC = () => {
     setSum(sum);
     setSumProof(proof);
 
-    const summary = Voting.getSummary(votes.length, Encryption.decrypt1(sum, sk, pk).toNumber());
+    const summary = Voting.getSummary(votes.length, Encryption.decrypt1(sum, sk, sp).toNumber());
     setSummary(summary);
   };
 
   const addYesVote = async () => {
-    const vote = Voting.generateYesVote(pk);
+    const vote = Voting.generateYesVote(sp, pk);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = VoteZKP.generateYesProof(vote, pk, randomWalletAddress);
-    const verifiedProof = VoteZKP.verifyVoteProof(vote, proof, pk, randomWalletAddress);
+    const proof = MembershipProof.generateYesProof(vote, sp, pk, randomWalletAddress);
+    const verifiedProof = MembershipProof.verify(vote, proof, sp, pk, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
@@ -60,10 +62,10 @@ const ElGamalComponent: React.FC = () => {
   };
 
   const addNoVote = () => {
-    const vote = Voting.generateNoVote(pk);
+    const vote = Voting.generateNoVote(sp, pk);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = VoteZKP.generateNoProof(vote, pk, randomWalletAddress);
-    const verifiedProof = VoteZKP.verifyVoteProof(vote, proof, pk, randomWalletAddress);
+    const proof = MembershipProof.generateNoProof(vote, sp, pk, randomWalletAddress);
+    const verifiedProof = MembershipProof.verify(vote, proof, sp, pk, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
@@ -91,7 +93,7 @@ const ElGamalComponent: React.FC = () => {
       </button>
       <br></br>
       <br></br>
-      Public Key: p={pk.p.toNumber()} q={pk.q.toNumber()} g={pk.g.toNumber()} h={pk.h.toNumber()}
+      Public Key: p={sp.p.toNumber()} q={sp.q.toNumber()} g={sp.g.toNumber()} h={pk.toNumber()}
       <br></br>
       Private Key: {sk.toNumber()}
       <br></br>
@@ -101,7 +103,7 @@ const ElGamalComponent: React.FC = () => {
         <div>
           <br></br>
           <span style={{ display: 'inline-block', width: '150px' }}>
-            Sum: {Encryption.decrypt1(sum, sk, pk).toNumber()} - {sum.a.toNumber()}, {sum.b.toNumber()}{' '}
+            Sum: {Encryption.decrypt1(sum, sk, sp).toNumber()} - {sum.a.toNumber()}, {sum.b.toNumber()}{' '}
           </span>
           Proof: {'{'}
           {sumProof.a1.toNumber()},{sumProof.b1.toNumber()},{sumProof.d.toNumber()},{sumProof.f.toNumber()}
@@ -114,7 +116,7 @@ const ElGamalComponent: React.FC = () => {
         {votes.map((vote, i) => (
           <li key={i}>
             <span style={{ display: 'inline-block', width: '150px' }}>
-              Vote: {Encryption.decrypt1(vote, sk, pk).toNumber()} - {vote.a.toNumber()}, {vote.a.toNumber()}
+              Vote: {Encryption.decrypt1(vote, sk, sp).toNumber()} - {vote.a.toNumber()}, {vote.a.toNumber()}
             </span>
             <span style={{ display: 'inline-block', width: '310px' }}>
               Proof: {'{'}
