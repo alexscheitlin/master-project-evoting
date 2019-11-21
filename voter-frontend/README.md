@@ -1,5 +1,23 @@
 # Voter Frontend & Solidity Testing
 
+## Set Up
+
+### link mp-crypto first
+
+```bash
+cd crypto
+npm run build
+npm link
+cd ../voter-frontend
+npm link mp-crypto
+```
+
+### What to do when I update /crypto
+
+run `npm run build` inside `/crypto`
+
+restart `/voter-frontend` with `npm run start`
+
 ## How to run Voter Frontend
 
 1. run `npm install`
