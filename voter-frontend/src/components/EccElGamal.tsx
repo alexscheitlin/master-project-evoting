@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 
+import { ECelGamal, Summary } from 'mp-crypto';
+
 import { getRandomWalletAddress } from '../util/helper';
-import { ECelGamal, Cipher, Summary, ValidVoteProof, SumProof } from 'mp-crypto';
 
 const EC = require('elliptic').ec;
 const secp256k1 = new EC('secp256k1');
 
-const { Encryption, Voting, VoteZKP } = ECelGamal;
+const { Encryption, Voting } = ECelGamal;
 
 const keyPair = secp256k1.genKeyPair();
 const sk = keyPair.getPrivate();
@@ -14,10 +15,10 @@ const pk = keyPair.getPublic();
 
 const EccElGamalComponent: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
-  const [votes, setVotes] = useState<Cipher[]>([]);
-  const [proofs, setProofs] = useState<ValidVoteProof[]>([]);
-  const [sum, setSum] = useState<Cipher>();
-  const [sumProof, setSumProof] = useState<SumProof>();
+  const [votes, setVotes] = useState<ECelGamal.Cipher[]>([]);
+  const [proofs, setProofs] = useState<ECelGamal.ValidVoteProof[]>([]);
+  const [sum, setSum] = useState<ECelGamal.Cipher>();
+  const [sumProof, setSumProof] = useState<ECelGamal.SumProof>();
   const [result, setResult] = useState<number>(0);
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
