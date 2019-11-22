@@ -2,43 +2,11 @@ export {}
 import { expect } from 'chai'
 import { describe } from 'mocha'
 import sinon from 'sinon'
-import * as Registration from '../src/register'
+import * as Registration from '../src/registration/register'
 import * as DB from '../src/database/database'
 
 describe('Voter Registration Tests', () => {
-  describe('Ethereum Address Validation Tests', () => {
-    beforeEach(() => {
-      // stub for the DB call -> returns an empty list
-      sinon
-        .stub(DB, 'getListFromDB')
-        .withArgs('voters')
-        .returns([''])
-    })
-
-    afterEach(() => {
-      sinon.restore()
-    })
-
-    it('should fail -> since address is empty', () => {
-      const address: string = ''
-      const isValid: boolean = Registration.verifyAddress(address)
-      expect(isValid).to.be.false
-    })
-
-    it('should fail -> since address is not a valid Ethereum address', () => {
-      const address: string = 'TestHelloWorld'
-      const isValid: boolean = Registration.verifyAddress(address)
-      expect(isValid).to.be.false
-    })
-
-    it('should pass -> since address it is a valid Ethereum address', () => {
-      const address: string = '0xC1595B46c0FBCf185E972D31F443D91C2E2549F8'
-      const isValid: boolean = Registration.verifyAddress(address)
-      expect(isValid).to.be.true
-    })
-  })
-
-  describe('Signup Token Validation Tests', () => {
+  describe('verifyVoterToken - Signup Token Validation Tests', () => {
     beforeEach(() => {
       // stubs for the DB calls
       // -> returns an empty list for table: usedSignupTokens

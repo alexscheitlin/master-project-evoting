@@ -1,6 +1,6 @@
 import express from 'express'
-import { verifyAddress } from './utils'
-import { getListFromDB, addToList } from './database/database'
+import { verifyAddress } from '../utils/addressVerification'
+import { getListFromDB, addToList } from '../database/database'
 
 const router: express.Router = express.Router()
 

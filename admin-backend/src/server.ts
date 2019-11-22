@@ -6,8 +6,8 @@ import helmet from 'helmet'
 import { config } from 'dotenv'
 import { resolve } from 'path'
 
-import logger from './logger'
-import register from './register'
+import logger from './utils/logger'
+import register from './registration/register'
 import chainspec from './chainspec/chainspec'
 import { setupDB } from './database/database'
 
