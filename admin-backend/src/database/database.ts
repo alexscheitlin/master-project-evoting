@@ -1,6 +1,7 @@
 import { AdapterSync } from 'lowdb'
 
 import low from 'lowdb'
+import fs from 'fs'
 import FileSync from 'lowdb/adapters/FileSync'
 
 // TODO: replace with correct type
@@ -10,8 +11,18 @@ export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
 
+  const defaultConfig = JSON.parse(fs.readFileSync('./src/chainspec/defaultChainspec.json', 'utf-8'))
+
   // set defaults (if JSON is empty)
-  db.defaults({ voters: [], usedSignupTokens: [], validSignupTokens: [], authorities: [], state: 'PRE_VOTING' }).write()
+  db.defaults({
+    voters: [],
+    usedSignupTokens: [],
+    validSignupTokens: [],
+    authorities: [],
+    state: 'PRE_VOTING',
+    chainspec: defaultConfig,
+    defaultChainspec: defaultConfig,
+  }).write()
 }
 
 export const addToList = (table: string, value: string) => {
@@ -35,5 +46,9 @@ export const getListFromDB = (table: string): string[] => {
 }
 
 export const getValueFromDB = (table: string): string => {
+  return db.get(table).value()
+}
+
+export const getObjectFromDB = (table: string): any => {
   return db.get(table).value()
 }
