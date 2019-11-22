@@ -9,6 +9,7 @@ import { resolve } from 'path'
 import logger from './utils/logger'
 import register from './registration/register'
 import chainspec from './chainspec/chainspec'
+import state from './state/state'
 import { setupDB } from './database/database'
 
 // load environment variables based on NODE_ENV
@@ -25,6 +26,7 @@ server.use(logger)
 // add all routes
 server.use('/', register)
 server.use('/', chainspec)
+server.use('/', state)
 
 // setup the database
 setupDB()
