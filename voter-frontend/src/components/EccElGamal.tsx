@@ -9,7 +9,9 @@ const secp256k1 = new EC('secp256k1');
 
 const { Encryption, Voting } = ECelGamal;
 
-const keyPair = secp256k1.genKeyPair();
+const activeCurve = ECelGamal.Curve.activeCurve;
+
+const keyPair = activeCurve.genKeyPair();
 const sk = keyPair.getPrivate();
 const pk = keyPair.getPublic();
 
@@ -26,9 +28,9 @@ const EccElGamalComponent: React.FC = () => {
   const [privateKey, setPrivateKey] = useState<typeof sk>(sk);
 
   const proofParams = {
-    p: secp256k1.curve.p, // BN
-    n: secp256k1.curve.n, // BN
-    g: JSON.stringify(secp256k1.curve.g), // string JSON
+    p: activeCurve.p, // BN
+    n: activeCurve.n, // BN
+    g: JSON.stringify(activeCurve.g), // string JSON
     h: publicKey, // string
   };
 
