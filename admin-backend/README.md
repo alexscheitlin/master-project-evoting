@@ -47,3 +47,7 @@ Access the server via `https://localhost:3000` or via `localhost:3000`.
 ## Testing
 
 Run `npm run test` to run all test of the project or `npm run test:watch` to continuously re-run the tests while developing.
+
+## Compile and Deploy Contracts
+
+`npm run contracts` will compile and then deploy the contract on a blockchain running on `http://localhost:8545`, so make sure that you do `cd ../voter-frontend && npm run ganache:dev` first
