@@ -3,17 +3,16 @@ import React, { useState } from 'react';
 import { ECelGamal, Summary } from 'mp-crypto';
 
 import { getRandomWalletAddress } from '../util/helper';
+import { SystemParametersSerialized } from 'mp-crypto/dist/ec-elgamal';
 
-const EC = require('elliptic').ec;
-const secp256k1 = new EC('secp256k1');
-
-const { Encryption, Voting } = ECelGamal;
+const { Encryption, Voting, Helper, Proof, SystemSetup } = ECelGamal;
 
 const activeCurve = ECelGamal.Curve.activeCurve;
 
-const keyPair = activeCurve.genKeyPair();
-const sk = keyPair.getPrivate();
-const pk = keyPair.getPublic();
+const keyPair = SystemSetup.generateKeyPair();
+const sk = keyPair.sk;
+const pk = keyPair.h;
+const sp = SystemSetup.generateSystemParameters();
 
 const EccElGamalComponent: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
@@ -24,21 +23,18 @@ const EccElGamalComponent: React.FC = () => {
   const [result, setResult] = useState<number>(0);
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
-  const [publicKey, setPublicKey] = useState<string>(pk.encode('hex', false));
+  const [publicKey, setPublicKey] = useState<string>(Helper.serializeCurvePoint(pk));
   const [privateKey, setPrivateKey] = useState<typeof sk>(sk);
 
-  const proofParams = {
-    p: activeCurve.p, // BN
-    n: activeCurve.n, // BN
-    g: JSON.stringify(activeCurve.g), // string JSON
-    h: publicKey, // string
-  };
+  const [systemParameters, setSystemParameters] = useState<SystemParametersSerialized>(
+    Helper.serializeSystemParameters(sp),
+  );
 
   const getResult = (votes: any[]) => {
     const sum = Voting.addVotes(votes, publicKey);
     const randomWalletAddress = getRandomWalletAddress();
-    const proof = Voting.generateSumProof(sum, proofParams, sk, randomWalletAddress);
-    const verifiedProof = Voting.verifySumProof(sum, proof, proofParams, randomWalletAddress);
+    const proof = Proof.Decryption.generate(sum, systemParameters, sk, randomWalletAddress);
+    const verifiedProof = Proof.Decryption.verify(sum, proof, systemParameters, publicKey, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Sum Proof Failed!');
@@ -60,8 +56,8 @@ const EccElGamalComponent: React.FC = () => {
     const randomWalletAddress = getRandomWalletAddress();
 
     const vote = Voting.generateYesVote(publicKey);
-    const proof = Voting.generateYesProof(vote, proofParams, randomWalletAddress);
-    const verifiedProof = Voting.verifyZKP(vote, proof, proofParams, randomWalletAddress);
+    const proof = ECelGamal.VoteZKP.generateYesProof(vote, systemParameters, publicKey, randomWalletAddress);
+    const verifiedProof = ECelGamal.VoteZKP.verifyZKP(vote, proof, systemParameters, publicKey, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
@@ -81,8 +77,8 @@ const EccElGamalComponent: React.FC = () => {
     const randomWalletAddress = getRandomWalletAddress();
 
     const vote = Voting.generateNoVote(publicKey);
-    const proof = Voting.generateNoProof(vote, proofParams, randomWalletAddress);
-    const verifiedProof = Voting.verifyZKP(vote, proof, proofParams, randomWalletAddress);
+    const proof = ECelGamal.VoteZKP.generateNoProof(vote, systemParameters, publicKey, randomWalletAddress);
+    const verifiedProof = ECelGamal.VoteZKP.verifyZKP(vote, proof, systemParameters, publicKey, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
@@ -99,7 +95,7 @@ const EccElGamalComponent: React.FC = () => {
   };
 
   const serializeKey = (pk: string): string[] => {
-    const publicKey = secp256k1.keyFromPublic(pk, 'hex').pub;
+    const publicKey = activeCurve.keyFromPublic(pk, 'hex').pub;
     const pubX = JSON.parse(JSON.stringify(publicKey))[0];
     const pubY = JSON.parse(JSON.stringify(publicKey))[1];
     return [pubX, pubY];
