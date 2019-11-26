@@ -20,7 +20,7 @@ const EccElGamalComponent: React.FC = () => {
   const [votes, setVotes] = useState<ECelGamal.Cipher[]>([]);
   const [proofs, setProofs] = useState<ECelGamal.ValidVoteProof[]>([]);
   const [sum, setSum] = useState<ECelGamal.Cipher>();
-  const [sumProof, setSumProof] = useState<ECelGamal.SumProof>();
+  const [sumProof, setSumProof] = useState<ECelGamal.Proof.DecryptionProof>();
   const [result, setResult] = useState<number>(0);
   const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
@@ -38,7 +38,7 @@ const EccElGamalComponent: React.FC = () => {
     const sum = Voting.addVotes(votes, publicKey);
     const randomWalletAddress = getRandomWalletAddress();
     const proof = Voting.generateSumProof(sum, proofParams, sk, randomWalletAddress);
-    const verifiedProof = Voting.verifySumProof(sum, proof, proofParams, publicKey, randomWalletAddress);
+    const verifiedProof = Voting.verifySumProof(sum, proof, proofParams, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Sum Proof Failed!');
