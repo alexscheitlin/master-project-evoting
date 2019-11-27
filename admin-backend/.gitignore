@@ -63,3 +63,7 @@ db.json
 
 # dist
 dist/
+
+# vscode launch command
+.vscode/*
+!.vscode/launch.json
