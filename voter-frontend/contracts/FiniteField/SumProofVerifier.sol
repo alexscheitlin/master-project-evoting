@@ -1,6 +1,6 @@
 pragma solidity ^0.5.13;
 
-import "./ModuloMathLib.sol";
+import './ModuloMathLib.sol';
 
 contract SumProofVerifier {
     using ModuloMathLib for uint256;

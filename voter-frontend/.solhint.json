@@ -6,7 +6,8 @@
     "avoid-suicide": "error",
     "avoid-sha3": "warn",
     "mark-callable-contracts": false,
-    "var-name-mixedcase": false
+    "var-name-mixedcase": false,
+    "quotes": false
   },
   "plugins": ["prettier"]
 }

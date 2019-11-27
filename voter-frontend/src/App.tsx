@@ -1,8 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
 
-import { Navigation } from './components/Navigation';
-import { Routes } from './Router';
+import {Navigation} from './components/Navigation';
+import {Routes} from './Router';
 
 import styled from 'styled-components';
 

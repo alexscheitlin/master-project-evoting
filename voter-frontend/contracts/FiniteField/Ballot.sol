@@ -1,9 +1,9 @@
 pragma solidity ^0.5.13;
 
-import "./VoteProofVerifier.sol";
-import "./SumProofVerifier.sol";
-import "./KeyGenProofVerifier.sol";
-import "./ModuloMathLib.sol";
+import './VoteProofVerifier.sol';
+import './SumProofVerifier.sol';
+import './KeyGenProofVerifier.sol';
+import './ModuloMathLib.sol';
 
 contract Ballot {
     // /////////////////////////////////
@@ -121,7 +121,7 @@ contract Ballot {
         // initialize empty Election struct
         election.nrOfVoters = 0;
         election.voters.length = 0;
-        election.votingQuestion = "REPLACEME";
+        election.votingQuestion = 'REPLACEME';
         election.publicKeyShares.length = 0;
         election.decryptedShares.length = 0;
         election.yesVotes = 0;
@@ -207,13 +207,13 @@ contract Ballot {
         bool proofValid = keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender);
 
         if (!proofValid) {
-            emit SystemStatusEvent(msg.sender, false, "Key Generation Proof is not correct.");
-            return (false, "Key Generation Proof is not correct.");
+            emit SystemStatusEvent(msg.sender, false, 'Key Generation Proof is not correct.');
+            return (false, 'Key Generation Proof is not correct.');
         }
 
         election.pubKeyShareMapping[msg.sender] = key;
         election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
-        return (true, "Key Generation Proof is valid.");
+        return (true, 'Key Generation Proof is valid.');
     }
 
     function submitDecryptedShare(uint256 share, uint256 a, uint256 b, uint256 a1, uint256 b1, uint256 d, uint256 f)
@@ -221,14 +221,14 @@ contract Ballot {
         returns (bool, string memory)
     {
         if (IS_VOTING_OPEN) {
-            emit VoteStatusEvent(msg.sender, false, "Vote is still ongoing");
-            return (false, "Vote is still ongoing");
+            emit VoteStatusEvent(msg.sender, false, 'Vote is still ongoing');
+            return (false, 'Vote is still ongoing');
         }
 
         uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender];
         if (!sumVerifier.verifyProof(a, b, a1, b1, d, f, msg.sender, publicKeyShare)) {
-            emit VoteStatusEvent(msg.sender, false, "Proof not correct");
-            return (false, "Proof not correct");
+            emit VoteStatusEvent(msg.sender, false, 'Proof not correct');
+            return (false, 'Proof not correct');
         }
 
         DecryptedShareProof memory proof = DecryptedShareProof(a1, b1, d, f);
@@ -239,8 +239,8 @@ contract Ballot {
         // each time some authority submits a decrypted share
         election.sumCipher = Cipher(a, b);
 
-        emit VoteStatusEvent(msg.sender, true, "DecryptedShareProof accepted");
-        return (true, "Sumproof accepted");
+        emit VoteStatusEvent(msg.sender, true, 'DecryptedShareProof accepted');
+        return (true, 'Sumproof accepted');
     }
 
     // /////////////////////////////////
@@ -254,8 +254,8 @@ contract Ballot {
         uint256[2] calldata f
     ) external returns (bool, string memory) {
         if (!IS_VOTING_OPEN) {
-            emit VoteStatusEvent(msg.sender, false, "Vote not open");
-            return (false, "Vote not open");
+            emit VoteStatusEvent(msg.sender, false, 'Vote not open');
+            return (false, 'Vote not open');
         }
 
         // TODO: Enable once system is ready
@@ -265,8 +265,8 @@ contract Ballot {
         // }
 
         if (!voteVerifier.verifyProof(cipher, a, b, c, f, msg.sender)) {
-            emit VoteStatusEvent(msg.sender, false, "Proof not correct");
-            return (false, "Proof not correct");
+            emit VoteStatusEvent(msg.sender, false, 'Proof not correct');
+            return (false, 'Proof not correct');
         }
 
         VoteProof memory voteProof = VoteProof(a, b, c, f);
@@ -277,8 +277,8 @@ contract Ballot {
         election.nrOfVoters += 1;
         election.hasVoted[msg.sender] = true;
 
-        emit VoteStatusEvent(msg.sender, true, "Vote was accepted");
-        return (true, "Vote was accepted");
+        emit VoteStatusEvent(msg.sender, true, 'Vote was accepted');
+        return (true, 'Vote was accepted');
     }
 
     // /////////////////////////////////
@@ -293,7 +293,7 @@ contract Ballot {
 
     // get combined public key of the system
     function getPublicKey() public view returns (uint256) {
-        require(IS_PUBKEY_SET, "Public Key of the System not yet set");
+        require(IS_PUBKEY_SET, 'Public Key of the System not yet set');
         return publicKey.h;
     }
 

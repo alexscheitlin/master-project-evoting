@@ -1,6 +1,6 @@
 pragma solidity ^0.5.13;
 
-import "./lib/MathEC.sol";
+import './lib/MathEC.sol';
 
 contract VoteProofVerifierEC {
     // Public Key of the elGamal System, in the future, this should probably be set in a contructor
