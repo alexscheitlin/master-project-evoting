@@ -1,6 +1,6 @@
 import BN from 'bn.js';
 
-import { FFelGamal } from 'mp-crypto';
+import {FFelGamal} from 'mp-crypto';
 
 export const toHex = (bigNumber: BN) => {
   return bigNumber.toNumber().toString(16);

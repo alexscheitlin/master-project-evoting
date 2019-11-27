@@ -1,10 +1,10 @@
 //@ts-ignore
-const Ballot = artifacts.require('./Ballot.sol');
+const Ballot = artifacts.require('./FiniteField/Ballot.sol');
 
-import { assert } from 'chai';
-import { FFelGamal } from 'mp-crypto';
+import {assert} from 'chai';
+import {FFelGamal} from 'mp-crypto';
 import BN from 'bn.js';
-import { toSystemParams, toHex, unlockedAddresses } from './helper';
+import {toSystemParams, toHex, unlockedAddresses} from './helper';
 
 //@ts-ignore
 contract('Ballot.sol', () => {
@@ -105,7 +105,7 @@ contract('Ballot.sol', () => {
       [yesProof.b0, yesProof.b1],
       [yesProof.c0, yesProof.c1],
       [yesProof.f0, yesProof.f1],
-      { from: client_uniqueID },
+      {from: client_uniqueID},
     );
 
     // assert that contract saved the votes correctly
@@ -129,7 +129,7 @@ contract('Ballot.sol', () => {
       [noProof.b0, noProof.b1],
       [noProof.c0, noProof.c1],
       [noProof.f0, noProof.f1],
-      { from: client_uniqueID },
+      {from: client_uniqueID},
     );
 
     // assert that contract saved the votes correctly
@@ -200,7 +200,7 @@ contract('Ballot.sol', () => {
       auth1_decryptedShareProof.b1,
       auth1_decryptedShareProof.d,
       auth1_decryptedShareProof.f,
-      { from: unlockedAddresses.auth1 },
+      {from: unlockedAddresses.auth1},
     );
 
     // assert correct number of shares are saved in the contract
@@ -260,7 +260,7 @@ contract('Ballot.sol', () => {
       auth2_decryptedShareProof.b1,
       auth2_decryptedShareProof.d,
       auth2_decryptedShareProof.f,
-      { from: unlockedAddresses.auth2 },
+      {from: unlockedAddresses.auth2},
     );
 
     // assert correct number of shares are saved in the contract

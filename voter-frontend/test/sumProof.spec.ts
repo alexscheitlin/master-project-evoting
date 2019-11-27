@@ -1,9 +1,9 @@
 //@ts-ignore
-const SumProofVerifier = artifacts.require('SumProofVerifier');
+const SumProofVerifier = artifacts.require('./FiniteField/SumProofVerifier');
 
-import { FFelGamal } from 'mp-crypto';
-import { unlockedAddresses } from './helper';
-import { assert } from 'chai';
+import {FFelGamal} from 'mp-crypto';
+import {unlockedAddresses} from './helper';
+import {assert} from 'chai';
 import BN = require('bn.js');
 
 //@ts-ignore

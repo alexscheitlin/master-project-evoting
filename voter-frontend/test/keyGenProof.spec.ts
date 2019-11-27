@@ -1,9 +1,9 @@
 //@ts-ignore
-const KeyGenProofVerifier = artifacts.require('KeyGenProofVerifier');
+const KeyGenProofVerifier = artifacts.require('./FiniteField/KeyGenProofVerifier');
 
-import { FFelGamal } from 'mp-crypto';
-import { unlockedAddresses } from './helper';
-import { assert } from 'chai';
+import {FFelGamal} from 'mp-crypto';
+import {unlockedAddresses} from './helper';
+import {assert} from 'chai';
 
 //@ts-ignore
 contract('KeyGenProofVerifier.sol', () => {

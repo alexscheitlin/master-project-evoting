@@ -1,9 +1,9 @@
 //@ts-ignore
-const VoteProofVerifier = artifacts.require('VoteProofVerifier');
+const VoteProofVerifier = artifacts.require('./FiniteField/VoteProofVerifier');
 
-import { assert } from 'chai';
-import { FFelGamal } from 'mp-crypto';
-import { unlockedAddresses } from './helper';
+import {assert} from 'chai';
+import {FFelGamal} from 'mp-crypto';
+import {unlockedAddresses} from './helper';
 import BN = require('bn.js');
 
 // @ts-ignore
