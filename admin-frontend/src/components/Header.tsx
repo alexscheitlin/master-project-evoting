@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <Grid item>
+    <Grid item component="header">
       <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>

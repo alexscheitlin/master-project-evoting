@@ -21,7 +21,7 @@ export const Vote: React.FC = () => {
           <Grid item>
             <h2>Please enter a new question for the vote to be created?</h2>
           </Grid>
-          <Grid item>
+          <Grid item className={classes.container}>
             <TextField
               className={classes.vote}
               label="Vote Question"
@@ -43,6 +43,10 @@ export const Vote: React.FC = () => {
 const useStyles = makeStyles({
   vote: {
     margin: '0 1em 0 0'
+  },
+  container: {
+    display: 'flex',
+    alignItems: 'stretch'
   },
   main: {
     padding: '1em',

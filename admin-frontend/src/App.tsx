@@ -7,7 +7,8 @@ import { Routes } from './Router';
 
 const useStyles = makeStyles({
   wrapper: {
-    display: 'flex'
+    display: 'flex',
+    height: '100vh'
   }
 });
 
