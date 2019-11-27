@@ -11,7 +11,7 @@ const {SystemSetup, Encryption, Voting} = FFelGamal;
 
 const [sp, {h: pk, sk}] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
 
-const ElGamalComponent: React.FC = () => {
+export const FiniteFieldVoting: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
   const [votes, setVotes] = useState<FFelGamal.Cipher[]>([]);
   const [voteProofs, setVoteProofs] = useState<FFelGamal.Proof.MembershipProof[]>([]);
@@ -132,5 +132,3 @@ const ElGamalComponent: React.FC = () => {
     </div>
   );
 };
-
-export default ElGamalComponent;

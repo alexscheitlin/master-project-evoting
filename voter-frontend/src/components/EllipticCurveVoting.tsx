@@ -11,7 +11,7 @@ const sk = keyPair.sk;
 const pk = keyPair.h;
 const sp = SystemSetup.generateSystemParameters();
 
-const EccElGamalComponent: React.FC = () => {
+export const EllipticCurveVoting: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
   const [votes, setVotes] = useState<ECelGamal.Cipher[]>([]);
   const [proofs, setProofs] = useState<ECelGamal.Proof.MembershipProof[]>([]);
@@ -165,8 +165,6 @@ const EccElGamalComponent: React.FC = () => {
     </div>
   );
 };
-
-export default EccElGamalComponent;
 
 interface Props {
   input: any;
