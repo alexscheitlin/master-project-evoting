@@ -1,4 +1,4 @@
-import { isAddress } from 'web3-utils'
+import web3 from 'web3'
 import { getListFromDB } from '../database/database'
 
 export const hasAddressAlreadyBeenRegistered = (table: string, address: string): boolean => {
@@ -8,5 +8,5 @@ export const hasAddressAlreadyBeenRegistered = (table: string, address: string):
 }
 
 export const verifyAddress = (table: string, address: string): boolean => {
-  return isAddress(address) && hasAddressAlreadyBeenRegistered(table, address)
+  return web3.utils.isAddress(address) && hasAddressAlreadyBeenRegistered(table, address)
 }
