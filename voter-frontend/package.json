@@ -5,6 +5,8 @@
   "devDependencies": {
     "@types/mocha": "^5.2.7",
     "mocha": "^6.2.2",
+    "solhint": "^2.3.0",
+    "solhint-plugin-prettier": "0.0.3",
     "ts-node": "^8.5.2"
   },
   "dependencies": {
@@ -28,6 +30,7 @@
     "ganache-cli": "^6.7.0",
     "lint-staged": "^9.4.2",
     "prettier": "^1.18.2",
+    "prettier-plugin-solidity": "^1.0.0-alpha.34",
     "random": "^2.1.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
@@ -57,7 +60,9 @@
     "truffle:migrate:parity": "./node_modules/.bin/truffle migrate --network parity --reset",
     "truffle:test": "cd test && ../node_modules/.bin/truffle test --network ganache",
     "truffle:dev": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start",
-    "truffle:dev:parity": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start"
+    "truffle:dev:parity": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start",
+    "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol",
+    "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol"
   },
   "lint-staged": {
     "*.+(js|jsx|ts|tsx)": [
@@ -66,6 +71,10 @@
     ],
     "*.+(json|css|md)": [
       "prettier --write",
+      "git add"
+    ],
+    "*.+(sol)": [
+      "npm run prettier:solidity",
       "git add"
     ]
   },
