@@ -1,7 +1,13 @@
 import React from 'react';
 
 const VotingPage: React.FC = () => {
-  return <div>VotingPage</div>;
+  return (
+    <div>
+      <h1>Voting Page</h1>
+      <button>Yes</button>
+      <button>No</button>
+    </div>
+  );
 };
 
 export default VotingPage;
