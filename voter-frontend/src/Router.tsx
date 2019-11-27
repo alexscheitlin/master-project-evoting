@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Route, Switch } from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import ElGamalComponent from './components/ElGamal';
 import EccElGamalComponent from './components/EccElGamal';
 

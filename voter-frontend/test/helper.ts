@@ -1,6 +1,6 @@
 import BN from 'bn.js';
 
-import { FFelGamal } from 'mp-crypto';
+import {FFelGamal} from 'mp-crypto';
 
 export const toHex = (bigNumber: BN) => {
   return bigNumber.toNumber().toString(16);
@@ -13,16 +13,6 @@ export const toSystemParams = (params: BN[]) => {
     g: params[2],
   };
   return systemParams;
-};
-
-export const toParamsWithPubKey = (sysParams: BN[], pubKey: BN) => {
-  const params: FFelGamal.PublicKey = {
-    p: sysParams[0],
-    q: sysParams[1],
-    g: sysParams[2],
-    h: pubKey,
-  };
-  return params;
 };
 
 // these are the first 4 addresses shown when starting ganache via npm run ganache:dev
