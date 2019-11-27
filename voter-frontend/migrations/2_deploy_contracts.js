@@ -1,5 +1,6 @@
 const Ballot = artifacts.require('Ballot');
 const EllipticCurveLib = artifacts.require('EllipticCurveLib');
+const MathEC = artifacts.require('MathEC');
 const VoteProofVerifierEC = artifacts.require('VoteProofVerifierEC');
 const VoteProofVerifier = artifacts.require('VoteProofVerifier');
 const SumProofVerifier = artifacts.require('SumProofVerifier');
@@ -17,6 +18,8 @@ module.exports = function(deployer) {
 
   // link the Elliptic library
   deployer.deploy(EllipticCurveLib);
-  deployer.link(EllipticCurveLib, VoteProofVerifierEC);
+  deployer.deploy(MathEC);
+  deployer.link(EllipticCurveLib, MathEC);
+  deployer.link(MathEC, [VoteProofVerifierEC]);
   deployer.deploy(VoteProofVerifierEC);
 };
