@@ -10,7 +10,7 @@ const KeyGenProofVerifier = artifacts.require('KeyGenProofVerifier');
 module.exports = function(deployer) {
   // link the ModuloMath library
   deployer.deploy(ModuloMathLib);
-  deployer.link(ModuloMathLib, [SumProofVerifier, VoteProofVerifier, KeyGenProofVerifier, Ballot]);
+  deployer.link(ModuloMathLib, [SumProofVerifier, VoteProofVerifier, KeyGenProofVerifier, Ballot, VoteProofVerifierEC]);
   deployer.deploy(SumProofVerifier);
   deployer.deploy(VoteProofVerifier);
   deployer.deploy(KeyGenProofVerifier);
