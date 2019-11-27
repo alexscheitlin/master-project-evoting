@@ -7,7 +7,7 @@ import { SystemParametersSerialized } from 'mp-crypto/dist/ec-elgamal';
 
 const { Encryption, Voting, Helper, Proof, SystemSetup } = ECelGamal;
 
-const activeCurve = ECelGamal.Curve.activeCurve;
+const activeCurve = ECelGamal.Curve;
 
 const keyPair = SystemSetup.generateKeyPair();
 const sk = keyPair.sk;
@@ -95,7 +95,7 @@ const EccElGamalComponent: React.FC = () => {
   };
 
   const serializeKey = (pk: string): string[] => {
-    const publicKey = activeCurve.keyFromPublic(pk, 'hex').pub;
+    const publicKey = ECelGamal.Helper.deserializeCurvePoint(pk)
     const pubX = JSON.parse(JSON.stringify(publicKey))[0];
     const pubY = JSON.parse(JSON.stringify(publicKey))[1];
     return [pubX, pubY];
