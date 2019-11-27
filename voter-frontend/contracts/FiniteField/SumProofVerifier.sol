@@ -1,74 +1,76 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.5.13;
 
-import './ModuloMathLib.sol';
+import "./ModuloMathLib.sol";
 
 contract SumProofVerifier {
+    using ModuloMathLib for uint256;
 
-  using ModuloMathLib for uint;
+    struct Proof {
+        uint256 a; // cipher
+        uint256 b; // cipher
+        uint256 a1;
+        uint256 b1;
+        uint256 d;
+        uint256 f;
+    }
 
-  struct Proof {
-    uint a; // cipher
-    uint b; // cipher
-    uint a1;
-    uint b1;
-    uint d;
-    uint f;
-  }
+    struct Parameters {
+        uint256 p; // prime
+        uint256 q; // prime factor: p = 2*q+1
+        uint256 g; // generator
+        uint256 h;
+    }
 
-  struct Parameters {
-    uint p; // prime
-    uint q; // prime factor: p = 2*q+1
-    uint g; // generator
-    uint h;
-  }
+    Parameters private parameters;
 
-  Parameters parameters;
+    constructor() public {
+        parameters = Parameters(0, 0, 0, 0);
+    }
 
-  constructor() public {
-    parameters = Parameters(0,0,0,0);
-  }
+    function initialize(uint256 p, uint256 q, uint256 g, uint256 h) public payable {
+        parameters.p = p;
+        parameters.q = q;
+        parameters.g = g;
+        parameters.h = h;
+    }
 
-  function initialize(uint p, uint q, uint g, uint h) public payable {
-    parameters.p = p;
-    parameters.q = q;
-    parameters.g = g;
-    parameters.h = h;
-  }
+    function verifyProof(
+        uint256 a,
+        uint256 b, // a, b
+        uint256 a1,
+        uint256 b1,
+        uint256 d,
+        uint256 f,
+        address id,
+        uint256 pubKey
+    ) public view returns (bool) {
+        // create a proof object
+        // mostly needed because otherwise would throw compilation error that
+        // stack depth is reached
+        Proof memory proof = Proof(a, b, a1, b1, d, f);
 
-  function verifyProof(
-      uint a,
-      uint b, // a, b
-      uint a1,
-      uint b1,
-      uint d,
-      uint f,
-      address id,
-      uint pubKey
-      ) public view returns(bool) {
+        // recompute the challenge
+        uint256 c = generateChallenge(proof.a, proof.b, proof.a1, proof.b1, id, parameters.q);
 
-    // create a proof object
-    // mostly needed because otherwise would throw compilation error that
-    // stack depth is reached
-    Proof memory proof = Proof(a, b, a1, b1, d, f);
+        // verification a^f == a1 * d^c
+        uint256 l1 = proof.a.modPow(proof.f, parameters.p);
+        uint256 r1 = proof.a1.modMul(proof.d.modPow(c, parameters.p), parameters.p);
+        bool v1 = l1 == r1;
 
-    // recompute the challenge
-    uint c = generateChallenge(proof.a, proof.b, proof.a1, proof.b1, id, parameters.q);
+        // verification g^f == b1 * h^c
+        uint256 l2 = parameters.g.modPow(proof.f, parameters.p);
+        uint256 r2 = proof.b1.modMul(pubKey.modPow(c, parameters.p), parameters.p);
+        bool v2 = l2 == r2;
 
-    // verification a^f == a1 * d^c
-    uint l1 = proof.a.modPow(proof.f, parameters.p);
-    uint r1 = proof.a1.modMul(proof.d.modPow(c, parameters.p), parameters.p);
-    bool v1 = l1 == r1;
+        return v1 && v2;
+    }
 
-    // verification g^f == b1 * h^c
-    uint l2 = parameters.g.modPow(proof.f, parameters.p);
-    uint r2 = proof.b1.modMul( pubKey.modPow(c, parameters.p), parameters.p);
-    bool v2 = l2 == r2;
-
-    return v1 && v2;
-  }
-
-  function generateChallenge(uint a, uint b, uint a1, uint b1, address uniqueID, uint modulus) private pure returns(uint) {
-    bytes32 h = keccak256(abi.encodePacked(uniqueID, a, b, a1, b1));
-    return uint(h) % modulus;
-  }
+    function generateChallenge(uint256 a, uint256 b, uint256 a1, uint256 b1, address uniqueID, uint256 modulus)
+        private
+        pure
+        returns (uint256)
+    {
+        bytes32 h = keccak256(abi.encodePacked(uniqueID, a, b, a1, b1));
+        return uint256(h) % modulus;
+    }
 }
