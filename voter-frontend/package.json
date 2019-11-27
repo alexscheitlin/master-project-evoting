@@ -53,7 +53,7 @@
     "lint": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet",
     "lint:fix": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet --fix",
     "ganache:dev": "./node_modules/.bin/ganache-cli  -m 'situate electric canyon session gentle angry job client palm response error congress'",
-    "truffle:deploy": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate",
+    "truffle:deploy": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev",
     "truffle:clean": "./node_modules/.bin/rimraf src/contracts",
     "truffle:compile": "./node_modules/.bin/truffle compile",
     "truffle:migrate:dev": "./node_modules/.bin/truffle migrate --network ganache --reset",
