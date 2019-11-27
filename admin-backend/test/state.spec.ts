@@ -14,6 +14,10 @@ describe('Voting State Tests', () => {
       const state2: string = 'PRE_VOTING'
       const state2IsValid: boolean = State.checkIfStateIsValid(state2)
       expect(state2IsValid).to.be.true
+
+      const state3: string = 'POST_VOTING'
+      const state3IsValid: boolean = State.checkIfStateIsValid(state3)
+      expect(state3IsValid).to.be.true
     })
 
     it('should fail -> invalid state input', () => {

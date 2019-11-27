@@ -2,6 +2,7 @@ import express from 'express'
 import https from 'https'
 import fs from 'fs'
 import helmet from 'helmet'
+import cors from 'cors'
 
 import { config } from 'dotenv'
 import { resolve } from 'path'
@@ -22,6 +23,7 @@ const server = express()
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(logger)
+server.use(cors({ origin: 'http://localhost:3000' }))
 
 // add all routes
 server.use('/', register)
