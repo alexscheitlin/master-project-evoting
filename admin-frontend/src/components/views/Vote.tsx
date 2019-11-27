@@ -1,5 +1,6 @@
-import { Button, FormLabel, Grid, makeStyles, TextField } from '@material-ui/core';
+import { Button, FormLabel, Grid, makeStyles, TextField, Divider } from '@material-ui/core';
 import React, { useState } from 'react';
+import { State } from './State';
 
 export const Vote: React.FC = () => {
   const [question, setQuestion] = useState<string>('');
@@ -18,7 +19,7 @@ export const Vote: React.FC = () => {
     <Grid container component="main" direction={'column'} className={classes.mainContainer}>
       <Grid item>
         <Grid container direction={'column'}>
-          <Grid item>
+          <Grid item className={classes.container}>
             <h2>Please enter a new question for the vote to be created?</h2>
           </Grid>
           <Grid item className={classes.container}>
@@ -34,22 +35,28 @@ export const Vote: React.FC = () => {
             </Button>
             <FormLabel className={classes.vote}>{question}</FormLabel>
           </Grid>
+          <Divider orientation="vertical" className={classes.divider} />
+          <State />
         </Grid>
       </Grid>
     </Grid>
   );
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
+  divider: {
+    borderTop: `1px solid ${theme.palette.divider}`
+  },
   vote: {
     margin: '0 1em 0 0'
   },
   container: {
     display: 'flex',
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    padding: '1em'
   },
   mainContainer: {
     padding: '1em',
     flexGrow: 1
   }
-});
+}));
