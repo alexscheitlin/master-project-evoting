@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
+// based on contracts found here: https://github.com/witnet/elliptic-curve-solidity
 
 /**
  * @title Elliptic Curve Library
  * @dev Library providing arithmetic operations over elliptic curves.
  * @author Witnet Foundation
- * based on contracts found here: https://github.com/witnet/elliptic-curve-solidity
  */
 library EllipticCurveLib {
 
