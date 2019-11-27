@@ -1,8 +1,8 @@
 import { CssBaseline, Grid, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
+import { Footer } from './components/defaults/Footer';
+import { Header } from './components/defaults/Header';
 import { Routes } from './Router';
 
 const useStyles = makeStyles({

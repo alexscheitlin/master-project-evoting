@@ -1,4 +1,5 @@
-import { AppBar, Button, Grid, Link, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, Grid, makeStyles, Toolbar, Typography, Link } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 import React from 'react';
 
 const useStyles = makeStyles(theme => ({
@@ -27,11 +28,11 @@ export const Header: React.FC = () => {
             BCBEV: Bund Admin
           </Typography>
           <nav>
-            <Link variant="button" color="textPrimary" href="#" className={classes.link}>
-              Vote
+            <Link variant="button" color="textPrimary" className={classes.link}>
+              <RouterLink to="/">Vote</RouterLink>
             </Link>
-            <Link variant="button" color="textPrimary" href="#" className={classes.link}>
-              Summary
+            <Link variant="button" color="textPrimary" className={classes.link}>
+              <RouterLink to="/summary">Summary</RouterLink>
             </Link>
           </nav>
           <Button href="#" color="primary" variant="outlined" className={classes.link}>

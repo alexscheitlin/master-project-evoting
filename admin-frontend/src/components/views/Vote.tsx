@@ -15,7 +15,7 @@ export const Vote: React.FC = () => {
   };
 
   return (
-    <Grid container component="main" direction={'column'} className={classes.main}>
+    <Grid container component="main" direction={'column'} className={classes.mainContainer}>
       <Grid item>
         <Grid container direction={'column'}>
           <Grid item>
@@ -48,7 +48,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'stretch'
   },
-  main: {
+  mainContainer: {
     padding: '1em',
     flexGrow: 1
   }
