@@ -3,14 +3,6 @@ pragma solidity ^0.5.13;
 import './lib/MathEC.sol';
 
 contract VoteProofVerifierEC {
-    // Public Key of the elGamal System, in the future, this should probably be set in a contructor
-    // or passed as additional function argument to the verifyProof()
-    uint256 private constant PK_X = 0x8e81a4b79ebab6d063730feba5bb4d943bb33185fd6d29a25a322a797757fd23;
-    uint256 private constant PK_Y = 0x50e9734783787d55abe859dbe32049aea0854a7434fc1e093aed90800adda40c;
-
-    ///////////////////////////////////////////////////////////////////////////////////
-    // Structs
-    ///////////////////////////////////////////////////////////////////////////////////
     struct Proof {
         uint256[2] x;
         uint256[2] y;
@@ -25,9 +17,25 @@ contract VoteProofVerifierEC {
         uint256 challenge;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////
-    // VERIFIER CORE FUNCTIONS
-    ///////////////////////////////////////////////////////////////////////////////////
+    struct PublicKey {
+        uint256 x;
+        uint256 y;
+    }
+
+    PublicKey private publicKey;
+    address private _owner;
+
+    constructor() public {
+        publicKey = PublicKey(0, 0);
+        _owner = msg.sender;
+    }
+
+    function initialize(uint256 x, uint256 y) public payable {
+        require(msg.sender == _owner);
+        publicKey.x = x;
+        publicKey.y = y;
+    }
+
     function verifyProof(
         uint256[2] memory _x,
         uint256[2] memory _y,
@@ -40,7 +48,7 @@ contract VoteProofVerifierEC {
         uint256 _r1,
         uint256 _r2,
         uint256 _challenge
-    ) public pure returns (bool b) {
+    ) public view returns (bool b) {
         // create a proof object
         Proof memory proof = Proof(_x, _y, _a1, _a2, _b1, _b2, _d1, _d2, _r1, _r2, _challenge);
 
@@ -87,9 +95,9 @@ contract VoteProofVerifierEC {
         return verified;
     }
 
-    function verifyB1(uint256 r1, uint256 d1, uint256[2] memory b1, uint256[2] memory y) public pure returns (bool b) {
+    function verifyB1(uint256 r1, uint256 d1, uint256[2] memory b1, uint256[2] memory y) public view returns (bool b) {
         // const pubKTr1 = pubK.mul(r1)
-        (uint256 pubKTr1_1, uint256 pubKTr1_2) = MathEC.ecMul(r1, PK_X, PK_Y);
+        (uint256 pubKTr1_1, uint256 pubKTr1_2) = MathEC.ecMul(r1, publicKey.x, publicKey.y);
 
         // const yG = y.add(ec.curve.g)
         (uint256 yG_1, uint256 yG_2) = MathEC.ecAdd(y[0], y[1], MathEC.gx(), MathEC.gy());
@@ -120,9 +128,9 @@ contract VoteProofVerifierEC {
         return verified;
     }
 
-    function verifyB2(uint256 r2, uint256 d2, uint256[2] memory b2, uint256[2] memory y) public pure returns (bool b) {
+    function verifyB2(uint256 r2, uint256 d2, uint256[2] memory b2, uint256[2] memory y) public view returns (bool b) {
         // const pubKTr2 = pubK.mul(r2)
-        (uint256 pubKTr2_1, uint256 pubKTr2_2) = MathEC.ecMul(r2, PK_X, PK_X);
+        (uint256 pubKTr2_1, uint256 pubKTr2_2) = MathEC.ecMul(r2, publicKey.x, publicKey.x);
 
         // const generator_inverted = ec.curve.g.neg()
         (uint256 ginv_x, uint256 ginv_y) = MathEC.ecInv(MathEC.gx(), MathEC.gy());
