@@ -61,6 +61,9 @@ typings/
 # database file
 db.json
 
+# solidity compiled contracts
+solidity/compiled
+
 # dist
 dist/
 
