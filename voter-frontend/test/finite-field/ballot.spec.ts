@@ -4,7 +4,7 @@ const Ballot = artifacts.require('./FiniteField/Ballot.sol');
 import {assert} from 'chai';
 import {FFelGamal} from 'mp-crypto';
 import BN from 'bn.js';
-import {toSystemParams, toHex, unlockedAddresses} from './helper';
+import {toSystemParams, toHex, unlockedAddresses} from '../helper';
 
 //@ts-ignore
 contract('Ballot.sol', () => {

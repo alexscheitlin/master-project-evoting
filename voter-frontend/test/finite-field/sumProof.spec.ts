@@ -1,18 +1,19 @@
 //@ts-ignore
-const KeyGenProofVerifier = artifacts.require('./FiniteField/KeyGenProofVerifier');
+const SumProofVerifier = artifacts.require('./FiniteField/SumProofVerifier');
 
 import {FFelGamal} from 'mp-crypto';
-import {unlockedAddresses} from './helper';
+import {unlockedAddresses} from '../helper';
 import {assert} from 'chai';
+import BN = require('bn.js');
 
 //@ts-ignore
-contract('KeyGenProofVerifier.sol', () => {
+contract('SumProofVerifier.sol', () => {
   const testCases = [[23, 2], [23, 6], [23, 8]];
 
   // run 10 tests for each test case
   for (let i = 0; i < 10; i++) {
     for (const testCase of testCases) {
-      it(`ZKP KeyGen Verification for (p: ${testCase[0]}, g: ${testCase[1]})`, async () => {
+      it(`ZKP Sum Verification for (p: ${testCase[0]}, g: ${testCase[1]})`, async () => {
         const p_: number = testCase[0];
         const q_: number = (p_ - 1) / 2;
         const g_: number = testCase[1];
@@ -53,25 +54,47 @@ contract('KeyGenProofVerifier.sol', () => {
 
         assert.isTrue(auth2_isKeyGenProofValid, 'key generation proof is not valid');
 
-        const keyGenProofVerifier = await KeyGenProofVerifier.new();
-        await keyGenProofVerifier.initialize(p_, q_, g_);
-
-        const auth1_isKeyGenProofValidContract = await keyGenProofVerifier.verifyProof(
-          auth1_keyGenProof.c,
-          auth1_keyGenProof.d,
+        const publicKey = FFelGamal.SystemSetup.combinePublicKeys(systemWideParams, [
           auth1_keyShare.h,
-          auth1_uniqueID,
-        );
-
-        const auth2_isKeyGenProofValidContract = await keyGenProofVerifier.verifyProof(
-          auth2_keyGenProof.c,
-          auth2_keyGenProof.d,
           auth2_keyShare.h,
-          auth2_uniqueID,
+        ]);
+
+        const sumProofContract = await SumProofVerifier.new();
+        await sumProofContract.initialize(p_, q_, g_, publicKey);
+
+        const sum = Math.floor(Math.random() * ((p_ - 1) / 2 - 1)) + 1;
+        const systemParamsWithPubKey = {
+          p: new BN(p_),
+          q: new BN(q_),
+          g: new BN(g_),
+          h: publicKey,
+        };
+        const sumEnc = FFelGamal.Encryption.encrypt(sum, systemWideParams, publicKey);
+
+        const privateKey = FFelGamal.SystemSetup.combinePrivateKeys(systemWideParams, [
+          auth1_keyShare.sk,
+          auth2_keyShare.sk,
+        ]);
+
+        const proof = FFelGamal.Proof.Decryption.generate(
+          sumEnc,
+          systemParamsWithPubKey,
+          privateKey,
+          unlockedAddresses.bund,
         );
 
-        assert.isTrue(auth1_isKeyGenProofValidContract, 'auth1_isKeyGenProofValidContract WRONG');
-        assert.isTrue(auth2_isKeyGenProofValidContract, 'auth2_isKeyGenProofValidContract WRONG');
+        const verifiedSumProof = await sumProofContract.verifyProof(
+          sumEnc.a,
+          sumEnc.b,
+          proof.a1,
+          proof.b1,
+          proof.d,
+          proof.f,
+          unlockedAddresses.bund,
+          publicKey,
+        );
+
+        assert.isTrue(verifiedSumProof, 'Sum proof could not be verified by the contract');
       });
     }
   }
