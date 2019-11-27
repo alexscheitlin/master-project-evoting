@@ -56,8 +56,8 @@ const EccElGamalComponent: React.FC = () => {
     const randomWalletAddress = getRandomWalletAddress();
 
     const vote = Voting.generateYesVote(publicKey);
-    const proof = ECelGamal.VoteZKP.generateYesProof(vote, systemParameters, publicKey, randomWalletAddress);
-    const verifiedProof = ECelGamal.VoteZKP.verifyZKP(vote, proof, systemParameters, publicKey, randomWalletAddress);
+    const proof = ECelGamal.Proof.Membership.generateYesProof(vote, systemParameters, publicKey, randomWalletAddress);
+    const verifiedProof = ECelGamal.Proof.Membership.verifyZKP(vote, proof, systemParameters, publicKey, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
@@ -77,8 +77,8 @@ const EccElGamalComponent: React.FC = () => {
     const randomWalletAddress = getRandomWalletAddress();
 
     const vote = Voting.generateNoVote(publicKey);
-    const proof = ECelGamal.VoteZKP.generateNoProof(vote, systemParameters, publicKey, randomWalletAddress);
-    const verifiedProof = ECelGamal.VoteZKP.verifyZKP(vote, proof, systemParameters, publicKey, randomWalletAddress);
+    const proof = ECelGamal.Proof.Membership.generateNoProof(vote, systemParameters, publicKey, randomWalletAddress);
+    const verifiedProof = ECelGamal.Proof.Membership.verifyZKP(vote, proof, systemParameters, publicKey, randomWalletAddress);
 
     if (!verifiedProof) {
       window.alert('Vote Proof Failed!');
