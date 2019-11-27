@@ -63,3 +63,10 @@ db.json
 
 # solidity compiled contracts
 solidity/compiled
+
+# dist
+dist/
+
+# vscode launch command
+.vscode/*
+!.vscode/launch.json
