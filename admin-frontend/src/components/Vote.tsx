@@ -1,8 +1,11 @@
+import { Button, CssBaseline, FormLabel, Grid, makeStyles, TextField } from '@material-ui/core';
 import React, { useState } from 'react';
-import { Grid, Button, TextField, FormLabel } from '@material-ui/core';
+import { Header } from './Header';
 
 export const Vote: React.FC = () => {
   const [question, setQuestion] = useState<string>('');
+
+  const classes = useStyles();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(event.currentTarget.value);
@@ -13,11 +16,10 @@ export const Vote: React.FC = () => {
   };
 
   return (
-    <div style={styles.wrapper}>
+    <React.Fragment>
+      <CssBaseline />
       <Grid container direction={'column'}>
-        <Grid item>
-          <h1>E-Voting Admin Backend</h1>
-        </Grid>
+        <Header />
         <Grid item>
           <Grid container direction={'column'}>
             <Grid item>
@@ -25,26 +27,26 @@ export const Vote: React.FC = () => {
             </Grid>
             <Grid item>
               <TextField
-                style={styles.vote}
+                className={classes.vote}
                 label="Vote Question"
                 variant="outlined"
                 required
                 onChange={handleInputChange}
               />
-              <Button style={styles.vote} variant={'outlined'} color={'primary'} onClick={sendToServer}>
+              <Button className={classes.vote} variant={'outlined'} color={'primary'} onClick={sendToServer}>
                 Submit
               </Button>
-              <FormLabel style={styles.vote}>{question}</FormLabel>
+              <FormLabel className={classes.vote}>{question}</FormLabel>
             </Grid>
           </Grid>
           <Grid container direction={'row'}></Grid>
         </Grid>
       </Grid>
-    </div>
+    </React.Fragment>
   );
 };
 
-const styles = {
+const useStyles = makeStyles({
   vote: {
     margin: '0 1em 0 0'
   },
@@ -53,4 +55,4 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center'
   }
-};
+});
