@@ -15,16 +15,6 @@ export const toSystemParams = (params: BN[]) => {
   return systemParams;
 };
 
-export const toParamsWithPubKey = (sysParams: BN[], pubKey: BN) => {
-  const params: FFelGamal.PublicKey = {
-    p: sysParams[0],
-    q: sysParams[1],
-    g: sysParams[2],
-    h: pubKey,
-  };
-  return params;
-};
-
 // these are the first 4 addresses shown when starting ganache via npm run ganache:dev
 export const unlockedAddresses = {
   bund: '0x05f5e01f2d2073c8872aca4213fd85f382ca681a', // owner of contracts

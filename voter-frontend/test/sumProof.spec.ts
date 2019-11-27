@@ -6,8 +6,6 @@ import { unlockedAddresses } from './helper';
 import { assert } from 'chai';
 import BN = require('bn.js');
 
-const { KeyGeneration } = FFelGamal;
-
 //@ts-ignore
 contract('SumProofVerifier.sol', () => {
   const testCases = [[23, 2], [23, 6], [23, 8]];
@@ -20,43 +18,46 @@ contract('SumProofVerifier.sol', () => {
         const q_: number = (p_ - 1) / 2;
         const g_: number = testCase[1];
 
-        const systemWideParams: FFelGamal.SystemParameters = KeyGeneration.generateSystemParameters(p_, q_, g_);
+        const systemWideParams: FFelGamal.SystemParameters = FFelGamal.SystemSetup.generateSystemParameters(p_, g_);
 
         // Authority 1
-        const auth1_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(systemWideParams);
+        const auth1_keyShare: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(systemWideParams);
         const auth1_uniqueID = unlockedAddresses.auth1;
-        const auth1_keyGenProof = KeyGeneration.generateKeyGenerationProof(
+        const auth1_keyGenProof = FFelGamal.Proof.KeyGeneration.generate(
           systemWideParams,
           auth1_keyShare,
           auth1_uniqueID,
         );
-        const auth1_isKeyGenProofValid = KeyGeneration.verifyKeyGenerationProof(
+        const auth1_isKeyGenProofValid = FFelGamal.Proof.KeyGeneration.verify(
           systemWideParams,
           auth1_keyGenProof,
-          auth1_keyShare.h_,
+          auth1_keyShare.h,
           auth1_uniqueID,
         );
 
         assert.isTrue(auth1_isKeyGenProofValid, 'key generation proof is not valid');
 
         // Authority 2
-        const auth2_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(systemWideParams);
+        const auth2_keyShare: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(systemWideParams);
         const auth2_uniqueID = unlockedAddresses.auth2;
-        const auth2_keyGenProof = KeyGeneration.generateKeyGenerationProof(
+        const auth2_keyGenProof = FFelGamal.Proof.KeyGeneration.generate(
           systemWideParams,
           auth2_keyShare,
           auth2_uniqueID,
         );
-        const auth2_isKeyGenProofValid = KeyGeneration.verifyKeyGenerationProof(
+        const auth2_isKeyGenProofValid = FFelGamal.Proof.KeyGeneration.verify(
           systemWideParams,
           auth2_keyGenProof,
-          auth2_keyShare.h_,
+          auth2_keyShare.h,
           auth2_uniqueID,
         );
 
         assert.isTrue(auth2_isKeyGenProofValid, 'key generation proof is not valid');
 
-        const publicKey = KeyGeneration.combinePublicKeys(systemWideParams, [auth1_keyShare.h_, auth2_keyShare.h_]);
+        const publicKey = FFelGamal.SystemSetup.combinePublicKeys(systemWideParams, [
+          auth1_keyShare.h,
+          auth2_keyShare.h,
+        ]);
 
         const sumProofContract = await SumProofVerifier.new();
         await sumProofContract.initialize(p_, q_, g_, publicKey);
@@ -68,11 +69,14 @@ contract('SumProofVerifier.sol', () => {
           g: new BN(g_),
           h: publicKey,
         };
-        const sumEnc = FFelGamal.Encryption.encrypt(sum, systemParamsWithPubKey);
+        const sumEnc = FFelGamal.Encryption.encrypt(sum, systemWideParams, publicKey);
 
-        const privateKey = KeyGeneration.combinePrivateKeys(systemWideParams, [auth1_keyShare.sk_, auth2_keyShare.sk_]);
+        const privateKey = FFelGamal.SystemSetup.combinePrivateKeys(systemWideParams, [
+          auth1_keyShare.sk,
+          auth2_keyShare.sk,
+        ]);
 
-        const proof = FFelGamal.SumZKP.generateSumProof(
+        const proof = FFelGamal.Proof.Decryption.generate(
           sumEnc,
           systemParamsWithPubKey,
           privateKey,

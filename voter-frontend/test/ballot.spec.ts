@@ -2,11 +2,9 @@
 const Ballot = artifacts.require('./Ballot.sol');
 
 import { assert } from 'chai';
-import { FFelGamal, Cipher, SumProof } from 'mp-crypto';
+import { FFelGamal } from 'mp-crypto';
 import BN from 'bn.js';
-import { toSystemParams, toParamsWithPubKey, toHex, unlockedAddresses } from './helper';
-
-const { KeyGeneration, Voting, VoteZKP, SumZKP } = FFelGamal;
+import { toSystemParams, toHex, unlockedAddresses } from './helper';
 
 //@ts-ignore
 contract('Ballot.sol', () => {
@@ -24,7 +22,7 @@ contract('Ballot.sol', () => {
     const q_: number = (p_ - 1) / 2;
     const g_: number = 2;
 
-    const bund_systemParams: FFelGamal.SystemParameters = KeyGeneration.generateSystemParameters(p_, q_, g_);
+    const bund_systemParams: FFelGamal.SystemParameters = FFelGamal.SystemSetup.generateSystemParameters(p_, g_);
     await ballotContract.setParameters([bund_systemParams.p, bund_systemParams.q, bund_systemParams.g], {
       from: unlockedAddresses.bund,
     });
@@ -36,10 +34,10 @@ contract('Ballot.sol', () => {
      */
     const auth1_sysParamsFromContract = await ballotContract.getParameters();
     const auth1_sysParams = toSystemParams(auth1_sysParamsFromContract);
-    const auth1_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(auth1_sysParams);
+    const auth1_keyShare: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(auth1_sysParams);
     const auth1_uniqueID = unlockedAddresses.auth1;
-    const auth1_keyGenProof = KeyGeneration.generateKeyGenerationProof(auth1_sysParams, auth1_keyShare, auth1_uniqueID);
-    await ballotContract.submitPublicKeyShare(auth1_keyShare.h_, auth1_keyGenProof.c, auth1_keyGenProof.d, {
+    const auth1_keyGenProof = FFelGamal.Proof.KeyGeneration.generate(auth1_sysParams, auth1_keyShare, auth1_uniqueID);
+    await ballotContract.submitPublicKeyShare(auth1_keyShare.h, auth1_keyGenProof.c, auth1_keyGenProof.d, {
       from: unlockedAddresses.auth1,
     });
 
@@ -50,10 +48,10 @@ contract('Ballot.sol', () => {
      */
     const auth2_sysParamsFromContract = await ballotContract.getParameters();
     const auth2_sysParams = toSystemParams(auth2_sysParamsFromContract);
-    const auth2_keyShare: FFelGamal.KeyShare = KeyGeneration.generateKeyShares(auth2_sysParams);
+    const auth2_keyShare: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(auth2_sysParams);
     const auth2_uniqueID = unlockedAddresses.auth2;
-    const auth2_keyGenProof = KeyGeneration.generateKeyGenerationProof(auth2_sysParams, auth2_keyShare, auth2_uniqueID);
-    await ballotContract.submitPublicKeyShare(auth2_keyShare.h_, auth2_keyGenProof.c, auth2_keyGenProof.d, {
+    const auth2_keyGenProof = FFelGamal.Proof.KeyGeneration.generate(auth2_sysParams, auth2_keyShare, auth2_uniqueID);
+    await ballotContract.submitPublicKeyShare(auth2_keyShare.h, auth2_keyGenProof.c, auth2_keyGenProof.d, {
       from: unlockedAddresses.auth2,
     });
 
@@ -64,7 +62,10 @@ contract('Ballot.sol', () => {
     await ballotContract.createVerifiers();
 
     // assert the combined public key in contract is the same as if combined locally on one machine
-    const test_localPubKey = KeyGeneration.combinePublicKeys(auth1_sysParams, [auth1_keyShare.h_, auth2_keyShare.h_]);
+    const test_localPubKey = FFelGamal.SystemSetup.combinePublicKeys(auth1_sysParams, [
+      auth1_keyShare.h,
+      auth2_keyShare.h,
+    ]);
     const test_contractPubKey = await ballotContract.getPublicKey();
     assert(toHex(test_localPubKey) === toHex(test_contractPubKey), 'PublicKey does not match after combining shares');
 
@@ -87,14 +88,17 @@ contract('Ballot.sol', () => {
     const client_publicKey = await ballotContract.getPublicKey();
 
     // Client/Voter creates system params with publicKey
-    const client_sysParamsWithPubKey: FFelGamal.PublicKey = toParamsWithPubKey(
-      client_sysParamsFromContract,
-      client_publicKey,
-    );
+    const client_sysParams: FFelGamal.SystemParameters = toSystemParams(client_sysParamsFromContract);
 
     // generate and submit yesVote
-    const yesVote = Voting.generateYesVote(client_sysParamsWithPubKey);
-    const yesProof = VoteZKP.generateYesProof(yesVote, client_sysParamsWithPubKey, client_uniqueID);
+    const yesVote = FFelGamal.Voting.generateYesVote(client_sysParams, client_publicKey);
+
+    const yesProof = FFelGamal.Proof.Membership.generateYesProof(
+      yesVote,
+      client_sysParams,
+      client_publicKey,
+      client_uniqueID,
+    );
     await ballotContract.vote(
       [yesVote.a, yesVote.b],
       [yesProof.a0, yesProof.a1],
@@ -112,8 +116,13 @@ contract('Ballot.sol', () => {
     );
 
     // generate and submit noVote
-    const noVote = Voting.generateNoVote(client_sysParamsWithPubKey);
-    const noProof = VoteZKP.generateNoProof(noVote, client_sysParamsWithPubKey, client_uniqueID);
+    const noVote = FFelGamal.Voting.generateNoVote(client_sysParams, client_publicKey);
+    const noProof = FFelGamal.Proof.Membership.generateNoProof(
+      noVote,
+      client_sysParams,
+      client_publicKey,
+      client_uniqueID,
+    );
     await ballotContract.vote(
       [noVote.a, noVote.b],
       [noProof.a0, noProof.a1],
@@ -152,35 +161,31 @@ contract('Ballot.sol', () => {
 
     for (let i = 0; i < auth1_votesCount.toNumber(); i++) {
       const vote = await ballotContract.getVote(i);
-      const c: Cipher = {
+      const c: FFelGamal.Cipher = {
         a: vote[0],
         b: vote[1],
       };
       auth1_votes.push(c);
     }
-    const auth1_sysParamsWithPubKey: FFelGamal.PublicKey = toParamsWithPubKey(
-      auth1_sysParamsFromContract,
-      auth1_keyShare.h_,
-    );
-
     // homomorphically add votes
-    const auth1_sumCipher = Voting.addVotes(auth1_votes, auth1_sysParamsWithPubKey);
+    const auth1_sumCipher = FFelGamal.Voting.addVotes(auth1_votes, auth1_sysParams);
 
     // create decrypted share
-    const auth1_decryptedShare = KeyGeneration.decryptShare(auth1_sysParams, auth1_sumCipher, auth1_keyShare.sk_);
+    const auth1_decryptedShare = FFelGamal.Encryption.decryptShare(auth1_sysParams, auth1_sumCipher, auth1_keyShare.sk);
 
     // create proof for homomorphic sum
-    const auth1_decryptedShareProof: SumProof = SumZKP.generateSumProof(
+    const auth1_decryptedShareProof: FFelGamal.Proof.DecryptionProof = FFelGamal.Proof.Decryption.generate(
       auth1_sumCipher,
-      auth1_sysParamsWithPubKey,
-      auth1_keyShare.sk_,
+      auth1_sysParams,
+      auth1_keyShare.sk,
       auth1_uniqueID,
     );
 
-    const auth1_isDecryptedShareProofValid = SumZKP.verifySumProof(
+    const auth1_isDecryptedShareProofValid = FFelGamal.Proof.Decryption.verify(
       auth1_sumCipher,
       auth1_decryptedShareProof,
-      auth1_sysParamsWithPubKey,
+      auth1_sysParams,
+      auth1_keyShare.h,
       auth1_uniqueID,
     );
 
@@ -215,36 +220,32 @@ contract('Ballot.sol', () => {
 
     for (let i = 0; i < auth2_votesCount.toNumber(); i++) {
       const vote = await ballotContract.getVote(i);
-      const c: Cipher = {
+      const c: FFelGamal.Cipher = {
         a: vote[0],
         b: vote[1],
       };
       auth2_votes.push(c);
     }
 
-    const auth2_sysParamsWithPublicKey: FFelGamal.PublicKey = toParamsWithPubKey(
-      auth2_sysParamsFromContract,
-      auth2_keyShare.h_,
-    );
-
     // homomorphically add votes
-    const auth2_sumCipher = Voting.addVotes(auth2_votes, auth2_sysParamsWithPublicKey);
+    const auth2_sumCipher = FFelGamal.Voting.addVotes(auth2_votes, auth2_sysParams);
 
     // create decrypted share
-    const auth2_decryptedShare = KeyGeneration.decryptShare(auth2_sysParams, auth2_sumCipher, auth2_keyShare.sk_);
+    const auth2_decryptedShare = FFelGamal.Encryption.decryptShare(auth2_sysParams, auth2_sumCipher, auth2_keyShare.sk);
 
     // create proof for homomorphic sum
-    const auth2_decryptedShareProof: SumProof = SumZKP.generateSumProof(
+    const auth2_decryptedShareProof: FFelGamal.Proof.DecryptionProof = FFelGamal.Proof.Decryption.generate(
       auth2_sumCipher,
-      auth2_sysParamsWithPublicKey,
-      auth2_keyShare.sk_,
+      auth2_sysParams,
+      auth2_keyShare.sk,
       auth2_uniqueID,
     );
 
-    const auth2_isDecryptedShareProofValid = SumZKP.verifySumProof(
+    const auth2_isDecryptedShareProofValid = FFelGamal.Proof.Decryption.verify(
       auth2_sumCipher,
       auth2_decryptedShareProof,
-      auth2_sysParamsWithPublicKey,
+      auth2_sysParams,
+      auth2_keyShare.h,
       auth2_uniqueID,
     );
 
