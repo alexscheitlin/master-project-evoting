@@ -17,7 +17,7 @@ const sp = SystemSetup.generateSystemParameters();
 const EccElGamalComponent: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
   const [votes, setVotes] = useState<ECelGamal.Cipher[]>([]);
-  const [proofs, setProofs] = useState<ECelGamal.ValidVoteProof[]>([]);
+  const [proofs, setProofs] = useState<ECelGamal.Proof.MembershipProof[]>([]);
   const [sum, setSum] = useState<ECelGamal.Cipher>();
   const [sumProof, setSumProof] = useState<ECelGamal.Proof.DecryptionProof>();
   const [result, setResult] = useState<number>(0);
