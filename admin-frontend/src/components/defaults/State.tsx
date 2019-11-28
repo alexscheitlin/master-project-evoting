@@ -11,7 +11,6 @@ type StateResult = {
 
 export const State: React.FC = () => {
   const classes = useStyles();
-
   const VOTE_STATES: string[] = ['PRE_VOTING', 'VOTING', 'POST_VOTING'];
   const [voteState, setVoteState] = useState<string>(VOTE_STATES[0]);
 
@@ -39,8 +38,10 @@ export const State: React.FC = () => {
 
   return (
     <Grid item className={classes.container}>
-      <FormLabel className={classes.vote}>State of Vote:</FormLabel>
-      <FormLabel className={classes.vote}>{voteState}</FormLabel>
+      <Grid item>
+        <FormLabel className={classes.vote}>State of Vote: </FormLabel>
+        <FormLabel className={classes.vote}>{voteState}</FormLabel>
+      </Grid>
       <Button className={classes.vote} variant={'outlined'} color={'primary'} onClick={changeVoteState}>
         Change state to: {nextVoteState()}
       </Button>
@@ -50,10 +51,11 @@ export const State: React.FC = () => {
 
 const useStyles = makeStyles({
   vote: {
-    margin: '0 1em 0 0'
+    margin: '1em 0'
   },
   container: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     padding: '1em'
   }
