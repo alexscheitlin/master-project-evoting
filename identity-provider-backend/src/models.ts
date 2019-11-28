@@ -3,3 +3,8 @@ export interface Identity {
     username: string;
     password: string;
 }
+
+export interface IdentityToken {
+    uuid: string;
+    token: string;
+}

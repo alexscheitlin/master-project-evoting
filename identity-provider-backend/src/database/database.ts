@@ -29,22 +29,21 @@ export const setupDB = () => {
   // set defaults (if JSON is empty)
   db.defaults({
     identities: identities,
-    voters: [],
-    tokens: []
+    tokens: [],
   }).write()
 }
 
-export const addToList = (table: string, value: string) => {
+export const addToList = (table: string, value: any[]) => {
   // read content from DB + add the new value
   const tableContent: string[] = getListFromDB(table)
-  tableContent.push(value)
+  tableContent.push(...value)
 
   // write the content to the DB
   db.set(table, tableContent).value()
   db.write()
 }
 
-export const setValue = (table: string, value: string) => {
+export const setValue = (table: string, value: any | any[]) => {
   // write the new value to the field in the DB
   db.set(table, value).value()
   db.write()
