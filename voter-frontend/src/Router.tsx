@@ -5,7 +5,7 @@ import DemoPage from './pages/DemoPage';
 import LoginPage from './pages/LoginPage';
 import VotingPage from './pages/VotingPage';
 import PublicPage from './pages/PublicPage';
-import {fakeAuth} from './util/auth';
+import {useAuth} from './hooks/useAuth';
 
 export const Routes: React.FC = () => {
   return (
@@ -27,11 +27,13 @@ interface PrivateRouteProps {
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
 const PrivateRoute: React.FC<PrivateRouteProps> = ({children, path, ...rest}) => {
+  const {user}: any = useAuth();
+
   return (
     <Route
       {...rest}
       render={({location}) =>
-        fakeAuth.isAuthenticated ? (
+        user && user.authenticated ? (
           children
         ) : (
           <Redirect
