@@ -1,6 +1,6 @@
-import { AppBar, Button, Grid, makeStyles, Toolbar, Typography, Link, Omit } from '@material-ui/core';
-import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
+import { AppBar, Button, Grid, makeStyles, Toolbar, Typography } from '@material-ui/core';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -20,30 +20,22 @@ const useStyles = makeStyles(theme => ({
 export const Header: React.FC = () => {
   const classes = useStyles();
 
-  const LinkToSummary = React.forwardRef<HTMLAnchorElement, Omit<RouterLinkProps, 'innerRef' | 'to'>>((props, ref) => (
-    <RouterLink className={classes.link} innerRef={ref} to="/summary">
-      Summary
-    </RouterLink>
-  ));
-
-  const LinkToVote = React.forwardRef<HTMLAnchorElement, Omit<RouterLinkProps, 'innerRef' | 'to'>>((props, ref) => (
-    <RouterLink className={classes.link} innerRef={ref} to="/">
-      Vote
-    </RouterLink>
-  ));
-
   return (
     <Grid item component="header">
       <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>
-            BCBEV: Bund Admin
+            Voting Authority
           </Typography>
           <nav>
-            <Link variant="button" color="textPrimary" component={LinkToVote} />
-            <Link variant="button" color="textPrimary" component={LinkToSummary} />
+            <Button>
+              <RouterLink to="/">Vote</RouterLink>
+            </Button>
+            <Button>
+              <RouterLink to="/summary">Summary</RouterLink>
+            </Button>
           </nav>
-          <Button href="#" color="primary" variant="outlined" className={classes.link}>
+          <Button color="primary" variant="outlined" className={classes.link}>
             Login
           </Button>
         </Toolbar>
