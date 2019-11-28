@@ -4,9 +4,6 @@ import {FFelGamal, Summary} from 'mp-crypto';
 
 import {getRandomWalletAddress} from '../util/helper';
 
-import ballotABI from '../contracts/Ballot.json';
-import {useWeb3} from '../hooks/useWeb3';
-
 const {SystemSetup, Encryption, Voting} = FFelGamal;
 
 const [sp, {h: pk, sk}] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
@@ -18,8 +15,6 @@ export const FiniteFieldVoting: React.FC = () => {
   const [sum, setSum] = useState<FFelGamal.Cipher>();
   const [sumProof, setSumProof] = useState<FFelGamal.Proof.DecryptionProof>();
   const [summary, setSummary] = useState<Summary>({total: 0, yes: 0, no: 0});
-
-  const [web3, contract] = useWeb3(ballotABI);
 
   const getResult = (votes: any[]) => {
     const sum = Voting.addVotes(votes, sp);
