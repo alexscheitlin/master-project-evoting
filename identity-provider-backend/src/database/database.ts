@@ -50,7 +50,7 @@ export const setValue = (table: string, value: string) => {
   db.write()
 }
 
-export const getListFromDB = (table: string): string[] => {
+export const getListFromDB = (table: string): any[] => {
   return db.get(table).value()
 }
 
