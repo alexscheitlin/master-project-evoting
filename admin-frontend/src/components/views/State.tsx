@@ -32,11 +32,8 @@ export const State: React.FC = () => {
     if (response.status === 200) {
       const res: StateResult = response.data;
       setVoteState(res.state);
-    } else if (response.status === 400) {
-      const res: StateResult = response.data;
-      console.error(res.msg);
     } else {
-      console.error(response.status, response.data);
+      console.error(`Status: ${response.status}\nMessage: ${response.data}`);
     }
   };
 
