@@ -1,16 +1,18 @@
 import React from 'react';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Routes} from './Router';
-import {LogoutButton} from './components/LogoutButton';
+import AppWrapper from './components/Layout/AppWrapper/AppWrapper';
+import {ProvideAuth} from './hooks/useAuth';
 
 const App: React.FC = () => {
   return (
-    <>
-      <Router>
-        <LogoutButton />
-        <Routes />
-      </Router>
-    </>
+    <AppWrapper>
+      <ProvideAuth>
+        <Router>
+          <Routes />
+        </Router>
+      </ProvideAuth>
+    </AppWrapper>
   );
 };
 
