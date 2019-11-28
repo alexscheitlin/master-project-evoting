@@ -30,7 +30,7 @@ contract.only('VoteProofVerifierEC.sol', () => {
       unlockedAddresses.client,
     );
 
-    const localVerify = ECelGamal.Proof.Membership.verifyZKP(
+    const localVerify = ECelGamal.Proof.Membership.verify(
       yesVote,
       yesVoteProof,
       systemParams,

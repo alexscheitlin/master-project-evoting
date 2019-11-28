@@ -54,7 +54,7 @@ const EccElGamalComponent: React.FC = () => {
 
     const vote = Voting.generateYesVote(publicKey);
     const proof = ECelGamal.Proof.Membership.generateYesProof(vote, systemParameters, publicKey, randomWalletAddress);
-    const verifiedProof = ECelGamal.Proof.Membership.verifyZKP(
+    const verifiedProof = ECelGamal.Proof.Membership.verify(
       vote,
       proof,
       systemParameters,
@@ -81,7 +81,7 @@ const EccElGamalComponent: React.FC = () => {
 
     const vote = Voting.generateNoVote(publicKey);
     const proof = ECelGamal.Proof.Membership.generateNoProof(vote, systemParameters, publicKey, randomWalletAddress);
-    const verifiedProof = ECelGamal.Proof.Membership.verifyZKP(
+    const verifiedProof = ECelGamal.Proof.Membership.verify(
       vote,
       proof,
       systemParameters,
