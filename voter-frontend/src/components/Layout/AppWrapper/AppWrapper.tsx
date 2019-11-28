@@ -4,7 +4,6 @@ import {makeStyles} from '@material-ui/core/styles';
 const useStyles = makeStyles(theme => ({
   wrapper: {
     height: '100vh',
-    padding: theme.spacing(2),
     margin: theme.spacing(0),
   },
 }));
