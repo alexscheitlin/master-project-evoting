@@ -26,7 +26,7 @@ function useProvideAuth(): Auth {
 
   const login = (username: string, password: string) => {
     return new Promise<boolean>(resolve => {
-      EIdentityProviderBackend.getToken()
+      EIdentityProviderBackend.getToken(username, password)
         .then((token: any) => {
           setUser({...user, authenticated: true, token: token});
           localStorage.setItem('token', token);
