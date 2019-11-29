@@ -22,11 +22,11 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function getSteps() {
+function getSteps(): string[] {
   return ['Checking your Login', 'Creating Voter Account', 'Setting up Wallet', 'Connect to Blockchain'];
 }
 
-function getStepContent(step: number) {
+function getStepContent(step: number): string {
   switch (step) {
     case 0:
       return `Making sure you are logged in correctly`;
@@ -51,12 +51,12 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
   const steps = getSteps();
   const ctx = useUser();
 
-  const checkLogin = async () => {
+  const checkLogin = async (): Promise<any> => {
     await delay(2000);
     return true;
   };
 
-  const createAccount = async () => {
+  const createAccount = async (): Promise<any> => {
     await delay(2000);
     const web3 = await getWeb3();
     const account = await web3.eth.personal.newAccount('securePassword');
@@ -64,7 +64,7 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
     web3.eth.defaultAccount = account;
   };
 
-  const fundWallet = async () => {
+  const fundWallet = async (): Promise<any> => {
     const web3 = await getWeb3();
     const token = localStorage.getItem('token');
     const wallet = web3.eth.defaultAccount;
@@ -73,7 +73,7 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
     }
   };
 
-  const connectToContract = async () => {
+  const connectToContract = async (): Promise<any> => {
     await delay(2000);
     // TODO: get contract address from backend
     // currently the contract is deployed manually and the address
@@ -85,28 +85,25 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
     // const res = await contract.methods.get().call({from: web3.eth.defaultAccount});
   };
 
-  const nextStep = () => {
+  const nextStep = (): void => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
-    console.log('nextStep');
   };
 
   useEffect(() => {
-    let isSubscribed = true;
-    async function setup() {
+    async function setup(): Promise<any> {
       await checkLogin();
-      isSubscribed && nextStep();
+      nextStep();
       await createAccount();
-      isSubscribed && nextStep();
+      nextStep();
       await fundWallet();
-      isSubscribed && nextStep();
+      nextStep();
       await connectToContract();
-      isSubscribed && onSetupComplete();
+      onSetupComplete();
     }
     setup();
-    return () => {
-      isSubscribed = false;
-    };
-  }, [fundWallet, onSetupComplete]);
+    return (): void => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container maxWidth="xs">
