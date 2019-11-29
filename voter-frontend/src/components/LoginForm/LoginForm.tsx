@@ -33,18 +33,8 @@ const useStyles = makeStyles(theme => ({
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const history = useHistory();
-
-  const auth: any = useAuth();
-
+  const auth = useAuth();
   const classes = useStyles();
-
-  const handleLogin = () => {
-    auth.login(username, password, () => {
-      history.replace('/voting');
-    });
-  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -78,9 +68,17 @@ const LoginForm: React.FC = () => {
             autoComplete="current-password"
             onChange={e => setPassword(e.target.value)}
           />
-          <Button fullWidth variant="contained" color="primary" className={classes.submit} onClick={handleLogin}>
-            Login
-          </Button>
+          {auth !== null && (
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => auth.login(username, password)}
+            >
+              Login
+            </Button>
+          )}
         </form>
       </Paper>
     </Container>

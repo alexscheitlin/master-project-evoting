@@ -1,32 +1,48 @@
 import React, {useState, useEffect, useContext} from 'react';
+import {loginUser, logoutUser, delay} from '../util/fakeAuth';
 
-const AuthContext = React.createContext({});
+interface Auth {
+  user: {
+    authenticated: boolean;
+    token: string;
+  };
+  login: (username: string, password: string) => void;
+  logout: () => void;
+}
 
-// Hook for child components to get the auth object ...
-// ... and re-render when it changes.
+const AuthContext = React.createContext<Auth | null>(null);
+
+// Hook for child components to get the auth object
+// and re-render when it changes.
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
 // Provider hook that creates auth object and handles state
-function useProvideAuth() {
-  const [user, setUser] = useState();
+function useProvideAuth(): Auth {
+  const [user, setUser] = useState({authenticated: false, token: ''});
 
-  const login = (email: string, password: string, cb: Function) => {
-    setUser({authenticated: true, token: '1234'});
-    setTimeout(cb, 1000);
+  const login = (username: string, password: string) => {
+    loginUser(username, password).then(res => {
+      setUser({authenticated: true, token: ''});
+      delay(2000).then(() => {
+        localStorage.setItem('token', res.token);
+        setUser({authenticated: true, token: res.token});
+      });
+    });
   };
 
-  const logout = (cb: Function) => {
-    setUser({authenticated: false, token: ''});
-    setTimeout(cb, 1000);
+  const logout = () => {
+    logoutUser().then(() => {
+      setUser({authenticated: false, token: ''});
+      localStorage.setItem('token', '');
+    });
   };
 
   useEffect(() => {
     const unsubscribe = () => {
       console.log('unsubscribing');
     };
-
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
@@ -43,9 +59,9 @@ interface ProvideAuthProps {
   children: React.ReactNode;
 }
 
-// Provider component that wraps your app and makes auth object ...
-// ... available to any child component that calls useAuth().
+// Provider component that wraps your app and makes auth object
+// available to any child component that calls useAuth().
 export const ProvideAuth: React.FC<ProvideAuthProps> = ({children}) => {
-  const auth = useProvideAuth();
+  const auth: Auth = useProvideAuth();
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
