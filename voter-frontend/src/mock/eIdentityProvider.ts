@@ -6,9 +6,9 @@ mock.onGet('/getToken').reply(200, {
   token: '123456789',
 });
 
-export const getToken = async () => {
+export const getToken = async (username: string, password: string) => {
   return new Promise(resolve =>
-    axios.get('/getToken').then((res: any) => {
+    axios.get('/getToken', {params: {username: 'asd', password: 'asdsad'}}).then((res: any) => {
       return resolve(res.data.token);
     }),
   );

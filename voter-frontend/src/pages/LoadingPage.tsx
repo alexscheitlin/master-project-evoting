@@ -57,10 +57,9 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
   };
 
   const createAccount = async () => {
-    const web3 = await getWeb3();
     await delay(2000);
+    const web3 = await getWeb3();
     const account = await web3.eth.personal.newAccount('securePassword');
-    console.log(account);
     await web3.eth.personal.unlockAccount(account, 'securePassword', 1);
     web3.eth.defaultAccount = account;
   };
