@@ -12,7 +12,7 @@ const AppManager: React.FC = () => {
 
   if (auth !== null) {
     authenticated = auth.user.authenticated;
-    initialized = auth.user.token !== '';
+    initialized = auth.user.wallet !== '';
   }
 
   let activeComponent;

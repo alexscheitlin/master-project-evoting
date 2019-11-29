@@ -5,9 +5,11 @@ interface Auth {
   user: {
     authenticated: boolean;
     token: string;
+    wallet: string;
   };
   login: (username: string, password: string) => void;
   logout: () => void;
+  setWallet: (wallet: string) => void;
 }
 
 const AuthContext = React.createContext<Auth | null>(null);
@@ -20,23 +22,24 @@ export const useAuth = () => {
 
 // Provider hook that creates auth object and handles state
 function useProvideAuth(): Auth {
-  const [user, setUser] = useState({authenticated: false, token: ''});
+  const [user, setUser] = useState({authenticated: false, token: '', wallet: ''});
 
   const login = (username: string, password: string) => {
     loginUser(username, password).then(res => {
-      setUser({authenticated: true, token: ''});
-      delay(2000).then(() => {
-        localStorage.setItem('token', res.token);
-        setUser({authenticated: true, token: res.token});
-      });
+      setUser({...user, authenticated: true, token: res.token});
+      localStorage.setItem('token', res.token);
     });
   };
 
   const logout = () => {
     logoutUser().then(() => {
-      setUser({authenticated: false, token: ''});
+      setUser({...user, authenticated: false, token: ''});
       localStorage.setItem('token', '');
     });
+  };
+
+  const setWallet = (wallet: string) => {
+    setUser({...user, wallet: wallet});
   };
 
   useEffect(() => {
@@ -52,6 +55,7 @@ function useProvideAuth(): Auth {
     user,
     login,
     logout,
+    setWallet,
   };
 }
 

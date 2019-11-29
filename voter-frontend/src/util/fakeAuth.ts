@@ -6,7 +6,7 @@ interface AuthResponse {
 }
 
 export const loginUser = (username: string, password: string) => {
-  return delay(500).then(() => new Promise<AuthResponse>(resolve => setTimeout(resolve({token: '123456789'}), 3000)));
+  return delay(100).then(() => new Promise<AuthResponse>(resolve => setTimeout(resolve({token: '123456789'}), 3000)));
 };
 
 export const logoutUser = () => {
