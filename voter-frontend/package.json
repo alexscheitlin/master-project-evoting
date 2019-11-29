@@ -4,6 +4,7 @@
   "private": true,
   "devDependencies": {
     "@types/mocha": "^5.2.7",
+    "axios-mock-adapter": "^1.17.0",
     "mocha": "^6.2.2",
     "solhint": "^2.3.0",
     "solhint-plugin-prettier": "0.0.3",

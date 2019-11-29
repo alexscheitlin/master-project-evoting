@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {loginUser, logoutUser, delay} from '../util/fakeAuth';
+import {EIdentityProviderBackend, AccessProviderBackend} from '../mock';
+import axios from 'axios';
 
 interface Auth {
   user: {
@@ -8,7 +9,6 @@ interface Auth {
     wallet: string;
   };
   login: (username: string, password: string) => void;
-  logout: () => void;
   setWallet: (wallet: string) => void;
 }
 
@@ -25,16 +25,10 @@ function useProvideAuth(): Auth {
   const [user, setUser] = useState({authenticated: false, token: '', wallet: ''});
 
   const login = (username: string, password: string) => {
-    loginUser(username, password).then(res => {
-      setUser({...user, authenticated: true, token: res.token});
-      localStorage.setItem('token', res.token);
-    });
-  };
-
-  const logout = () => {
-    logoutUser().then(() => {
-      setUser({...user, authenticated: false, token: ''});
-      localStorage.setItem('token', '');
+    EIdentityProviderBackend.getToken().then((token: any) => {
+      setUser({...user, authenticated: true, token: token});
+      localStorage.setItem('token', token);
+      console.log(token);
     });
   };
 
@@ -54,7 +48,6 @@ function useProvideAuth(): Auth {
   return {
     user,
     login,
-    logout,
     setWallet,
   };
 }
