@@ -78,30 +78,34 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
     // TODO: get contract address from backend
     // currently the contract is deployed manually and the address
     // added here manually
-    const address = '0x702196b86Aed17A91EF58804B6345B359919812d';
+    const address = '0x702196b86aed17a91ef58804b6345b359919812d';
     const web3 = await getWeb3();
     // TODO: abi should be fetched from the backend
     const contract = new web3.eth.Contract(SimpleStorage.abi, address);
     // const res = await contract.methods.get().call({from: web3.eth.defaultAccount});
-    return true;
   };
 
   const nextStep = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
+    console.log('nextStep');
   };
 
   useEffect(() => {
-    async function init() {
+    let isSubscribed = true;
+    async function setup() {
       await checkLogin();
-      nextStep();
+      isSubscribed && nextStep();
       await createAccount();
-      nextStep();
+      isSubscribed && nextStep();
       await fundWallet();
-      nextStep();
+      isSubscribed && nextStep();
       await connectToContract();
-      onSetupComplete();
+      isSubscribed && onSetupComplete();
     }
-    init();
+    setup();
+    return () => {
+      isSubscribed = false;
+    };
   }, [fundWallet, onSetupComplete]);
 
   return (
