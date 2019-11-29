@@ -14,3 +14,6 @@ const randHex = (length: number): string => {
 export const getRandomWalletAddress = () => {
   return '0x' + randHex(32);
 };
+
+// simulates a delay like an asyc call would
+export const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));

@@ -9,7 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import React, {useEffect} from 'react';
 
 import {useAuth} from '../hooks/useAuth';
-import {delay} from '../util/fakeAuth';
+import {delay} from '../util/helper';
+import {AccessProviderBackend} from '../mock';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,7 +49,19 @@ export default function LoadingPage() {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
+  const generateWallet = () => {
+    const wallet = '0x02191612638124780216416783612739';
+    const token = localStorage.getItem('token');
+    if (token !== null) {
+      console.log(token);
+      AccessProviderBackend.fundWallet(token, wallet).then((res: any) => {
+        console.log(res);
+      });
+    }
+  };
+
   useEffect(() => {
+    generateWallet();
     if (auth !== null) {
       delay(2000)
         .then(() => handleNext())
