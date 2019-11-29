@@ -37,17 +37,32 @@ Add `PORT=3000` to both. The production file additionally requires: `passphrase`
 
 ## Development
 
-Run `npm run serve` to start the server. Pass the `NODE_ENV` variable with options:
+There are two settings:
 
-- `NODE_ENV=production` to run the server in HTTPS mode or
-- `NODE_ENV=development` to run a basic HTTP server.
+- `HTTPS` (prod): run `npm run serve:prod` - uses `NODE_ENV=production`
+- `HTTP` (dev): run `npm run serve:dev`- uses `NODE_ENV=development`
 
-Access the server via `https://localhost:3000` or via `localhost:3000`.
+The server can be accessed on the `PORT` specified in `.env.*` files.
+Usually, the server can be accessed via `https://localhost:3000` or via `localhost:3000`.
 
 ## Testing
 
 Run `npm run test` to run all test of the project or `npm run test:watch` to continuously re-run the tests while developing.
 
-## Compile and Deploy Contracts
+## Solidity Contracts
 
-`npm run contracts` will compile and then deploy the contract on a blockchain running on `http://localhost:8545`, so make sure that you do `cd ../voter-frontend && npm run ganache:dev` first
+### 1. Step: Run local Ganache chain
+
+go inside `voter-frontend/` and run `npm run ganache:dev`
+
+### 2. Deployment of contract
+
+**POST** -> `/deploy` will deploy the Ballot contract onto the running chain and return the `address` of the `contract`
+
+**GET** -> `/deploy` will return the `address` of the `contract` if it has already been deployed
+
+### 3. Compile Contracts
+
+To keep it consistent, this sub-project will not have any `.sol` files. All contracts are developed and tested in `voter-frontend`.
+
+The contracts (in `JSON` format) in `voting-authority-backend/solidity/toDeploy` are ready for deployment. If something changed in the contracts, then they have to be compiled in `voter-frontend` and copied into `voting-authority-backend/solidity/toDeploy`.
