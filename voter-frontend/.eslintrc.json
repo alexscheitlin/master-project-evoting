@@ -6,7 +6,7 @@
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
+  "plugins": ["react", "react-hooks", "@typescript-eslint/eslint-plugin", "prettier"],
   "env": {
     "browser": true,
     "jasmine": true,
@@ -15,9 +15,8 @@
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-ignore": "off",
-    "no-undef": "off",
     "react/prop-types": "off",
-    "no-console": "warn",
+    "no-console": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"
   },
