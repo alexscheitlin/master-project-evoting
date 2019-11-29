@@ -1,30 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
+
 import LoginPage from './pages/LoginPage';
-import LoadingPage from './pages/LoadingPage';
 import VotingPage from './pages/VotingPage';
-import {useAuth} from './hooks/useAuth';
 
 const AppManager: React.FC = () => {
-  const auth = useAuth();
+  const [loaded, setLoaded] = useState(false);
 
-  let authenticated = false;
-  let initialized = false;
+  const handleLoadFinished = () => {
+    setLoaded(true);
+  };
 
-  if (auth !== null) {
-    authenticated = auth.user.authenticated;
-    initialized = auth.user.wallet !== '';
-  }
-
-  let activeComponent;
-  if (!authenticated) {
-    activeComponent = <LoginPage />;
-  } else if (authenticated && !initialized) {
-    activeComponent = <LoadingPage />;
-  } else if (authenticated && initialized) {
-    activeComponent = <VotingPage />;
-  }
-
-  return <>{activeComponent}</>;
+  return <>{loaded ? <VotingPage /> : <LoginPage onLoadFinished={handleLoadFinished} />} </>;
 };
 
 export default AppManager;

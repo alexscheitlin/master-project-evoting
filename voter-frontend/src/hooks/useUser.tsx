@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {EIdentityProviderBackend, AccessProviderBackend} from '../mock';
-import axios from 'axios';
 
 interface Auth {
   user: {
@@ -8,15 +7,16 @@ interface Auth {
     token: string;
     wallet: string;
   };
-  login: (username: string, password: string) => void;
+  login: (username: string, password: string) => Promise<boolean>;
   setWallet: (wallet: string) => void;
+  fundWallet: (token: string, wallet: string) => Promise<boolean>;
 }
 
 const AuthContext = React.createContext<Auth | null>(null);
 
 // Hook for child components to get the auth object
 // and re-render when it changes.
-export const useAuth = () => {
+export const useUser = () => {
   return useContext(AuthContext);
 };
 
@@ -25,15 +25,37 @@ function useProvideAuth(): Auth {
   const [user, setUser] = useState({authenticated: false, token: '', wallet: ''});
 
   const login = (username: string, password: string) => {
-    EIdentityProviderBackend.getToken().then((token: any) => {
-      setUser({...user, authenticated: true, token: token});
-      localStorage.setItem('token', token);
-      console.log(token);
+    return new Promise<boolean>(resolve => {
+      EIdentityProviderBackend.getToken()
+        .then((token: any) => {
+          setUser({...user, authenticated: true, token: token});
+          localStorage.setItem('token', token);
+          resolve(true);
+        })
+        .catch((err: any) => {
+          console.log(err);
+          resolve(false);
+        });
     });
   };
 
   const setWallet = (wallet: string) => {
     setUser({...user, wallet: wallet});
+  };
+
+  const fundWallet = (token: string, wallet: string) => {
+    return new Promise<boolean>(resolve => {
+      AccessProviderBackend.fundWallet(token, wallet)
+        .then((res: any) => {
+          setUser({...user, wallet: wallet});
+          localStorage.setItem('wallet', wallet);
+          resolve(true);
+        })
+        .catch((err: any) => {
+          console.log(err);
+          resolve(false);
+        });
+    });
   };
 
   useEffect(() => {
@@ -49,6 +71,7 @@ function useProvideAuth(): Auth {
     user,
     login,
     setWallet,
+    fundWallet,
   };
 }
 

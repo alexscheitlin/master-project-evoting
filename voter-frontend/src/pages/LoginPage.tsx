@@ -1,8 +1,28 @@
-import React from 'react';
-import LoginForm from '../components/LoginForm/LoginForm';
+import React, {useState} from 'react';
 
-const LoginPage: React.FC = () => {
-  return <LoginForm />;
+import LoginForm from '../components/LoginForm/LoginForm';
+import {useUser} from '../hooks/useUser';
+import LoadingPage from './LoadingPage';
+
+interface Props {
+  onLoadFinished: () => void;
+}
+
+const LoginPage: React.FC<Props> = ({onLoadFinished}) => {
+  const [loginSubmitted, setLoginSubmitted] = useState(false);
+  const ctx = useUser();
+
+  const handleLogin = (username: string, password: string) => {
+    if (ctx !== null) {
+      ctx.login(username, password).then(() => {
+        setLoginSubmitted(true);
+      });
+    }
+  };
+
+  return (
+    <div>{loginSubmitted ? <LoadingPage onSetupComplete={onLoadFinished} /> : <LoginForm onLogin={handleLogin} />}</div>
+  );
 };
 
 export default LoginPage;

@@ -6,8 +6,8 @@ import {makeStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import React, {useState} from 'react';
-import {useAuth} from '../../hooks/useAuth';
-import {useHistory, useLocation} from 'react-router';
+
+import {useUser} from '../../hooks/useUser';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -30,10 +30,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const LoginForm: React.FC = () => {
+interface Props {
+  onLogin: (username: string, password: string) => void;
+}
+
+const LoginForm: React.FC<Props> = ({onLogin}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const auth = useAuth();
+  const user = useUser();
   const classes = useStyles();
 
   return (
@@ -68,17 +72,15 @@ const LoginForm: React.FC = () => {
             autoComplete="current-password"
             onChange={e => setPassword(e.target.value)}
           />
-          {auth !== null && (
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={() => auth.login(username, password)}
-            >
-              Login
-            </Button>
-          )}
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            onClick={() => onLogin(username, password)}
+          >
+            Login
+          </Button>
         </form>
       </Paper>
     </Container>
