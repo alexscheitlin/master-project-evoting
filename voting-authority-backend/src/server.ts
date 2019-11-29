@@ -11,6 +11,7 @@ import logger from './utils/logger'
 import chainspec from './chainspec/chainspec'
 import state from './state/state'
 import { setupDB } from './database/database'
+import deploy from './deploy/deploy'
 
 // load environment variables based on NODE_ENV
 const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
@@ -27,6 +28,7 @@ server.use(cors({ origin: 'http://localhost:3000' }))
 // add all routes
 server.use('/', chainspec)
 server.use('/', state)
+server.use('/', deploy)
 
 // setup the database
 setupDB()

@@ -46,7 +46,8 @@ const compileContracts = () => {
     }
   }
 }
-;(function run() {
+
+export const init = () => {
   createBuildFolder()
   compileContracts()
-})()
+}

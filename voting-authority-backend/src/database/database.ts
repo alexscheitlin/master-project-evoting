@@ -19,6 +19,8 @@ export const setupDB = () => {
     state: 'PRE_VOTING',
     chainspec: defaultConfig,
     defaultChainspec: defaultConfig,
+    ballotAddress: '',
+    ballotDeployed: 'false',
   }).write()
 }
 
