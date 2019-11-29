@@ -6,11 +6,12 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 
-import {useAuth} from '../hooks/useAuth';
+import SimpleStorage from '../contracts/SimpleStorage.json';
+import {useUser} from '../hooks/useUser';
+import getWeb3 from '../util/getWeb3';
 import {delay} from '../util/helper';
-import {AccessProviderBackend} from '../mock';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,60 +19,91 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       marginTop: theme.spacing(16),
     },
-    container: {},
   }),
 );
 
 function getSteps() {
-  return ['Checking your Login ', 'Creating Voting Material', 'Connect to Blockchain'];
+  return ['Checking your Login', 'Creating Voter Account', 'Setting up Wallet', 'Connect to Blockchain'];
 }
 
 function getStepContent(step: number) {
   switch (step) {
     case 0:
-      return `Authenticating with the e-Identity provider`;
+      return `Making sure you are logged in correctly`;
     case 1:
-      return 'Generating your Voter-Wallet and waiting for activation';
+      return 'Generating your Wallet';
     case 2:
-      return `Connecting to deployed Ballot on the Blockchain`;
+      return 'Adding Funds to your Wallet';
+    case 3:
+      return 'Connecting you to the blockchain where you can cast your votes';
     default:
       return 'Unknown step';
   }
 }
 
-export default function LoadingPage() {
-  const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const steps = getSteps();
-  const auth = useAuth();
+interface Props {
+  onSetupComplete: () => void;
+}
 
-  const handleNext = () => {
+export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
+  const classes = useStyles();
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = getSteps();
+  const ctx = useUser();
+
+  const checkLogin = async () => {
+    await delay(2000);
+    return true;
+  };
+
+  const createAccount = async () => {
+    const web3 = await getWeb3();
+    await delay(2000);
+    const account = await web3.eth.personal.newAccount('securePassword');
+    console.log(account);
+    await web3.eth.personal.unlockAccount(account, 'securePassword', 1);
+    web3.eth.defaultAccount = account;
+  };
+
+  const fundWallet = async () => {
+    const web3 = await getWeb3();
+    const token = localStorage.getItem('token');
+    const wallet = web3.eth.defaultAccount;
+    if (ctx !== null && token !== null && wallet !== null) {
+      await ctx.fundWallet(token, wallet);
+    }
+  };
+
+  const connectToContract = async () => {
+    await delay(2000);
+    // TODO: get contract address from backend
+    // currently the contract is deployed manually and the address
+    // added here manually
+    const address = '0x702196b86Aed17A91EF58804B6345B359919812d';
+    const web3 = await getWeb3();
+    // TODO: abi should be fetched from the backend
+    const contract = new web3.eth.Contract(SimpleStorage.abi, address);
+    // const res = await contract.methods.get().call({from: web3.eth.defaultAccount});
+    return true;
+  };
+
+  const nextStep = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
-  const generateWallet = () => {
-    const wallet = '0x02191612638124780216416783612739';
-    const token = localStorage.getItem('token');
-    if (token !== null) {
-      console.log(token);
-      AccessProviderBackend.fundWallet(token, wallet).then((res: any) => {
-        console.log(res);
-      });
-    }
-  };
-
   useEffect(() => {
-    generateWallet();
-    if (auth !== null) {
-      delay(2000)
-        .then(() => handleNext())
-        .then(() => delay(2000))
-        .then(() => handleNext())
-        .then(() => delay(2000))
-        .then(() => auth.setWallet('0x02191612638124780216416783612739'));
+    async function init() {
+      await checkLogin();
+      nextStep();
+      await createAccount();
+      nextStep();
+      await fundWallet();
+      nextStep();
+      await connectToContract();
+      onSetupComplete();
     }
-    return () => {};
-  }, [auth]);
+    init();
+  }, [fundWallet, onSetupComplete]);
 
   return (
     <Container maxWidth="xs">
@@ -91,4 +123,6 @@ export default function LoadingPage() {
       </Paper>
     </Container>
   );
-}
+};
+
+export default LoadingPage;
