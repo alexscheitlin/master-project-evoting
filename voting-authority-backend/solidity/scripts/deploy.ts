@@ -1,33 +1,43 @@
 const Web3 = require('web3')
-const compiledContract = require('../compiled/SimpleStorage.json')
+
+const ballotContract = require('../compiled/Ballot.json')
+const moduloLibrary = require('../compiled/ModuloMathLib.json')
 
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 const web3 = new Web3(provider)
 
-export const deployContract = async () => {
+export const deploy = async (abi: {}, bytecode: string) => {
   const accounts = await web3.eth.getAccounts()
 
-  console.log(`Attempting to deploy from account: ${accounts[0]}`)
-
-  const deployedContract = await new web3.eth.Contract(compiledContract.abi)
+  const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
-      data: '0x' + compiledContract.evm.bytecode.object,
-      arguments: [10], // arguments for contructor of contract
+      data: '0x' + bytecode,
     })
     .send({
       from: accounts[0],
-      gas: '2000000',
+      gas: '6000000',
     })
-
-  // test if contract methods can be called
-  const val = await deployedContract.methods.get().call()
-  console.log('VALUE 1', val)
-
-  await deployedContract.methods.set(5).send({ from: accounts[0] })
-  const changedVal = await deployedContract.methods.get().call()
-  console.log('VALUE 2', changedVal)
-
-  console.log(`Contract deployed at address: ${deployedContract.options.address}`)
+  return deployedContract.options.address
 }
 
-deployContract()
+export const init = async () => {
+  const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.evm.bytecode.object)
+  console.log(`Library deployed at address: ${libAddress}`)
+
+  // replaces the given pattern with the address of the library
+  // at compile-time, these "placeholders" are inserted for later
+  // replacement by an address
+  // we need to manually set the address of the deployed library in order
+  // for the Ballot.sol to find it
+  const ballotBytecode = ballotContract.evm.bytecode.object.replace(
+    /__\$2b17134ab1906492f2985bd6a40d21838c\$__/g,
+
+    libAddress.replace('0x', '')
+  )
+  const Ballot = { ...ballotContract }
+  Ballot.evm.bytecode.object = ballotBytecode
+  const ballotAddress = await deploy(Ballot.abi, Ballot.evm.bytecode.object)
+  console.log(`Ballot deployed at address: ${ballotAddress}`)
+}
+
+init()
