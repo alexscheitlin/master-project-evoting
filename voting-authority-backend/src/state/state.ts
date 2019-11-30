@@ -16,10 +16,10 @@ router.post('/state', (req, res) => {
 
   if (!isValidState) {
     res.status(400).json({ state: currentState, msg: STATE_INVALID })
+  } else {
+    setValue(VOTING_STATE, newState)
+    res.status(201).json({ state: newState, msg: `New State: ${newState}` })
   }
-
-  setValue(VOTING_STATE, newState)
-  res.status(201).json({ state: newState, msg: `New State: ${newState}` })
 })
 
 export const checkIfStateIsValid = (state: string): boolean => {

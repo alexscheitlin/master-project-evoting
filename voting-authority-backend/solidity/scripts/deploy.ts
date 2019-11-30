@@ -7,14 +7,15 @@ const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 const web3 = new Web3(provider)
 
-const deploy = async (abi: {}, bytecode: string) => {
+const deploy = async (abi: {}, bytecode: string, voteQuestion?: string) => {
   const accounts = await web3.eth.getAccounts()
 
   const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
       data: '0x' + bytecode,
-      // TODO: think about how we pass the voting-question... probaby with contructor here
-      // arguments: <arguments for contructor>
+      arguments: [],
+      // 1. adjust the contract abi + byte code to allow for voteQuestion input parameter
+      // 2. pass the voteQuestion input parameter above: [voteQuestion]
     })
     .send({
       from: accounts[0],
@@ -23,7 +24,7 @@ const deploy = async (abi: {}, bytecode: string) => {
   return deployedContract.options.address
 }
 
-export const init = async () => {
+export const init = async (voteQuestion: string) => {
   try {
     const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.evm.bytecode.object)
     console.log(`Library deployed at address: ${libAddress}`)
@@ -39,11 +40,11 @@ export const init = async () => {
     )
     const Ballot = { ...ballotContract }
     Ballot.evm.bytecode.object = ballotBytecode
-    const ballotAddress = await deploy(Ballot.abi, Ballot.evm.bytecode.object)
+    const ballotAddress = await deploy(Ballot.abi, Ballot.evm.bytecode.object, voteQuestion)
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
     return ballotAddress
   } catch (error) {
-    throw new Error('fail hard')
+    throw new Error(`Contract Deployment failed: ${JSON.stringify(error)}`)
   }
 }
