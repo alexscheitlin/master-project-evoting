@@ -12,6 +12,8 @@ import BallotContract from '../contracts/Ballot.json';
 import {useUser} from '../hooks/useUser';
 import getWeb3 from '../util/getWeb3';
 import {delay} from '../util/helper';
+import {PERSONAL_ACCOUNT_ERROR_MESSAGE} from '../constants';
+import Web3 from 'web3';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,6 +52,7 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const ctx = useUser();
+  const [web3, setWeb3] = useState<Web3>();
 
   const checkLogin = async (): Promise<any> => {
     await delay(2000);
@@ -59,9 +62,13 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
   const createAccount = async (): Promise<any> => {
     await delay(2000);
     const web3 = await getWeb3();
-    const account = await web3.eth.personal.newAccount('securePassword');
-    await web3.eth.personal.unlockAccount(account, 'securePassword', 1);
-    web3.eth.defaultAccount = account;
+    try {
+      const account = await web3.eth.personal.newAccount('securePassword');
+      await web3.eth.personal.unlockAccount(account, 'securePassword', 1);
+      web3.eth.defaultAccount = account;
+    } catch (error) {
+      throw new Error(PERSONAL_ACCOUNT_ERROR_MESSAGE);
+    }
   };
 
   const fundWallet = async (): Promise<any> => {
@@ -71,6 +78,7 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
     if (ctx !== null && token !== null && wallet !== null) {
       await ctx.fundWallet(token, wallet);
     }
+    await delay(2000);
   };
 
   const connectToContract = async (): Promise<any> => {
@@ -78,8 +86,6 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
     const address = localStorage.getItem('address');
     if (address !== null) {
       const web3 = await getWeb3();
-      // TODO: abi should be fetched from the backend or maybe copied inside this
-      // project
       // @ts-ignore
       const contract = new web3.eth.Contract(BallotContract.abi, address);
     }
@@ -98,9 +104,9 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
       await fundWallet();
       nextStep();
       await connectToContract();
-      onSetupComplete();
     }
-    setup();
+
+    setup().then(() => onSetupComplete());
     return (): void => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
