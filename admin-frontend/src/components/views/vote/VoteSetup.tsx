@@ -2,18 +2,16 @@ import { Button, FormLabel, Grid, makeStyles, TextField } from '@material-ui/cor
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React, { useCallback } from 'react';
+
 import { DEV_URL } from '../../../constants';
-import { ActionType, useDispatch, useGlobalState } from '../../../gloablState';
 
-export const VoteSetup: React.FC = () => {
-  const question = useGlobalState('voteQuestion');
-  const dispatch = useDispatch();
-  const setVoteQuestion = useCallback(value => dispatch({ type: ActionType.SET_VOTE_QUESTION, payload: value }), [
-    dispatch
-  ]);
+interface Props {
+  votingQuestion: string;
+  setVoteQuestion: (question: string) => void;
+}
 
-  const isButtonDisabled = question.length < 5;
-
+export const VoteSetup: React.FC<Props> = ({ votingQuestion, setVoteQuestion }) => {
+  const isButtonDisabled = votingQuestion.length < 5;
   const classes = useStyles();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +26,7 @@ export const VoteSetup: React.FC = () => {
 
     const response: AxiosResponse = await axios.post(
       `${DEV_URL}/deploy`,
-      { question: question },
+      { question: votingQuestion },
       { httpsAgent: agent }
     );
 
@@ -63,7 +61,7 @@ export const VoteSetup: React.FC = () => {
           >
             Create Vote
           </Button>
-          <FormLabel className={classes.vote}>{question}</FormLabel>
+          <FormLabel className={classes.vote}>{votingQuestion}</FormLabel>
         </Grid>
       </Grid>
     </Grid>

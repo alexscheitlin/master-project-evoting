@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React, { useState } from 'react';
 import { DEV_URL } from '../../constants';
+import { VotingState } from '../../models/voting';
 
 type StateResult = {
   state: string;
@@ -11,7 +12,7 @@ type StateResult = {
 
 export const State: React.FC = () => {
   const classes = useStyles();
-  const VOTE_STATES: string[] = ['PRE_VOTING', 'VOTING', 'POST_VOTING'];
+  const VOTE_STATES: string[] = [VotingState.PRE_VOTING, VotingState.VOTING, VotingState.POST_VOTING];
   const [voteState, setVoteState] = useState<string>(VOTE_STATES[0]);
 
   const nextVoteState = (): string => {

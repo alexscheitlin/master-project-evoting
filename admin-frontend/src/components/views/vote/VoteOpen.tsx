@@ -1,15 +1,17 @@
 import React from 'react';
-import { useGlobalState } from '../../../gloablState';
+import { VotingState } from '../../../models/voting';
 
-export const VoteOpen: React.FC = () => {
-  const state = useGlobalState('voteState');
-  const question = useGlobalState('voteQuestion');
+interface Props {
+  votingState: VotingState;
+  votingQuestion: string;
+}
 
+export const VoteOpen: React.FC<Props> = ({ votingState, votingQuestion }) => {
   return (
     <div>
       <h1>The Vote Is Open!!!</h1>
-      <p>{state}</p>
-      <p>{question}</p>
+      <p>{votingState}</p>
+      <p>{votingQuestion}</p>
     </div>
   );
 };

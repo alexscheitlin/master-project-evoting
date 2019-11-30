@@ -13,24 +13,13 @@ import {
   Typography
 } from '@material-ui/core';
 import React, { useState } from 'react';
+
+import { VotingState } from '../../models/voting';
 import { State } from '../defaults/State';
-import { VoteSetup, VoteDone, VoteOpen } from './vote/index';
+import { VoteDone, VoteOpen, VoteSetup } from './vote';
 
 const getSteps = (): string[] => {
   return ['Vote Setup', 'Vote Open', 'Vote Completed'];
-};
-
-const getStepContent = (step: number): any => {
-  switch (step) {
-    case 0:
-      return <VoteSetup />;
-    case 1:
-      return <VoteOpen />;
-    case 2:
-      return <VoteDone />;
-    default:
-      throw new Error('Invalid Component Selected!');
-  }
 };
 
 const getButtonText = (step: number): string => {
@@ -46,10 +35,13 @@ const getButtonText = (step: number): string => {
   }
 };
 
-export const SideBar: React.FC = () => {
+export const Voting: React.FC = () => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
+
+  const [votingQuestion, setVotingQuestion] = useState('');
+  const [votingState, setVotingState] = useState<VotingState>(VotingState.PRE_VOTING);
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1);
@@ -57,6 +49,23 @@ export const SideBar: React.FC = () => {
 
   const handleReset = () => {
     setActiveStep(0);
+  };
+
+  const handleVotingQuestionChange = (question: string) => {
+    setVotingQuestion(question);
+  };
+
+  const getStepContent = (step: number): any => {
+    switch (step) {
+      case 0:
+        return <VoteSetup votingQuestion={votingQuestion} setVoteQuestion={handleVotingQuestionChange} />;
+      case 1:
+        return <VoteOpen votingQuestion={votingQuestion} votingState={votingState} />;
+      case 2:
+        return <VoteDone />;
+      default:
+        throw new Error('Invalid Component Selected!');
+    }
   };
 
   return (
