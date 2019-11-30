@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {EIdentityProviderBackend, AccessProviderBackend} from '../mock';
+import {EIdentityProviderBackend, AccessProviderBackend} from '../services';
 
 interface Auth {
   user: {
