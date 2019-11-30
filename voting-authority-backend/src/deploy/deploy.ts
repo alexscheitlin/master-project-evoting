@@ -1,6 +1,6 @@
 import express from 'express'
 import { setValue, getValueFromDB } from '../database/database'
-import { Deploy } from '../../solidity/scripts'
+import * as Deploy from '../../solidity/scripts/deploy'
 
 const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed.'
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
