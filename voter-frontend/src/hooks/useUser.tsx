@@ -24,44 +24,26 @@ export const useUser = () => {
 function useProvideAuth(): Auth {
   const [user, setUser] = useState({authenticated: false, token: '', wallet: ''});
 
-  const login = (username: string, password: string) => {
-    return new Promise<boolean>(resolve => {
-      EIdentityProviderBackend.getToken(username, password)
-        .then((token: any) => {
-          setUser({...user, authenticated: true, token: token});
-          localStorage.setItem('token', token);
-          resolve(true);
-        })
-        .catch((err: any) => {
-          console.log(err);
-          resolve(false);
-        });
-    });
+  const login = async (username: string, password: string) => {
+    const token: any = await EIdentityProviderBackend.getToken(username, password);
+    setUser({...user, authenticated: true, token: token});
+    localStorage.setItem('token', token);
+    return true;
   };
 
   const setWallet = (wallet: string) => {
     setUser({...user, wallet: wallet});
   };
 
-  const fundWallet = (token: string, wallet: string) => {
-    return new Promise<boolean>(resolve => {
-      AccessProviderBackend.fundWallet(token, wallet)
-        .then((res: any) => {
-          setUser({...user, wallet: wallet});
-          localStorage.setItem('wallet', wallet);
-          resolve(true);
-        })
-        .catch((err: any) => {
-          console.log(err);
-          resolve(false);
-        });
-    });
+  const fundWallet = async (token: string, wallet: string) => {
+    const address: string = await AccessProviderBackend.fundWallet(token, wallet);
+    setUser({...user, wallet: wallet});
+    localStorage.setItem('address', address);
+    return true;
   };
 
   useEffect(() => {
-    const unsubscribe = () => {
-      console.log('unsubscribing');
-    };
+    const unsubscribe = () => {};
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);

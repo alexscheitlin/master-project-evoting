@@ -8,7 +8,7 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, {useEffect, useState} from 'react';
 
-import SimpleStorage from '../contracts/SimpleStorage.json';
+import BallotContract from '../contracts/Ballot.json';
 import {useUser} from '../hooks/useUser';
 import getWeb3 from '../util/getWeb3';
 import {delay} from '../util/helper';
@@ -75,14 +75,14 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
 
   const connectToContract = async (): Promise<any> => {
     await delay(2000);
-    // TODO: get contract address from backend
-    // currently the contract is deployed manually and the address
-    // added here manually
-    const address = '0x702196b86aed17a91ef58804b6345b359919812d';
-    const web3 = await getWeb3();
-    // TODO: abi should be fetched from the backend
-    const contract = new web3.eth.Contract(SimpleStorage.abi, address);
-    // const res = await contract.methods.get().call({from: web3.eth.defaultAccount});
+    const address = localStorage.getItem('address');
+    if (address !== null) {
+      const web3 = await getWeb3();
+      // TODO: abi should be fetched from the backend or maybe copied inside this
+      // project
+      // @ts-ignore
+      const contract = new web3.eth.Contract(BallotContract.abi, address);
+    }
   };
 
   const nextStep = (): void => {
