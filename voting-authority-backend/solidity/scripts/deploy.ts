@@ -12,7 +12,7 @@ const deploy = async (abi: {}, bytecode: string) => {
 
   const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
-      data: '0x' + bytecode,
+      data: bytecode,
       // TODO: think about how we pass the voting-question... probaby with contructor here
       // arguments: <arguments for contructor>
     })
@@ -25,21 +25,21 @@ const deploy = async (abi: {}, bytecode: string) => {
 
 export const init = async () => {
   try {
-    const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.evm.bytecode.object)
+    const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
     console.log(`Library deployed at address: ${libAddress}`)
     // replaces the given pattern with the address of the library
     // at compile-time, these "placeholders" are inserted for later
     // replacement by an address
     // we need to manually set the address of the deployed library in order
     // for the Ballot.sol to find it
-    const ballotBytecode = ballotContract.evm.bytecode.object.replace(
-      /__\$2b17134ab1906492f2985bd6a40d21838c\$__/g,
+    const ballotBytecode = ballotContract.bytecode.replace(
+      /__ModuloMathLib_________________________/g,
 
       libAddress.replace('0x', '')
     )
     const Ballot = { ...ballotContract }
-    Ballot.evm.bytecode.object = ballotBytecode
-    const ballotAddress = await deploy(Ballot.abi, Ballot.evm.bytecode.object)
+    Ballot.bytecode = ballotBytecode
+    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode)
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
     return ballotAddress
