@@ -61,7 +61,7 @@ export const SideBar: React.FC = () => {
 
   return (
     <Grid container direction={'row'} className={classes.root}>
-      <Grid item>
+      <Grid xs={10} item>
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((label, index) => (
             <Step key={label}>
@@ -95,7 +95,7 @@ export const SideBar: React.FC = () => {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: '100%',
+      // width: '100%',
       flexGrow: 1
     },
     button: {

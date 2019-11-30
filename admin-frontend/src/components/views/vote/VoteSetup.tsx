@@ -1,17 +1,43 @@
 import { Button, FormLabel, Grid, makeStyles, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import axios, { AxiosResponse } from 'axios';
+import https from 'https';
+import React, { useCallback } from 'react';
+import { DEV_URL } from '../../../constants';
+import { ActionType, useDispatch, useGlobalState } from '../../../gloablState';
 
 export const VoteSetup: React.FC = () => {
-  const [question, setQuestion] = useState<string>('');
+  const question = useGlobalState('voteQuestion');
+  const dispatch = useDispatch();
+  const setVoteQuestion = useCallback(value => dispatch({ type: ActionType.SET_VOTE_QUESTION, payload: value }), [
+    dispatch
+  ]);
+
+  const isButtonDisabled = question.length < 5;
 
   const classes = useStyles();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuestion(event.currentTarget.value);
+    setVoteQuestion(event.currentTarget.value);
   };
 
-  const sendToServer = () => {
-    alert(question);
+  const sendVoteQuestionToBackend = async () => {
+    // avoids ssl error with certificate
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+
+    const response: AxiosResponse = await axios.post(
+      `${DEV_URL}/deploy`,
+      { question: question },
+      { httpsAgent: agent }
+    );
+
+    if (response.status === 201) {
+      const res = response.data;
+      console.log(res);
+    } else {
+      console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
+    }
   };
 
   return (
@@ -28,8 +54,14 @@ export const VoteSetup: React.FC = () => {
             required
             onChange={handleInputChange}
           />
-          <Button className={classes.vote} variant={'outlined'} color={'primary'} onClick={sendToServer}>
-            Submit
+          <Button
+            className={classes.vote}
+            variant={'outlined'}
+            color={'primary'}
+            onClick={sendVoteQuestionToBackend}
+            disabled={isButtonDisabled}
+          >
+            Create Vote
           </Button>
           <FormLabel className={classes.vote}>{question}</FormLabel>
         </Grid>
@@ -38,16 +70,12 @@ export const VoteSetup: React.FC = () => {
   );
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   vote: {
     margin: '0 1em 0 0'
   },
   container: {
     display: 'flex',
-    alignItems: 'stretch',
-    padding: '1em'
-  },
-  mainContainer: {
-    padding: '1em'
+    alignItems: 'stretch'
   }
-}));
+});

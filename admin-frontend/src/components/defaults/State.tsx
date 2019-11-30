@@ -1,7 +1,7 @@
 import { Button, FormLabel, Grid, makeStyles } from '@material-ui/core';
-import React, { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
+import React, { useState } from 'react';
 import { DEV_URL } from '../../constants';
 
 type StateResult = {
@@ -28,11 +28,11 @@ export const State: React.FC = () => {
 
     const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, { state: newState }, { httpsAgent: agent });
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       const res: StateResult = response.data;
       setVoteState(res.state);
     } else {
-      console.error(`Status: ${response.status}\nMessage: ${response.data}`);
+      console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
     }
   };
 
