@@ -1,11 +1,7 @@
 import React from 'react';
-import {Box, Typography, Grid, makeStyles} from '@material-ui/core';
-
-const useStyles = makeStyles(() => ({}));
+import { Box, Typography, Grid } from '@material-ui/core';
 
 const Question: React.FC = () => {
-  const classes = useStyles();
-
   return (
     <Grid container direction="column" justify="center">
       <Grid item>

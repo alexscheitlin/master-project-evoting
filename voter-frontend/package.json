@@ -1,5 +1,5 @@
 {
-  "name": "react-voting-truffle",
+  "name": "mp-voter-frontend",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
@@ -7,15 +7,11 @@
     "axios-mock-adapter": "^1.17.0",
     "eslint-plugin-react": "^7.17.0",
     "mocha": "^6.2.2",
-    "solhint": "^2.3.0",
-    "solhint-plugin-prettier": "0.0.3",
     "ts-node": "^8.5.2",
     "eslint-plugin-react-hooks": "^2.2.0"
   },
   "dependencies": {
     "@material-ui/core": "^4.7.0",
-    "@truffle/contract": "^4.0.38",
-    "@types/bn.js": "^4.11.5",
     "@types/chai": "^4.2.4",
     "@types/node": "12.12.6",
     "@types/react": "16.9.11",
@@ -27,23 +23,17 @@
     "@typescript-eslint/parser": "^2.5.0",
     "axios": "^0.19.0",
     "bn.js": "^5.0.0",
-    "chai": "^4.2.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-config-react": "^1.1.7",
     "eslint-plugin-prettier": "^3.1.1",
-    "ethereumjs-util": "^6.1.0",
-    "ganache-cli": "^6.7.0",
     "lint-staged": "^9.4.2",
     "prettier": "^1.18.2",
-    "prettier-plugin-solidity": "^1.0.0-alpha.34",
     "random": "^2.1.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "styled-components": "^4.4.1",
-    "truffle": "^5.0.5",
-    "truffle-contract": "^4.0.31",
     "typescript": "3.7.2",
     "web3": "^1.2.2",
     "web3-typescript-typings": "^0.10.2"
@@ -56,18 +46,7 @@
     "eject": "react-scripts eject",
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
     "lint": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet",
-    "lint:fix": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet --fix",
-    "ganache:dev": "./node_modules/.bin/ganache-cli  -m 'situate electric canyon session gentle angry job client palm response error congress'",
-    "truffle:deploy": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev",
-    "truffle:clean": "./node_modules/.bin/rimraf src/contracts",
-    "truffle:compile": "./node_modules/.bin/truffle compile",
-    "truffle:migrate:dev": "./node_modules/.bin/truffle migrate --network ganache --reset",
-    "truffle:migrate:parity": "./node_modules/.bin/truffle migrate --network parity --reset",
-    "truffle:test": "cd test && ../node_modules/.bin/truffle test --network ganache",
-    "truffle:dev": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start",
-    "truffle:dev:parity": "npm run truffle:clean && npm run truffle:compile && npm run truffle:migrate:dev && npm run start",
-    "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol",
-    "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol"
+    "lint:fix": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet --fix"
   },
   "lint-staged": {
     "*.+(js|jsx|ts|tsx)": [
@@ -76,10 +55,6 @@
     ],
     "*.+(json|css|md)": [
       "prettier --write",
-      "git add"
-    ],
-    "*": [
-      "npm run prettier:solidity",
       "git add"
     ]
   },
