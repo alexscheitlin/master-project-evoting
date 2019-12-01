@@ -1,19 +1,18 @@
-import {CircularProgress, Container} from '@material-ui/core';
+import { CircularProgress, Container } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Step from '@material-ui/core/Step';
 import StepContent from '@material-ui/core/StepContent';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import BallotContract from '../contracts/Ballot.json';
-import {useUser} from '../hooks/useUser';
+import { useUser } from '../hooks/useUser';
 import getWeb3 from '../util/getWeb3';
-import {delay} from '../util/helper';
-import {PERSONAL_ACCOUNT_ERROR_MESSAGE} from '../constants';
-import Web3 from 'web3';
+import { delay } from '../util/helper';
+import { PERSONAL_ACCOUNT_ERROR_MESSAGE } from '../constants';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,12 +46,11 @@ interface Props {
   onSetupComplete: () => void;
 }
 
-export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
+export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const ctx = useUser();
-  const [web3, setWeb3] = useState<Web3>();
 
   const checkLogin = async (): Promise<any> => {
     await delay(2000);
@@ -88,6 +86,7 @@ export const LoadingPage: React.FC<Props> = ({onSetupComplete}) => {
       const web3 = await getWeb3();
       // @ts-ignore
       const contract = new web3.eth.Contract(BallotContract.abi, address);
+      console.log(contract);
     }
   };
 

@@ -1,13 +1,11 @@
-import {Paper} from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React, {useState} from 'react';
-
-import {useUser} from '../../hooks/useUser';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -34,10 +32,9 @@ interface Props {
   onLogin: (username: string, password: string) => void;
 }
 
-const LoginForm: React.FC<Props> = ({onLogin}) => {
+const LoginForm: React.FC<Props> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const user = useUser();
   const classes = useStyles();
 
   return (
