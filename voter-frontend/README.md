@@ -2,6 +2,8 @@
 
 ## Set Up
 
+The `Ballot.json` inside `src/contract-abis` is the same that exists in the authority frontend. Basically the `.sol` files are compiled in `contracs` and then copied into `voting-authority-backend/solidity/toDeploy` and `voter-frontend/src/contract-abis`
+
 ### link mp-crypto first
 
 ```bash

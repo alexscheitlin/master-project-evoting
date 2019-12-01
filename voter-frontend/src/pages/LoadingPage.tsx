@@ -8,7 +8,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 
-import BallotContract from '../contracts/Ballot.json';
+import BallotContract from '../contract-abis/Ballot.json';
 import { useUser } from '../hooks/useUser';
 import getWeb3 from '../util/getWeb3';
 import { delay } from '../util/helper';

@@ -26,4 +26,3 @@ yarn-error.log*
 /chain/parity*
 contracts/.placeholder
 test/.placeholder
-src/contracts
