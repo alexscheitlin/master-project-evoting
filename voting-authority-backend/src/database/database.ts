@@ -21,13 +21,14 @@ export const setupDB = () => {
     defaultChainspec: defaultConfig,
     ballotAddress: '',
     ballotDeployed: false,
+    tokens: [],
   }).write()
 }
 
-export const addToList = (table: string, value: string) => {
+export const addToList = (table: string, value: string[]) => {
   // read content from DB + add the new value
   const tableContent: string[] = getListFromDB(table)
-  tableContent.push(value)
+  tableContent.push(...value)
 
   // write the content to the DB
   db.set(table, tableContent).value()

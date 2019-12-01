@@ -3,6 +3,7 @@ import crypto = require('crypto')
 import { getListFromDB, addToList } from '../database/database'
 import { Identity, IdentityToken } from '../models'
 
+const axios = require('axios')
 const router: express.Router = express.Router()
 
 // database table names
@@ -38,7 +39,7 @@ export const getRandomToken = (): string => {
   return crypto.randomBytes(64).toString('hex')
 }
 
-router.post('/registerVoters', (req, res) => {
+router.post('/registerVoters', async (req, res) => {
   const voters: string[] = req.body.voters || []
   const identities = <Identity[]>getListFromDB(IDENTITIES)
 
@@ -60,14 +61,25 @@ router.post('/registerVoters', (req, res) => {
     })
   }
 
-  // simply add all toke/uuid pairs
-  // TODO: deletion of old tokens?
-  // TODO: duplication check
+  // simply add all token/uuid pairs
+  // TODO: how to handle deletion of old tokens?
+  // TODO: check if a voter already has a token
   addToList(TOKENS, identityTokens)
 
-  // TODO: send tokens to access provider
-
-  res.status(201).json({ success: true, msg: SUCCESS_MSG })
+  // send tokens to access provider
+  await axios
+    .post(`${process.env.access_provider}/sendTokens`, {
+      tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
+    })
+    .then((response: any) => {
+      console.log('Response:', response.data.msg)
+      res.status(201).json({ success: true, msg: SUCCESS_MSG })
+    })
+    .catch((error: any) => {
+      console.log('Error:', error)
+      res.status(400).json({ success: false, msg: error.message })
+      return
+    })
 })
 
 export default router
