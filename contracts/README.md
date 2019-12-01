@@ -1,4 +1,6 @@
-# Voter Frontend & Solidity Testing
+# Solidity Contracts
+
+#### !! Ganache must be running !! `npm run ganache:dev` !!
 
 ## Set Up
 
@@ -12,21 +14,21 @@ cd ../voter-frontend
 npm link mp-crypto
 ```
 
+## Compile
+
+run `npm run truffle:compile` to compile all contracts inside `/contracts` into `/compiled`
+
+The compiled contracts are `JSON` files which can be used to deploy or to interface with the contract.
+
+## Deploy
+
+run `npm run truffle:migrate` to push all compiled contract onto the running ganache blockchain
+
 ### What to do when I update /crypto
 
-run `npm run build` inside `/crypto`
-
-restart `/voter-frontend` with `npm run start`
-
-## How to run Voter Frontend
-
-1. run `npm install`
-2. run `npm run ganache:dev` to spin up a local dev chain. **The accounts are always the same, as the chain is started with a mnemonic**
-3. run `npm run truffle:dev` to compile, migrate contracts and start the react frontend
+- run `npm run build` inside `/crypto`
 
 ## How to run Tests
-
-#### !! Ganache must be running !! `npm run ganache:dev` !!
 
 **Run all Tests**
 
