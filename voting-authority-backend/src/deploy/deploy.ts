@@ -1,13 +1,14 @@
 import express from 'express'
 import * as Deploy from '../../solidity/scripts/deploy'
 import { getValueFromDB, setValue } from '../database/database'
+import { BallotManager } from '../utils/ballotManager'
 
-const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed.'
+const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed. System parameters successfully set.'
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
 const VOTE_QUESTION_INVALID: string = 'Vote Question was not provided or is not of type String.'
 
-const DEPLOYMENT_ADDRESS: string = 'ballotAddress'
-const DEPLOYMENT_STATE: string = 'ballotDeployed'
+export const DEPLOYMENT_ADDRESS: string = 'ballotAddress'
+export const DEPLOYMENT_STATE: string = 'ballotDeployed'
 
 const router: express.Router = express.Router()
 
@@ -27,10 +28,14 @@ router.post('/deploy', (req, res) => {
     res.status(400).json({ msg: VOTE_QUESTION_INVALID })
   } else {
     Deploy.init(voteQuestion)
-      .then(addr => {
-        setValue(DEPLOYMENT_ADDRESS, addr)
+      .then(address => {
+        setValue(DEPLOYMENT_ADDRESS, address)
         setValue(DEPLOYMENT_STATE, true)
-        res.status(201).json({ address: addr, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
+
+        // initialize the parameters of the system
+        BallotManager.setSystemParameters()
+
+        res.status(201).json({ address: address, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
       })
       .catch((err: Error) => {
         // TODO: Think of a better error status code -> the request was valid but some processing on the blockchain failed and, therefore, it is a server error and not a client side error -> better way to handle this.
