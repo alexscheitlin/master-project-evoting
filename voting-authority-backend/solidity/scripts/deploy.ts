@@ -50,6 +50,6 @@ export const init = async (votingQuestion: string) => {
     // inside /src/deploy we then need to generate the system parameters and send them to the deployed contract
     return ballotAddress
   } catch (error) {
-    throw new Error('Unable to deploy contracts to the blockchain.')
+    throw new Error(`Contract Deployment failed: ${JSON.stringify(error)}`)
   }
 }

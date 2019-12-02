@@ -9,17 +9,17 @@ const VOTING_STATE: string = 'state'
 const router: express.Router = express.Router()
 
 router.post('/state', (req, res) => {
-  const currentState: string = getValueFromDB(VOTING_STATE)
+  const currentState: string = <string>getValueFromDB(VOTING_STATE)
 
   const newState: string = req.body.state
   const isValidState: boolean = checkIfStateIsValid(newState)
 
   if (!isValidState) {
     res.status(400).json({ state: currentState, msg: STATE_INVALID })
+  } else {
+    setValue(VOTING_STATE, newState)
+    res.status(201).json({ state: newState, msg: `New State: ${newState}` })
   }
-
-  setValue(VOTING_STATE, newState)
-  res.status(200).json({ state: newState, msg: `New State: ${newState}` })
 })
 
 export const checkIfStateIsValid = (state: string): boolean => {
