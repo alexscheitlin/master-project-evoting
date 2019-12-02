@@ -13,8 +13,7 @@ import {
   Typography
 } from '@material-ui/core';
 import React, { useState } from 'react';
-
-import { VotingState } from '../../models/voting';
+import { VotingState, useStore } from '../../models/voting';
 import { State } from '../defaults/State';
 import { VoteDone, VoteOpen, VoteSetup } from './vote';
 
@@ -40,6 +39,8 @@ export const Voting: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
 
+  const { voteState } = useStore();
+
   const [votingQuestion, setVotingQuestion] = useState('');
   const [votingState, setVotingState] = useState<VotingState>(VotingState.PRE_VOTING);
 
@@ -53,6 +54,7 @@ export const Voting: React.FC = () => {
 
   const handleVotingQuestionChange = (question: string) => {
     setVotingQuestion(question);
+    console.log(voteState);
   };
 
   const getStepContent = (step: number): any => {

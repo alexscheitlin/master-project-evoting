@@ -1,7 +1,8 @@
 import { Button, FormLabel, Grid, makeStyles, TextField } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
-import React, { useCallback } from 'react';
+import React from 'react';
+import { useStore } from '../../../models/voting';
 
 import { DEV_URL } from '../../../constants';
 
@@ -11,8 +12,9 @@ interface Props {
 }
 
 export const VoteSetup: React.FC<Props> = ({ votingQuestion, setVoteQuestion }) => {
-  const isButtonDisabled = votingQuestion.length < 5;
+  const isButtonDisabled: boolean = votingQuestion.length < 5;
   const classes = useStyles();
+  const { nextState } = useStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVoteQuestion(event.currentTarget.value);
@@ -33,6 +35,9 @@ export const VoteSetup: React.FC<Props> = ({ votingQuestion, setVoteQuestion }) 
     if (response.status === 201) {
       const res = response.data;
       console.log(res);
+
+      // trigger a global voteState update if request was successful
+      nextState();
     } else {
       console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
     }
