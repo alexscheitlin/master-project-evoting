@@ -7,25 +7,26 @@ const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 const web3 = new Web3(provider)
 
-const deploy = async (abi: {}, bytecode: string) => {
+const deploy = async (abi: {}, bytecode: string, question?: string) => {
+  const hasVotingQuestion = question !== undefined
   const accounts = await web3.eth.getAccounts()
 
   const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
       data: bytecode,
-      // TODO: think about how we pass the voting-question... probaby with contructor here
-      // arguments: <arguments for contructor>
+      arguments: hasVotingQuestion ? [question] : null,
     })
     .send({
       from: accounts[0],
       gas: '6000000',
     })
-  return deployedContract.options.address
+  const deployAddress = deployedContract.options.address
+  return [deployedContract, deployAddress]
 }
 
-export const init = async () => {
+export const init = async (votingQuestion: string) => {
   try {
-    const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
+    const [libContract, libAddress] = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
     console.log(`Library deployed at address: ${libAddress}`)
     // replaces the given pattern with the address of the library
     // at compile-time, these "placeholders" are inserted for later
@@ -39,11 +40,16 @@ export const init = async () => {
     )
     const Ballot = { ...ballotContract }
     Ballot.bytecode = ballotBytecode
-    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode)
+    const [ballot, ballotAddress] = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion)
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
+    // const question = await ballot.methods.getVotingQuestion().call()
+    // console.log(question)
+
+    // TODO: also return ballot contract (variable exists already)
+    // inside /src/deploy we then need to generate the system parameters and send them to the deployed contract
     return ballotAddress
   } catch (error) {
-    throw new Error('fail hard')
+    throw new Error('Unable to deploy contracts to the blockchain.')
   }
 }
