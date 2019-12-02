@@ -1,8 +1,11 @@
-import axios from 'axios';
-
 export const config = {
-  url: 'http://localhost:8545',
-  backend: 'http://localhost:3001',
+  chainUrl: 'http://localhost:8545',
+  authBackendUrl: {
+    dev: 'http://localhost:4001',
+    prod: 'http://localhost:4002',
+  },
+  accessProviderUrl: {
+    dev: 'http://localhost:4002',
+    prod: 'https://localhost:4002',
+  },
 };
-
-axios.defaults.baseURL = 'http://localhost:3001';
