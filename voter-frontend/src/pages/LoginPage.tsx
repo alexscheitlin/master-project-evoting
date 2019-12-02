@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import LoginForm from '../components/LoginForm/LoginForm';
-import { useUser } from '../hooks/useUser';
+import { useVote } from '../hooks/useVote';
 import LoadingPage from './LoadingPage';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 const LoginPage: React.FC<Props> = ({ onLoadFinished }) => {
   const [loginSubmitted, setLoginSubmitted] = useState(false);
-  const ctx = useUser();
+  const ctx = useVote();
 
   const handleLogin = (username: string, password: string) => {
     if (ctx !== null) {

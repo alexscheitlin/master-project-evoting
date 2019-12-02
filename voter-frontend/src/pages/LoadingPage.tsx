@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 
 import BallotContract from '../contract-abis/Ballot.json';
-import { useUser } from '../hooks/useUser';
+import { useVote } from '../hooks/useVote';
 import getWeb3 from '../util/getWeb3';
 import { delay } from '../util/helper';
 import { PERSONAL_ACCOUNT_ERROR_MESSAGE } from '../constants';
@@ -50,7 +50,7 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
-  const ctx = useUser();
+  const ctx = useVote();
 
   const checkLogin = async (): Promise<any> => {
     await delay(2000);
@@ -71,9 +71,9 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
 
   const fundWallet = async (): Promise<any> => {
     const web3 = await getWeb3();
-    const token = localStorage.getItem('token');
     const wallet = web3.eth.defaultAccount;
-    if (ctx !== null && token !== null && wallet !== null) {
+    if (ctx !== null && wallet !== null) {
+      const token = ctx.user.token;
       await ctx.fundWallet(token, wallet);
     }
     await delay(2000);
@@ -81,12 +81,12 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
 
   const connectToContract = async (): Promise<any> => {
     await delay(2000);
-    const address = localStorage.getItem('address');
-    if (address !== null) {
+    if (ctx !== null) {
+      const address = ctx.contractAddress;
       const web3 = await getWeb3();
       // @ts-ignore
       const contract = new web3.eth.Contract(BallotContract.abi, address);
-      console.log(contract);
+      ctx.setBallotContract(contract);
     }
   };
 
