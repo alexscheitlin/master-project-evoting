@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-import {ECelGamal, Summary} from 'mp-crypto';
+import { ECelGamal, Summary } from 'mp-crypto';
 
-import {getRandomWalletAddress} from '../util/helper';
+import { getRandomWalletAddress } from '../util/helper';
 
-const {Encryption, Voting, Helper, Proof, SystemSetup} = ECelGamal;
+const { Encryption, Voting, Helper, Proof, SystemSetup } = ECelGamal;
 
 const keyPair = SystemSetup.generateKeyPair();
 const sk = keyPair.sk;
@@ -18,7 +18,7 @@ export const EllipticCurveVoting: React.FC = () => {
   const [sum, setSum] = useState<ECelGamal.Cipher>();
   const [sumProof, setSumProof] = useState<ECelGamal.Proof.DecryptionProof>();
   const [result, setResult] = useState<number>(0);
-  const [summary, setSummary] = useState<Summary>({total: 0, yes: 0, no: 0});
+  const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
   const [publicKey, setPublicKey] = useState<string>(Helper.serializeCurvePoint(pk));
   const [privateKey, setPrivateKey] = useState<typeof sk>(sk);
@@ -145,7 +145,7 @@ export const EllipticCurveVoting: React.FC = () => {
       <hr></hr>
       {votes.map((vote, i) => (
         <div key={i}>
-          <div style={{border: '1px solid white', padding: '1em'}}>
+          <div style={{ border: '1px solid white', padding: '1em' }}>
             <strong>Vote {i}</strong>
             <h4>Vote Cipher</h4>
             <div>
@@ -170,6 +170,6 @@ interface Props {
   input: any;
 }
 
-const PrettyJSON: React.FC<Props> = ({input}) => {
+const PrettyJSON: React.FC<Props> = ({ input }) => {
   return <pre>{JSON.stringify(input, null, 2)}</pre>;
 };
