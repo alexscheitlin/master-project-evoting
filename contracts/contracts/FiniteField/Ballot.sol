@@ -107,7 +107,7 @@ contract Ballot {
     // /////////////////////////////////
     // constructor
     // /////////////////////////////////
-    constructor() public {
+    constructor(string memory votingQuestion) public {
         voteVerifier = new VoteProofVerifier();
         sumVerifier = new SumProofVerifier();
         keyGenProofVerifier = new KeyGenProofVerifier();
@@ -121,7 +121,7 @@ contract Ballot {
         // initialize empty Election struct
         election.nrOfVoters = 0;
         election.voters.length = 0;
-        election.votingQuestion = 'REPLACEME';
+        election.votingQuestion = votingQuestion;
         election.publicKeyShares.length = 0;
         election.decryptedShares.length = 0;
         election.yesVotes = 0;
@@ -284,6 +284,10 @@ contract Ballot {
     // /////////////////////////////////
     // getters
     // /////////////////////////////////
+
+    function getVotingQuestion() external view returns (string memory) {
+        return election.votingQuestion;
+    }
 
     // get system parameters
     function getParameters() external view returns (uint256[3] memory) {
