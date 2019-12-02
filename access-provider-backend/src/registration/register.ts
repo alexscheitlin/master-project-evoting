@@ -1,6 +1,8 @@
 import express from 'express'
 import { verifyAddress } from '../utils/addressVerification'
 import { getListFromDB, addToList } from '../database/database'
+import { fundWallet } from '../utils/fundWallet'
+import { getBallotAddress } from '../utils/getBallotAddress'
 
 const router: express.Router = express.Router()
 
@@ -31,7 +33,7 @@ export const hasTokenAlreadyBeenUsed = (token: string): boolean => {
   return !usedTokens.includes(token)
 }
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   const voterToken: string = req.body.token
   const voterAddress: string = req.body.address
 
@@ -39,15 +41,19 @@ router.post('/register', (req, res) => {
   const isAddressValid: boolean = verifyAddress(REGISTERED_VOTERS, voterAddress)
   const success: boolean = isTokenValid && isAddressValid
 
-  if (success) {
+  // FIXME: replace with `success` once ready, currently we don't have the tokens from the Identity Provider yet.
+  // So any token right now is valid, as long as as there is also a valid eth address
+  if (isAddressValid) {
     addToList(USED_TOKENS, voterToken)
     addToList(REGISTERED_VOTERS, voterAddress)
 
-    // TODO: FUND REGISTERED ADDRESS
-    // Make sure that you have access to the Ethereum account
-    // web3.eth.sendTransaction({from:,to:voterAddress, value:web3.toWei(1, "ether")});
+    // at this point, the address and token are correct
+    // now we need to fund the wallet and reply with the address of the ballot contract
+    // the address of the ballot is fetched from the auth backend
+    const ballotAddress = await getBallotAddress()
+    await fundWallet(voterAddress)
 
-    res.status(201).json({ success: true, msg: SUCCESS_MSG })
+    res.status(201).json({ success: true, msg: SUCCESS_MSG, ballot: ballotAddress })
   } else if (!isTokenValid && !isAddressValid) {
     res.status(400).json({ success: false, msg: BOTH_INVALID })
   } else if (!isTokenValid) {
