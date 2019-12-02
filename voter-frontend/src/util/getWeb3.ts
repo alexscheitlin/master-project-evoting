@@ -8,7 +8,7 @@ const getWeb3 = (): Promise<Web3> => {
     // eslint-disable-next-line no-undef
     p = new Promise<Web3>((resolve, reject) => {
       let web3: Web3 = (window as any).web3 as Web3;
-      const provider = new Web3.providers.HttpProvider(config.url);
+      const provider = new Web3.providers.HttpProvider(config.chainUrl);
       web3 = new Web3(provider);
       (window as any).web3 = web3;
       resolve(web3);
