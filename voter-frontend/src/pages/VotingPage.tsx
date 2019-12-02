@@ -7,6 +7,7 @@ import Question from '../components/Question/Question';
 import VotingPanel from '../components/VotingPanel/VotingPanel';
 import BallotContract from '../contract-abis/Ballot.json';
 import getWeb3 from '../util/getWeb3';
+import { useVote } from '../hooks/useVote';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -30,11 +31,12 @@ const VotingPage: React.FC = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [contractAddress, setContractAddress] = useState('');
   const [votingQuestion, setVotingQuestion] = useState('');
+  const ctx = useVote();
 
   const getChainInfo = async (): Promise<void> => {
     const web3 = await getWeb3();
-    const contractAddr = localStorage.getItem('address');
-    if (contractAddr !== null) {
+    if (ctx !== null) {
+      const contractAddr = ctx.contractAddress;
       setContractAddress(contractAddr);
       const defaultAcc = web3.eth.defaultAccount;
       if (defaultAcc !== null) {
