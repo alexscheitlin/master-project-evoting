@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import Web3 from 'web3';
 
-import {config} from '../config';
+import { config } from '../config';
 import getWeb3 from '../util/getWeb3';
 import contract from '@truffle/contract/index';
 

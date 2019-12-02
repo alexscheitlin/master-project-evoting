@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {EIdentityProviderBackend, AccessProviderBackend} from '../services';
+import React, { useState, useEffect, useContext } from 'react';
+import { EIdentityProviderBackend, AccessProviderBackend } from '../services';
 
 interface Auth {
   user: {
@@ -22,22 +22,22 @@ export const useUser = () => {
 
 // Provider hook that creates auth object and handles state
 function useProvideAuth(): Auth {
-  const [user, setUser] = useState({authenticated: false, token: '', wallet: ''});
+  const [user, setUser] = useState({ authenticated: false, token: '', wallet: '' });
 
   const login = async (username: string, password: string) => {
     const token: any = await EIdentityProviderBackend.getToken(username, password);
-    setUser({...user, authenticated: true, token: token});
+    setUser({ ...user, authenticated: true, token: token });
     localStorage.setItem('token', token);
     return true;
   };
 
   const setWallet = (wallet: string) => {
-    setUser({...user, wallet: wallet});
+    setUser({ ...user, wallet: wallet });
   };
 
   const fundWallet = async (token: string, wallet: string) => {
     const address: string = await AccessProviderBackend.fundWallet(token, wallet);
-    setUser({...user, wallet: wallet});
+    setUser({ ...user, wallet: wallet });
     localStorage.setItem('address', address);
     return true;
   };
@@ -63,7 +63,7 @@ interface ProvideAuthProps {
 
 // Provider component that wraps your app and makes auth object
 // available to any child component that calls useAuth().
-export const ProvideAuth: React.FC<ProvideAuthProps> = ({children}) => {
+export const ProvideAuth: React.FC<ProvideAuthProps> = ({ children }) => {
   const auth: Auth = useProvideAuth();
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

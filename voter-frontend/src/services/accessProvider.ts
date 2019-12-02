@@ -1,6 +1,6 @@
 import getWeb3 from '../util/getWeb3';
 import axios from 'axios';
-import {config} from '../config';
+import { config } from '../config';
 import {
   NO_ACCOUNTS_FOUND_ERROR_MESSAGE,
   NOT_FUNDED_ERROR_MESSAGE,
@@ -24,7 +24,7 @@ export const fundWallet = async (token: string, wallet: string): Promise<string>
   const receiver = web3.eth.defaultAccount;
   if (receiver !== null) {
     try {
-      await web3.eth.sendTransaction({from: accounts[0], to: receiver, value: web3.utils.toWei('1', 'ether')});
+      await web3.eth.sendTransaction({ from: accounts[0], to: receiver, value: web3.utils.toWei('1', 'ether') });
     } catch (error) {
       throw new Error(NOT_FUNDED_ERROR_MESSAGE);
     }

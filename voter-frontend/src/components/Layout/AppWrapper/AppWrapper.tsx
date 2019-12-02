@@ -1,5 +1,5 @@
 import React from 'react';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -12,7 +12,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const AppWrapper: React.FC<Props> = ({children}) => {
+const AppWrapper: React.FC<Props> = ({ children }) => {
   const classes = useStyles();
   return <div className={classes.wrapper}>{children}</div>;
 };
