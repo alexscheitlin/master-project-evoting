@@ -6,7 +6,7 @@ import VotingPage from './pages/VotingPage';
 const AppManager: React.FC = () => {
   const [loaded, setLoaded] = useState(false);
 
-  const handleLoadFinished = () => {
+  const handleLoadFinished = (): void => {
     setLoaded(true);
   };
 
