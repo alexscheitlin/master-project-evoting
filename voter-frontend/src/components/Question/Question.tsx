@@ -1,12 +1,16 @@
 import React from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 
-const Question: React.FC = () => {
+interface Props {
+  votingQuestion: string;
+}
+
+const Question: React.FC<Props> = ({ votingQuestion }) => {
   return (
     <Grid container direction="column" justify="center">
       <Grid item>
         <Box textAlign="center">
-          <Typography variant="h1">Lorem ipsum dolor sit amet, consetetur sadipscing elitr?</Typography>
+          <Typography variant="h1">{votingQuestion}</Typography>
         </Box>
       </Grid>
       <Grid item>
