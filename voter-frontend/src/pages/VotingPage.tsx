@@ -43,6 +43,7 @@ const VotingPage: React.FC = () => {
         setWalletAddress(defaultAcc);
         const balance = await web3.eth.getBalance(defaultAcc);
         setBalance(balance);
+        // @ts-ignore
         const contract = new web3.eth.Contract(BallotContract.abi, contractAddr);
         const question = await contract.methods.getVotingQuestion().call({ from: walletAddress });
         setVotingQuestion(question);
