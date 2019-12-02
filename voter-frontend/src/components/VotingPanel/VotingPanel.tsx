@@ -1,22 +1,12 @@
-import { Button, CircularProgress, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Button, CircularProgress, makeStyles, Theme, Typography, Paper } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import React, { useState } from 'react';
 
+import { SubmissionState, VotingOption } from '../../models/voting';
 import { delay } from '../../util/helper';
-
-enum VotingOption {
-  YES = 'YES',
-  NO = 'NO',
-  UNSPEC = '',
-}
-
-enum SubmissionState {
-  CONFIRMED = 'CONFIRMED',
-  IN_SUBMISSION = 'IN_SUBMISSION',
-  NOT_CONFIRMED = 'NOT_CONFIRMED',
-}
+import { useVote } from '../../hooks/useVote';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -37,12 +27,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       },
     },
   },
-  submit: {},
   buttons: {
     margin: theme.spacing(2, 0),
   },
   message: {
     height: '30px',
+  },
+  proof: {
+    margin: theme.spacing(2, 0),
+  },
+  proofPaper: {
+    padding: theme.spacing(2, 4),
+  },
+  proofButton: {
+    float: 'right',
   },
 }));
 
@@ -55,6 +53,7 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
   const [submissionState, setSubmissionState] = useState(SubmissionState.NOT_CONFIRMED);
   const [message, setMessage] = useState('Please submit a vote below');
   const [loading, setLoading] = useState(false);
+  const ctx = useVote();
 
   const handleToggle = (event: React.MouseEvent<HTMLElement>, newValue: string): void => {
     if (newValue === VotingOption.YES) {
@@ -68,8 +67,10 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
     setMessage('Submitting Vote');
     setSubmissionState(SubmissionState.IN_SUBMISSION);
     setLoading(true);
-    // TODO: send transaction to the blockchain with a proof for either a yes-Vote or no-Vote
     await delay(2000);
+    if (ctx !== null) {
+      await ctx.castVote(selectedVote);
+    }
     setLoading(false);
     setMessage('Your Vote was submitted successfully');
     setSubmissionState(SubmissionState.CONFIRMED);
@@ -115,11 +116,22 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <div className={classes.submit}>
+      <div>
         <Button color="primary" variant="outlined" onClick={submitVote} disabled={isButtonDisabled}>
           submit
         </Button>
       </div>
+      {submissionState === SubmissionState.CONFIRMED ? (
+        <div className={classes.proof}>
+          <Typography variant="h4">Proof of your vote</Typography>
+          <Paper className={classes.proofPaper}>
+            {ctx && ctx.proof}
+            <Button className={classes.proofButton} variant="contained" color="primary">
+              verify
+            </Button>
+          </Paper>
+        </div>
+      ) : null}
     </div>
   );
 };
