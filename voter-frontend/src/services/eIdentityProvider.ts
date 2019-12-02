@@ -1,3 +1,4 @@
 export const getToken = async (username: string, password: string) => {
-  return '12345667';
+  // TODO: login with the identity provider and return the retrieved token on success
+  return '1234';
 };
