@@ -51,6 +51,8 @@ Run `npm run test` to run all test of the project or `npm run test:watch` to con
 
 ## Solidity Contracts
 
+**Important**: Contracts should be compiled inside `/voter-frontend`. After that, copy `Ballot.json` and `ModuloMathLib.json` into `/toDeploy`.
+
 ### 1. Step: Run local Ganache chain
 
 go inside `voter-frontend/` and run `npm run ganache:dev`

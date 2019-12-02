@@ -1,10 +1,11 @@
 import Web3 from 'web3';
-import {config} from '../config';
+import { config } from '../config';
 
 let p: Promise<Web3>;
 
 const getWeb3 = (): Promise<Web3> => {
   if (!p) {
+    // eslint-disable-next-line no-undef
     p = new Promise<Web3>((resolve, reject) => {
       let web3: Web3 = (window as any).web3 as Web3;
       const provider = new Web3.providers.HttpProvider(config.url);

@@ -6,7 +6,7 @@ const path = require('path');
 require('ts-node/register');
 
 module.exports = {
-  contracts_build_directory: path.join(__dirname, 'src/contracts'),
+  contracts_build_directory: path.join(__dirname, 'compiled'),
   networks: {
     parity: {
       host: 'localhost',

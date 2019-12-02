@@ -16,7 +16,6 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-ignore": "off",
     "react/prop-types": "off",
-    "no-console": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"
   },

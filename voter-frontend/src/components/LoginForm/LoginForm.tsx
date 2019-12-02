@@ -1,13 +1,11 @@
-import {Paper} from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React, {useState} from 'react';
-
-import {useUser} from '../../hooks/useUser';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -16,10 +14,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%',
@@ -34,10 +28,9 @@ interface Props {
   onLogin: (username: string, password: string) => void;
 }
 
-const LoginForm: React.FC<Props> = ({onLogin}) => {
+const LoginForm: React.FC<Props> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const user = useUser();
   const classes = useStyles();
 
   return (
@@ -58,7 +51,7 @@ const LoginForm: React.FC<Props> = ({onLogin}) => {
             name="email"
             autoComplete="email"
             autoFocus
-            onChange={e => setUsername(e.target.value)}
+            onChange={(e): void => setUsername(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -70,14 +63,14 @@ const LoginForm: React.FC<Props> = ({onLogin}) => {
             type="password"
             id="password"
             autoComplete="current-password"
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e): void => setPassword(e.target.value)}
           />
           <Button
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={() => onLogin(username, password)}
+            onClick={(): void => onLogin(username, password)}
           >
             Login
           </Button>

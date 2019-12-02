@@ -6,8 +6,8 @@ import {ECelGamal} from 'mp-crypto';
 import {unlockedAddresses} from '../helper';
 
 // @ts-ignore
-contract.only('VoteProofVerifierEC.sol', () => {
-  it(`should run test with VoteProofVerifierEC`, async () => {
+contract('VoteProofVerifierEC.sol', () => {
+  xit(`should run test with VoteProofVerifierEC`, async () => {
     const voteProofVerifier = await VoteProofVerifier.new();
 
     // system params

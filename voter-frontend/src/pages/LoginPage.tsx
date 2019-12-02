@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 import LoginForm from '../components/LoginForm/LoginForm';
-import {useUser} from '../hooks/useUser';
+import { useUser } from '../hooks/useUser';
 import LoadingPage from './LoadingPage';
 
 interface Props {
   onLoadFinished: () => void;
 }
 
-const LoginPage: React.FC<Props> = ({onLoadFinished}) => {
+const LoginPage: React.FC<Props> = ({ onLoadFinished }) => {
   const [loginSubmitted, setLoginSubmitted] = useState(false);
   const ctx = useUser();
 
