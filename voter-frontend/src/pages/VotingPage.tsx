@@ -1,23 +1,27 @@
+import { Container, Paper } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
-import BallotContract from '../contract-abis/Ballot.json';
-import { Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+
+import ChainInfo from '../components/ChainInfo/ChainInfo';
 import Question from '../components/Question/Question';
+import VotingPanel from '../components/VotingPanel/VotingPanel';
+import BallotContract from '../contract-abis/Ballot.json';
 import getWeb3 from '../util/getWeb3';
 
-const useStyles = makeStyles(() => ({
-  question: {
-    height: '30%',
-    border: '1px solid red',
+const useStyles = makeStyles((theme: Theme) => ({
+  wrapper: {
+    paddingTop: theme.spacing(16),
+    display: 'flex',
+    flexDirection: 'column',
   },
-  chain: {
-    height: '20%',
-    border: '1px solid blue',
+  paper: {
+    padding: theme.spacing(2, 4, 0, 4),
+    display: 'flex',
+    flexDirection: 'column',
   },
-  voting: {
-    height: '50%',
-    border: '1px solid green',
-  },
+  question: {},
+  chain: {},
+  voting: {},
 }));
 
 const VotingPage: React.FC = () => {
@@ -50,28 +54,15 @@ const VotingPage: React.FC = () => {
   }, []);
 
   return (
-    <Grid container direction="column" style={{ height: '100%' }}>
-      <Grid item className={classes.question}>
-        <Question votingQuestion={votingQuestion} />
-      </Grid>
-      <Grid item className={classes.chain}>
-        <div>
-          <strong>Contract Address: </strong>
-          <span>{contractAddress}</span>
+    <Container maxWidth="md" className={classes.wrapper}>
+      <Paper>
+        <div className={classes.paper}>
+          <Question votingQuestion={votingQuestion} />
+          <VotingPanel votingQuestion={votingQuestion} />
         </div>
-        <div>
-          <strong>My Wallet Address: </strong>
-          <span>{walletAddress}</span>
-        </div>
-        <div>
-          <strong>My Wallet Balance: </strong>
-          <span>{balance}</span>
-        </div>
-      </Grid>
-      <Grid item className={classes.voting}>
-        Voting Panel
-      </Grid>
-    </Grid>
+        <ChainInfo contractAddress={contractAddress} walletAddress={walletAddress} balance={balance} />
+      </Paper>
+    </Container>
   );
 };
 

@@ -15,10 +15,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
   form: {
     width: '100%',
     marginTop: theme.spacing(1),
@@ -55,7 +51,7 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
             name="email"
             autoComplete="email"
             autoFocus
-            onChange={e => setUsername(e.target.value)}
+            onChange={(e): void => setUsername(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -67,14 +63,14 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
             type="password"
             id="password"
             autoComplete="current-password"
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e): void => setPassword(e.target.value)}
           />
           <Button
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={() => onLogin(username, password)}
+            onClick={(): void => onLogin(username, password)}
           >
             Login
           </Button>
