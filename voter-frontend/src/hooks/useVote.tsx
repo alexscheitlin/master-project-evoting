@@ -49,14 +49,14 @@ function useProvideVoterContext(): VoterContext {
     setContract(ballotContract);
   };
 
-  const castVote = (option: VotingOption) => {
+  const castVote = async (option: VotingOption) => {
     let proof = '';
     switch (option) {
       case VotingOption.YES:
-        proof = BallotService.castYesVote();
+        proof = await BallotService.castYesVote(contract, user.wallet);
         break;
       case VotingOption.NO:
-        proof = BallotService.castNoVote();
+        proof = await BallotService.castNoVote(contract, user.wallet);
         break;
       default:
         throw new Error('Wrong voting option');
