@@ -1,5 +1,4 @@
 # Master Project: eVoting
-# Master Project - Blockchain Based eVoting
 
 ## What to do initially
 
@@ -17,33 +16,31 @@ see https://github.com/alexscheitlin/master-project-sink/pull/30 for more detail
 
 `cd voting-authority-backend`
 
+Setup `.env` files (see `README` of project for more details)
+
 `npm install`
 
 `npm run serve:dev` to run Authority Backend on PORT **4001**
-
-You might need to adjust your `.env` files
-
-```
-...
-PORT=4001
-```
 
 ### Access Provider Backend
 
 `cd access-provider-backend`
 
+Setup `.env` files (see `README` of project for more details)
+
 `npm install`
 
 `npm run serve:dev` to run Access Provider on PORT **4002**
 
-Additionally add the following to your `.env` files, as the Access Provider backend will need to make a request to the Authority Backend.
+### Identity Provider Backend
 
-```
-...
-PORT=4002
-AUTH_BACKEND_URL=http://localhost:4001
-CHAIN_URL:http://localhost:8545
-```
+`cd identity-provider-backend`
+
+Setup `.env` files (see `README` of project for more details)
+
+`npm install`
+
+`npm run serve:dev` to run Identity Provider on PORT **4003**
 
 ### Local Dev Chain with Ganache
 
@@ -64,6 +61,16 @@ this blockchain will run on PORT **8545**
 run `npm run start` inside `/voter-frontend`
 
 the frontend will run on PORT **3000**
+
+### Admin Frontend
+
+`cd admin-frontend`
+
+`npm install`
+
+run `npm run start` inside `/admin-frontend`
+
+the frontend will run on PORT **3001**
 
 ### What happens with the Solidity contracts?
 

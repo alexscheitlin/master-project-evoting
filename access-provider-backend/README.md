@@ -4,6 +4,43 @@
 
 - NodeJS 13+
 
+## Required ENV Variables (.env)
+
+Create the following files in the folder `/envs`:
+
+```bash
+# envs/.env.development
+
+NODE_ENV=development
+PORT=4002
+AUTH_BACKEND_URL=http://localhost:4001
+CHAIN_URL:http://localhost:8545
+```
+
+```bash
+# envs/.env.production
+
+NODE_ENV=production
+PORT=4002
+passphrase=<replace with passphrase> # replace me
+AUTH_BACKEND_URL=http://localhost:4001
+CHAIN_URL:http://localhost:8545
+```
+
+The production file additionally requires: `passphrase` (the passphrase to the certificate created beforehand).
+
+## Development
+
+Run `npm install` to install all required dependencies.
+
+`npm run serve:dev` to start in http mode
+
+`npm run serve:prod` to start in https mode
+
+## Testing
+
+Run `npm run test` to run all test of the project or `npm run test:watch` to continuously re-run the tests while developing.
+
 ### Server Certificate
 
 For the server to run in a realisitc setup (i.e. using HTTPS and TLS) a certificate is required.
@@ -21,33 +58,3 @@ openssl req -x509 -new -key key.pem -out cert.pem -days 365 -nodes -SHA384
 ```
 
 Place the certificate and key in the folder: `./keys/cert` and add the passphrase to the `.env.production` file.
-
-### Installation
-
-Run `npm install` to install all required dependencies.
-
-## Environment Variables
-
-Create the following files in the folder `/envs`:
-
-- `.env.production`
-- `.env.development`
-
-Add `PORT=3000` to both. The production file additionally requires: `passphrase` (the passphrase to the certificate created beforehand).
-
-## Development
-
-Run `npm run serve` to start the server. Pass the `NODE_ENV` variable with options:
-
-- `NODE_ENV=production` to run the server in HTTPS mode or
-- `NODE_ENV=development` to run a basic HTTP server.
-
-Access the server via `https://localhost:3000` or via `localhost:3000`.
-
-## Testing
-
-Run `npm run test` to run all test of the project or `npm run test:watch` to continuously re-run the tests while developing.
-
-## Compile and Deploy Contracts
-
-`npm run contracts` will compile and then deploy the contract on a blockchain running on `http://localhost:8545`, so make sure that you do `cd ../voter-frontend && npm run ganache:dev` first
