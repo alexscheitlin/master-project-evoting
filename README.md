@@ -62,13 +62,13 @@ run `npm run start` inside `/voter-frontend`
 
 the frontend will run on PORT **3000**
 
-### Admin Frontend
+### Voting Authority Frontend
 
-`cd admin-frontend`
+`cd voting-authority-frontend`
 
 `npm install`
 
-run `npm run start` inside `/admin-frontend`
+run `npm run start` inside `/voting-authority-frontend`
 
 the frontend will run on PORT **3001**
 
@@ -81,5 +81,3 @@ These `JSON` objects contain important information to interface with the contrac
 1. Authority Backend needs 2 `JSON` files. This backend will deploy the `Ballot.sol` contract onto the chain. To do this, it needs the `JSON` files. If you recompile contracts within `/contracts` then you will have to replace `Ballot.json` and `ModuloMathLib.json` inside `voting-authority-backend/solidity/toDeploy` with the newer version.
 
 2. Voter Frontend needs `Ballot.json`, replace `voter-frontend/src/contract-abis/Ballot.json` if you update any contracts
-
-3. Admin Frontend: ...needed?
