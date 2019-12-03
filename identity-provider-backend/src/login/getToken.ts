@@ -31,43 +31,43 @@ export const getUuid = (identities: Identity[], username: string): string => {
   const identity: Identity | undefined = identities.find(i => i.username === username)
 
   if (!identity) {
-    return ""
+    return ''
   }
 
   return identity.uuid
 }
 
 export const getToken = (tokens: IdentityToken[], uuid: string): string => {
-  const token: IdentityToken | undefined = tokens.find(t => t.uuid == uuid);
+  const token: IdentityToken | undefined = tokens.find(t => t.uuid == uuid)
 
   if (!token) {
-    return ""
+    return ''
   }
 
-  return token.token;
+  return token.token
 }
 
-router.get('/getToken', (req, res) => {
+router.post('/getToken', (req, res) => {
   const username: string = req.body.username
   const password: string = req.body.password
   const identities = <Identity[]>getListFromDB(IDENTITIES)
   const tokens = <IdentityToken[]>getListFromDB(TOKENS)
 
   if (!doesUserExist(identities, username)) {
-    res.status(400).json({ success: false, msg: INVALID })
-    return;
+    res.status(400).json({ success: false, msg: INVALID + `username ${username}` })
+    return
   }
 
   if (!isPasswordCorrect(identities, username, password)) {
-    res.status(400).json({ success: false, msg: INVALID })
-    return;
+    res.status(400).json({ success: false, msg: INVALID + `password ${password}` })
+    return
   }
 
-  const token = getToken(tokens, getUuid(identities, username));
+  const token = getToken(tokens, getUuid(identities, username))
 
   if (!token) {
     res.status(400).json({ success: false, msg: NOT_REGISTERED })
-    return;
+    return
   }
 
   res.status(201).json({ success: true, msg: SUCCESS_MSG, token: token })
