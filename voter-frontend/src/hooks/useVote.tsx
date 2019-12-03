@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { EIdentityProviderBackend, AccessProviderBackend, Ballot } from '../services';
+import { EIdentityProviderService, AccessProviderService, BallotService } from '../services';
 import { VotingOption } from '../models/voting';
 
 interface VoterContext {
@@ -33,13 +33,13 @@ function useProvideVoterContext(): VoterContext {
   const [proof, setProof] = useState('');
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    const token: any = await EIdentityProviderBackend.getToken(username, password);
+    const token: any = await EIdentityProviderService.getToken(username, password);
     setUser({ ...user, authenticated: true, token: token });
     return true;
   };
 
   const fundWallet = async (token: string, wallet: string): Promise<boolean> => {
-    const address: string = await AccessProviderBackend.fundWallet(token, wallet);
+    const address: string = await AccessProviderService.fundWallet(token, wallet);
     setUser({ ...user, wallet: wallet });
     setContractAddress(address);
     return true;
@@ -53,10 +53,10 @@ function useProvideVoterContext(): VoterContext {
     let proof = '';
     switch (option) {
       case VotingOption.YES:
-        proof = Ballot.castYesVote();
+        proof = BallotService.castYesVote();
         break;
       case VotingOption.NO:
-        proof = Ballot.castNoVote();
+        proof = BallotService.castNoVote();
         break;
       default:
         throw new Error('Wrong voting option');

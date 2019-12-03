@@ -1,7 +1,7 @@
-import * as AccessProviderBackend from './accessProvider';
-import * as EIdentityProviderBackend from './eIdentityProvider';
-import * as Ballot from './ballot';
+import * as AccessProviderService from './accessProviderService';
+import * as EIdentityProviderService from './eIdentityProviderService';
+import * as BallotService from './ballotService';
 
-export { AccessProviderBackend };
-export { EIdentityProviderBackend };
-export { Ballot };
+export { AccessProviderService };
+export { EIdentityProviderService };
+export { BallotService };
