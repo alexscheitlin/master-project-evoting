@@ -1,7 +1,10 @@
 import { FFelGamal } from 'mp-crypto';
 
-export const castYesVote = (): string => {
+export const castYesVote = async (contract: any, wallet: string): Promise<string> => {
   // get system parameters from contract
+  const params = await contract.methods.getParameters().call({ from: wallet });
+  console.log(params);
+
   // get public key from contract
 
   // create vote
@@ -11,8 +14,11 @@ export const castYesVote = (): string => {
   return '<returned proof>';
 };
 
-export const castNoVote = (): string => {
+export const castNoVote = async (contract: any, wallet: string): Promise<string> => {
   // get system parameters from contract
+  const params = await contract.methods.getParameters().call({ from: wallet });
+  console.log(params);
+
   // get public key from contract
 
   // create vote
