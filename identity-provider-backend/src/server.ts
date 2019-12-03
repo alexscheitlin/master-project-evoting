@@ -8,12 +8,15 @@ import { config } from 'dotenv'
 import { resolve } from 'path'
 
 import logger from './utils/logger'
-import register from './registration/register'
-import sendTokens from './registration/sendTokens'
 import { setupDB } from './database/database'
+import register from './registration/register'
+import getToken from './login/getToken'
+
+// get NODE_ENV "param"
+const NODE_ENV = process.env.NODE_ENV
 
 // load environment variables based on NODE_ENV
-const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
+const isProduction: boolean = NODE_ENV === 'production' ? true : false
 const DOTENV_FILE: string = isProduction ? '.production' : '.development'
 config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
 
@@ -22,11 +25,11 @@ const server = express()
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(logger)
-server.use(cors({ origin: 'http://localhost:3000' }))
+server.use(cors({ origin: 'http://localhost:4003' }))
 
 // add all routes
 server.use('/', register)
-server.use('/', sendTokens)
+server.use('/', getToken)
 
 // setup the database
 setupDB()
