@@ -10,6 +10,7 @@ import { resolve } from 'path'
 import logger from './utils/logger'
 import { setupDB } from './database/database'
 import register from './registration/register'
+import getToken from './login/getToken'
 
 // get NODE_ENV "param"
 const NODE_ENV = process.env.NODE_ENV
@@ -28,6 +29,7 @@ server.use(cors({ origin: 'http://localhost:4003' }))
 
 // add all routes
 server.use('/', register)
+server.use('/', getToken)
 
 // setup the database
 setupDB()
