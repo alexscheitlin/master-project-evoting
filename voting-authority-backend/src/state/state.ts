@@ -1,5 +1,12 @@
 import express from 'express'
 import { setValue, getValueFromDB } from '../database/database'
+import { BallotManager } from '../utils/ballotManager/index'
+
+export enum VotingState {
+  PRE_VOTING = 'PRE_VOTING',
+  VOTING = 'VOTING',
+  POST_VOTING = 'POST_VOTING',
+}
 
 const STATE_INVALID: string = 'Provided state is invalid -> valid states are: PRE_VOTING, VOTING, POST_VOTING'
 
@@ -8,7 +15,7 @@ const VOTING_STATE: string = 'state'
 
 const router: express.Router = express.Router()
 
-router.post('/state', (req, res) => {
+router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
 
   const newState: string = req.body.state
@@ -18,12 +25,19 @@ router.post('/state', (req, res) => {
     res.status(400).json({ state: currentState, msg: STATE_INVALID })
   } else {
     setValue(VOTING_STATE, newState)
+
+    if (newState === VotingState.VOTING) {
+      await BallotManager.openBallot()
+    } else if (newState === VotingState.POST_VOTING) {
+      await BallotManager.closeBallot()
+    }
+
     res.status(201).json({ state: newState, msg: `New State: ${newState}` })
   }
 })
 
 export const checkIfStateIsValid = (state: string): boolean => {
-  const validStates: string[] = ['PRE_VOTING', 'VOTING', 'POST_VOTING']
+  const validStates: string[] = [VotingState.PRE_VOTING, VotingState.VOTING, VotingState.POST_VOTING]
 
   if (state === null || typeof state === undefined || !validStates.includes(state)) {
     return false
