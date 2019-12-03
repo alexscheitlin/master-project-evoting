@@ -1,7 +1,6 @@
 import {
   Button,
   createStyles,
-  Divider,
   Grid,
   makeStyles,
   Paper,
@@ -12,59 +11,28 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import React, { useState } from 'react';
-import { VotingState, useStore } from '../../models/voting';
-import { State } from '../defaults/State';
+import React from 'react';
 import { VoteDone, VoteOpen, VoteSetup } from './vote';
+import { useActiveStepStore } from '../../models/voting';
 
 const getSteps = (): string[] => {
   return ['Vote Setup', 'Vote Open', 'Vote Completed'];
 };
 
-const getButtonText = (step: number): string => {
-  switch (step) {
-    case 0:
-      return 'Create Vote';
-    case 1:
-      return 'Open Vote';
-    case 2:
-      return 'End Vote';
-    default:
-      return 'Unkown Step!';
-  }
-};
-
 export const Voting: React.FC = () => {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
 
-  const { voteState } = useStore();
-
-  const [votingQuestion, setVotingQuestion] = useState('');
-  const [votingState, setVotingState] = useState<VotingState>(VotingState.PRE_VOTING);
-
-  const handleNext = () => {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
-  const handleVotingQuestionChange = (question: string) => {
-    setVotingQuestion(question);
-    console.log(voteState);
-  };
+  const { activeStep, updateActiveStep, resetActiveStep } = useActiveStepStore();
 
   const getStepContent = (step: number): any => {
     switch (step) {
       case 0:
-        return <VoteSetup votingQuestion={votingQuestion} setVoteQuestion={handleVotingQuestionChange} />;
+        return <VoteSetup handleNext={updateActiveStep} />;
       case 1:
-        return <VoteOpen votingQuestion={votingQuestion} votingState={votingState} />;
+        return <VoteOpen handleNext={updateActiveStep} />;
       case 2:
-        return <VoteDone />;
+        return <VoteDone handleNext={updateActiveStep} />;
       default:
         throw new Error('Invalid Component Selected!');
     }
@@ -72,33 +40,24 @@ export const Voting: React.FC = () => {
 
   return (
     <Grid container direction={'row'} className={classes.root}>
-      <Grid xs={10} item>
+      <Grid item>
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((label, index) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
-              <StepContent>
-                {getStepContent(index)}
-                <div className={classes.actionsContainer}>
-                  <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
-                    {getButtonText(index)}
-                  </Button>
-                </div>
-              </StepContent>
+              <StepContent>{getStepContent(index)}</StepContent>
             </Step>
           ))}
         </Stepper>
         {activeStep === steps.length && (
           <Paper square elevation={0} className={classes.resetContainer}>
             <Typography>All steps completed. The vote is done.</Typography>
-            <Button onClick={handleReset} className={classes.button}>
+            <Button onClick={resetActiveStep} className={classes.button}>
               Reset
             </Button>
           </Paper>
         )}
       </Grid>
-      <Divider orientation="vertical" className={classes.divider} />
-      <State />
     </Grid>
   );
 };
@@ -106,7 +65,6 @@ export const Voting: React.FC = () => {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      // width: '100%',
       flexGrow: 1
     },
     button: {
