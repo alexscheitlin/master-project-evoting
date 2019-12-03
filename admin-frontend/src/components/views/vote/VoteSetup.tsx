@@ -1,45 +1,48 @@
-import { Button, FormLabel, Grid, makeStyles, TextField } from '@material-ui/core';
+import { Button, Grid, makeStyles, TextField, Theme } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React from 'react';
-import { useStore } from '../../../models/voting';
-
 import { DEV_URL } from '../../../constants';
+import { useVoteQuestionStore } from '../../../models/voting';
 
 interface Props {
-  votingQuestion: string;
-  setVoteQuestion: (question: string) => void;
+  handleNext: () => void;
 }
 
-export const VoteSetup: React.FC<Props> = ({ votingQuestion, setVoteQuestion }) => {
-  const isButtonDisabled: boolean = votingQuestion.length < 5;
+export const VoteSetup: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
-  const { nextState } = useStore();
+  const { question, setQuestion } = useVoteQuestionStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVoteQuestion(event.currentTarget.value);
+    setQuestion(event.currentTarget.value);
   };
 
-  const sendVoteQuestionToBackend = async () => {
+  const createVote = async () => {
     // avoids ssl error with certificate
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
 
-    const response: AxiosResponse = await axios.post(
-      `${DEV_URL}/deploy`,
-      { question: votingQuestion },
-      { httpsAgent: agent }
-    );
+    try {
+      const response: AxiosResponse = await axios.post(
+        `${DEV_URL}/deploy`,
+        { question: question },
+        { httpsAgent: agent }
+      );
 
-    if (response.status === 201) {
-      const res = response.data;
-      console.log(res);
+      if (response.status === 201) {
+        const res = response.data;
+        console.log(res);
 
-      // trigger a global voteState update if request was successful
-      nextState();
-    } else {
-      console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
+        // move to the next UI component
+        handleNext();
+      } else {
+        console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
+        throw new Error('Status Code not 201');
+      }
+    } catch (error) {
+      // show error or popup
+      console.error(error);
     }
   };
 
@@ -57,28 +60,36 @@ export const VoteSetup: React.FC<Props> = ({ votingQuestion, setVoteQuestion }) 
             required
             onChange={handleInputChange}
           />
+        </Grid>
+        <Grid item className={classes.actionsContainer}>
           <Button
-            className={classes.vote}
-            variant={'outlined'}
-            color={'primary'}
-            onClick={sendVoteQuestionToBackend}
-            disabled={isButtonDisabled}
+            variant="contained"
+            color="primary"
+            onClick={createVote}
+            className={classes.button}
+            disabled={question.length < 5}
           >
             Create Vote
           </Button>
-          <FormLabel className={classes.vote}>{votingQuestion}</FormLabel>
         </Grid>
       </Grid>
     </Grid>
   );
 };
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   vote: {
     margin: '0 1em 0 0'
   },
   container: {
     display: 'flex',
     alignItems: 'stretch'
+  },
+  button: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  },
+  actionsContainer: {
+    marginBottom: theme.spacing(2)
   }
-});
+}));
