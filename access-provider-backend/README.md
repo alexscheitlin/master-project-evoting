@@ -33,7 +33,7 @@ Create the following files in the folder `/envs`:
 - `.env.production`
 - `.env.development`
 
-Add `PORT=3000` to both. The production file additionally requires: `passphrase` (the passphrase to the certificate created beforehand).
+Add `PORT=4002` to both. The production file additionally requires: `passphrase` (the passphrase to the certificate created beforehand).
 
 ## Development
 
@@ -42,7 +42,7 @@ Run `npm run serve` to start the server. Pass the `NODE_ENV` variable with optio
 - `NODE_ENV=production` to run the server in HTTPS mode or
 - `NODE_ENV=development` to run a basic HTTP server.
 
-Access the server via `https://localhost:3000` or via `localhost:3000`.
+Access the server via `https://localhost:4002` or via `localhost:4002`.
 
 ## Testing
 

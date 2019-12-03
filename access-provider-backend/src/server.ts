@@ -9,6 +9,7 @@ import { resolve } from 'path'
 
 import logger from './utils/logger'
 import register from './registration/register'
+import sendTokens from './registration/sendTokens'
 import { setupDB } from './database/database'
 
 // load environment variables based on NODE_ENV
@@ -25,6 +26,7 @@ server.use(cors({ origin: 'http://localhost:3000' }))
 
 // add all routes
 server.use('/', register)
+server.use('/', sendTokens)
 
 // setup the database
 setupDB()

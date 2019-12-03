@@ -44,8 +44,8 @@ router.post('/register', async (req, res) => {
   // FIXME: replace with `success` once ready, currently we don't have the tokens from the Identity Provider yet.
   // So any token right now is valid, as long as as there is also a valid eth address
   if (isAddressValid) {
-    addToList(USED_TOKENS, voterToken)
-    addToList(REGISTERED_VOTERS, voterAddress)
+    addToList(USED_TOKENS, [voterToken])
+    addToList(REGISTERED_VOTERS, [voterAddress])
 
     // at this point, the address and token are correct
     // now we need to fund the wallet and reply with the address of the ballot contract
