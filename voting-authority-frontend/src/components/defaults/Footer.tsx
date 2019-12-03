@@ -1,7 +1,7 @@
-import { Box, Grid, Link, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, Link, makeStyles, Typography, Theme } from '@material-ui/core';
 import React from 'react';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   footer: {
     borderTop: `1px solid ${theme.palette.divider}`,
     paddingTop: theme.spacing(1),

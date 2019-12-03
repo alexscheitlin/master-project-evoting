@@ -1,9 +1,10 @@
 import { Button, Grid, makeStyles, TextField, Theme } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
-import React from 'react';
+import React, { useState } from 'react';
 import { DEV_URL } from '../../../constants';
 import { useVoteQuestionStore } from '../../../models/voting';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 
 interface Props {
   handleNext: () => void;
@@ -11,6 +12,7 @@ interface Props {
 
 export const VoteSetup: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
+  const [hasError, setError] = useState<boolean>(false);
   const { question, setQuestion } = useVoteQuestionStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,11 +39,13 @@ export const VoteSetup: React.FC<Props> = ({ handleNext }) => {
         // move to the next UI component
         handleNext();
       } else {
+        setError(true);
         console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
         throw new Error('Status Code not 201');
       }
     } catch (error) {
       // show error or popup
+      setError(true);
       console.error(error);
     }
   };
@@ -72,6 +76,7 @@ export const VoteSetup: React.FC<Props> = ({ handleNext }) => {
             Create Vote
           </Button>
         </Grid>
+        <ErrorSnackbar open={hasError} message={'Error - Request unsuccessful'} />
       </Grid>
     </Grid>
   );

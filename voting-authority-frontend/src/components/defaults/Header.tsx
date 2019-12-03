@@ -1,8 +1,8 @@
-import { AppBar, Button, Grid, makeStyles, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, Grid, makeStyles, Toolbar, Typography, Theme } from '@material-ui/core';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
     borderBottom: `1px solid ${theme.palette.divider}`
   },
