@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-import {FFelGamal, Summary} from 'mp-crypto';
+import { FFelGamal, Summary } from 'mp-crypto';
 
-import {getRandomWalletAddress} from '../util/helper';
+import { getRandomWalletAddress } from '../util/helper';
 
-const {SystemSetup, Encryption, Voting} = FFelGamal;
+const { SystemSetup, Encryption, Voting } = FFelGamal;
 
-const [sp, {h: pk, sk}] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
+const [sp, { h: pk, sk }] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
 
 export const FiniteFieldVoting: React.FC = () => {
   const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
@@ -14,7 +14,7 @@ export const FiniteFieldVoting: React.FC = () => {
   const [voteProofs, setVoteProofs] = useState<FFelGamal.Proof.MembershipProof[]>([]);
   const [sum, setSum] = useState<FFelGamal.Cipher>();
   const [sumProof, setSumProof] = useState<FFelGamal.Proof.DecryptionProof>();
-  const [summary, setSummary] = useState<Summary>({total: 0, yes: 0, no: 0});
+  const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
 
   const getResult = (votes: any[]) => {
     const sum = Voting.addVotes(votes, sp);
@@ -97,7 +97,7 @@ export const FiniteFieldVoting: React.FC = () => {
       {sum && sumProof && (
         <div>
           <br></br>
-          <span style={{display: 'inline-block', width: '150px'}}>
+          <span style={{ display: 'inline-block', width: '150px' }}>
             Sum: {Encryption.decrypt1(sum, sk, sp).toNumber()} - {sum.a.toNumber()}, {sum.b.toNumber()}{' '}
           </span>
           Proof: {'{'}
@@ -110,10 +110,10 @@ export const FiniteFieldVoting: React.FC = () => {
       <ul>
         {votes.map((vote, i) => (
           <li key={i}>
-            <span style={{display: 'inline-block', width: '150px'}}>
+            <span style={{ display: 'inline-block', width: '150px' }}>
               Vote: {Encryption.decrypt1(vote, sk, sp).toNumber()} - {vote.a.toNumber()}, {vote.a.toNumber()}
             </span>
-            <span style={{display: 'inline-block', width: '310px'}}>
+            <span style={{ display: 'inline-block', width: '310px' }}>
               Proof: {'{'}
               {voteProofs[i].a0.toNumber()},{voteProofs[i].a1.toNumber()},{voteProofs[i].b0.toNumber()},
               {voteProofs[i].b1.toNumber()},{voteProofs[i].c0.toNumber()},{voteProofs[i].c1.toNumber()},

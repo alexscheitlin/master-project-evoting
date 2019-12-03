@@ -16,7 +16,7 @@ const VOTING_STATE: string = 'state'
 const router: express.Router = express.Router()
 
 router.get('/chainspec', (req, res) => {
-  const state: string = getValueFromDB(VOTING_STATE)
+  const state: string = <string>getValueFromDB(VOTING_STATE)
 
   // PRE_VOTING -> returns default chainspec for authority account creation
   if (state === 'PRE_VOTING') {
@@ -31,7 +31,7 @@ router.get('/chainspec', (req, res) => {
 })
 
 router.post('/chainspec', (req, res) => {
-  const state: string = getValueFromDB(VOTING_STATE)
+  const state: string = <string>getValueFromDB(VOTING_STATE)
 
   // no longer allow authority registration once the voting state has changed to VOTING
   if (state === 'VOTING') {
@@ -54,16 +54,16 @@ router.post('/chainspec', (req, res) => {
     setValue(CHAINSPEC, newChainspec)
     res.status(201).json({ created: true, msg: SUCCESS_MSG })
   } catch (error) {
-    res.status(400).json({ created: false, msg: error.msg })
+    res.status(400).json({ created: false, msg: error.message })
   }
 })
 
-export const addValidatorToChainspec = (table: any, address: string): any => {
-  if (table === null || typeof table === undefined) {
+export const addValidatorToChainspec = (chainspec: any, address: string): any => {
+  if (chainspec === null || typeof chainspec === undefined) {
     throw new TypeError('Cannot read chainspec since it is null.')
   }
 
-  const validators: string[] = table['engine']['authorityRound']['params']['validators']['list']
+  const validators: string[] = chainspec['engine']['authorityRound']['params']['validators']['list']
 
   if (validators === null || typeof validators === undefined) {
     throw new TypeError('Validators cannot be retrieved from chainspec since it is null.')
@@ -71,8 +71,8 @@ export const addValidatorToChainspec = (table: any, address: string): any => {
 
   // updates the list of current validators in the current chainspec
   validators.push(address)
-  table['engine']['authorityRound']['params']['validators']['list'] = validators
-  return table
+  chainspec['engine']['authorityRound']['params']['validators']['list'] = validators
+  return chainspec
 }
 
 export default router

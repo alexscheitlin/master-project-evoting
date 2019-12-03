@@ -18,12 +18,16 @@ describe('Chainspec Tests', () => {
     })
 
     beforeEach(() => {
+      // create a deep clone of the DB object such that we only have to read the object once
+      // but can modify, null, and reuse it multiple times without interfering with other tests
+      const chainspecCopy = JSON.parse(JSON.stringify(defaultChainspec))
+
       // stubs for the DB calls
       // -> returns a chainspec containing a single validator for table: chainspec
       sinon
         .stub(DB, 'getObjectFromDB')
         .withArgs('chainspec')
-        .returns(defaultChainspec)
+        .returns(chainspecCopy)
     })
 
     afterEach(() => {
@@ -44,16 +48,28 @@ describe('Chainspec Tests', () => {
       const oldChainspec: any = null
 
       // needs a lambda function so that expect can call the function itself
+      expect(() => Chainspec.addValidatorToChainspec(oldChainspec, address)).to.throw(TypeError, 'Cannot read chainspec since it is null.')
+    })
+
+    it('should throw Error -> random part in JSON is null', () => {
+      const address: string = '0xC1595B46c0FBCf185E972D31F443D91C2E2549F8'
+      const oldChainspec: any = DB.getObjectFromDB(CHAINSPEC)
+      oldChainspec['engine']['authorityRound']['params'] = null
+
+      // needs a lambda function so that expect can call the function itself
       expect(() => Chainspec.addValidatorToChainspec(oldChainspec, address)).to.throw(TypeError)
     })
 
     it('should throw Error -> unable to retrieve validators from chainspec', () => {
       const address: string = '0xC1595B46c0FBCf185E972D31F443D91C2E2549F8'
       const oldChainspec: any = DB.getObjectFromDB(CHAINSPEC)
-      oldChainspec['engine']['authorityRound']['params']['validators'] = null
+      oldChainspec['engine']['authorityRound']['params']['validators']['list'] = null
 
       // needs a lambda function so that expect can call the function itself
-      expect(() => Chainspec.addValidatorToChainspec(oldChainspec, address)).to.throw(TypeError)
+      expect(() => Chainspec.addValidatorToChainspec(oldChainspec, address)).to.throw(
+        TypeError,
+        'Validators cannot be retrieved from chainspec since it is null.'
+      )
     })
   })
 

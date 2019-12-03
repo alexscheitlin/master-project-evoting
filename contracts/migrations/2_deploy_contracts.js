@@ -14,7 +14,7 @@ module.exports = function(deployer) {
   deployer.deploy(SumProofVerifier);
   deployer.deploy(VoteProofVerifier);
   deployer.deploy(KeyGenProofVerifier);
-  deployer.deploy(Ballot);
+  deployer.deploy(Ballot, '');
 
   // link the Elliptic library
   deployer.deploy(EllipticCurveLib);

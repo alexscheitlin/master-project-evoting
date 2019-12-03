@@ -1,29 +1,29 @@
-const Web3 = require('web3')
+import { getWeb3 } from '../../src/utils/web3'
 
 const ballotContract = require('../toDeploy/Ballot.json')
 const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
 
-// TODO: replace dynamically with real address of network
-const provider = new Web3.providers.HttpProvider('http://localhost:8545')
-const web3 = new Web3(provider)
+const web3 = getWeb3()
 
-const deploy = async (abi: {}, bytecode: string) => {
+const deploy = async (abi: any, bytecode: string, question?: string): Promise<string> => {
+  const hasVotingQuestion = question !== undefined
+  // TODO: figure out how to unlock the prefunded account which we will place inside the
+  // chainspec of the parity chain. Currently asuming that Authority has first account
   const accounts = await web3.eth.getAccounts()
 
   const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
       data: bytecode,
-      // TODO: think about how we pass the voting-question... probaby with contructor here
-      // arguments: <arguments for contructor>
+      arguments: hasVotingQuestion ? [question] : undefined,
     })
     .send({
       from: accounts[0],
-      gas: '6000000',
+      gas: 6000000,
     })
   return deployedContract.options.address
 }
 
-export const init = async () => {
+export const init = async (votingQuestion: string) => {
   try {
     const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
     console.log(`Library deployed at address: ${libAddress}`)
@@ -34,16 +34,15 @@ export const init = async () => {
     // for the Ballot.sol to find it
     const ballotBytecode = ballotContract.bytecode.replace(
       /__ModuloMathLib_________________________/g,
-
-      libAddress.replace('0x', '')
+      (libAddress as string).replace('0x', '')
     )
     const Ballot = { ...ballotContract }
     Ballot.bytecode = ballotBytecode
-    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode)
+    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion)
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
     return ballotAddress
   } catch (error) {
-    throw new Error('fail hard')
+    throw new Error(`Contract Deployment failed: ${JSON.stringify(error)}`)
   }
 }

@@ -1,67 +1,71 @@
-import React, {useEffect, useState} from 'react';
-import {Grid} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
-import Question from '../components/Question/Question';
-import getWeb3 from '../util/getWeb3';
+import { Container, Paper } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
 
-const useStyles = makeStyles(() => ({
-  question: {
-    height: '30%',
-    border: '1px solid red',
+import ChainInfo from '../components/ChainInfo/ChainInfo';
+import Question from '../components/Question/Question';
+import VotingPanel from '../components/VotingPanel/VotingPanel';
+import BallotContract from '../contract-abis/Ballot.json';
+import getWeb3 from '../util/getWeb3';
+import { useVote } from '../hooks/useVote';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  wrapper: {
+    paddingTop: theme.spacing(16),
+    display: 'flex',
+    flexDirection: 'column',
   },
-  chain: {
-    height: '20%',
-    border: '1px solid blue',
+  paper: {
+    padding: theme.spacing(2, 4, 0, 4),
+    display: 'flex',
+    flexDirection: 'column',
   },
-  voting: {
-    height: '50%',
-    border: '1px solid green',
-  },
+  question: {},
+  chain: {},
+  voting: {},
 }));
 
 const VotingPage: React.FC = () => {
   const classes = useStyles();
   const [balance, setBalance] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
+  const [contractAddress, setContractAddress] = useState('');
+  const [votingQuestion, setVotingQuestion] = useState('');
+  const ctx = useVote();
 
   const getChainInfo = async (): Promise<void> => {
     const web3 = await getWeb3();
-
-    const defaultAcc = web3.eth.defaultAccount;
-    if (defaultAcc !== null) {
-      setWalletAddress(defaultAcc);
-      const balance = await web3.eth.getBalance(defaultAcc);
-      setBalance(balance);
+    if (ctx !== null) {
+      const contractAddr = ctx.contractAddress;
+      setContractAddress(contractAddr);
+      const defaultAcc = web3.eth.defaultAccount;
+      if (defaultAcc !== null) {
+        setWalletAddress(defaultAcc);
+        const balance = await web3.eth.getBalance(defaultAcc);
+        setBalance(balance);
+        // @ts-ignore
+        const contract = new web3.eth.Contract(BallotContract.abi, contractAddr);
+        const question = await contract.methods.getVotingQuestion().call({ from: walletAddress });
+        setVotingQuestion(question);
+      }
     }
   };
 
   useEffect(() => {
     getChainInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Grid container direction="column" style={{height: '100%'}}>
-      <Grid item className={classes.question}>
-        <Question />
-      </Grid>
-      <Grid item className={classes.chain}>
-        <div>
-          <strong>Contract Address: </strong>
-          <span>{localStorage.getItem('address')}</span>
+    <Container maxWidth="md" className={classes.wrapper}>
+      <Paper>
+        <div className={classes.paper}>
+          <Question votingQuestion={votingQuestion} />
+          <VotingPanel votingQuestion={votingQuestion} />
         </div>
-        <div>
-          <strong>My Wallet Address: </strong>
-          <span>{walletAddress}</span>
-        </div>
-        <div>
-          <strong>My Wallet Balance: </strong>
-          <span>{balance}</span>
-        </div>
-      </Grid>
-      <Grid item className={classes.voting}>
-        Voting Panel
-      </Grid>
-    </Grid>
+        <ChainInfo contractAddress={contractAddress} walletAddress={walletAddress} balance={balance} />
+      </Paper>
+    </Container>
   );
 };
 

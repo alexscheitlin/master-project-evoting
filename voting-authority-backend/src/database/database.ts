@@ -20,7 +20,7 @@ export const setupDB = () => {
     chainspec: defaultConfig,
     defaultChainspec: defaultConfig,
     ballotAddress: '',
-    ballotDeployed: 'false',
+    ballotDeployed: false,
   }).write()
 }
 
@@ -34,7 +34,7 @@ export const addToList = (table: string, value: string) => {
   db.write()
 }
 
-export const setValue = (table: string, value: string) => {
+export const setValue = (table: string, value: any) => {
   // write the new value to the field in the DB
   db.set(table, value).value()
   db.write()
@@ -44,7 +44,7 @@ export const getListFromDB = (table: string): string[] => {
   return db.get(table).value()
 }
 
-export const getValueFromDB = (table: string): string => {
+export const getValueFromDB = (table: string): any => {
   return db.get(table).value()
 }
 
