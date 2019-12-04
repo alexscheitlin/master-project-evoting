@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useActiveStepStore, VOTE_LABELS } from '../../models/voting';
-import { VoteDone, VoteOpen, VoteSetup } from './vote';
+import { Config, Vote, Tally } from './vote';
 
 export const Voting: React.FC = () => {
   const classes = useStyles();
@@ -23,11 +23,11 @@ export const Voting: React.FC = () => {
   const getStep = (step: number): any => {
     switch (step) {
       case 0:
-        return <VoteSetup handleNext={nextStep} />;
+        return <Config handleNext={nextStep} />;
       case 1:
-        return <VoteOpen handleNext={nextStep} />;
+        return <Vote handleNext={nextStep} />;
       case 2:
-        return <VoteDone handleNext={nextStep} />;
+        return <Tally handleNext={nextStep} />;
       default:
         return (
           <div>

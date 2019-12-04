@@ -10,7 +10,7 @@ interface Props {
   handleNext: () => void;
 }
 
-export const VoteSetup: React.FC<Props> = ({ handleNext }) => {
+export const Config: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
   const [hasError, setError] = useState<boolean>(false);
   const { question, setQuestion } = useVoteQuestionStore();

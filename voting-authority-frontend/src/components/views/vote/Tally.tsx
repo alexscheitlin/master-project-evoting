@@ -3,25 +3,28 @@ import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React from 'react';
 import { DEV_URL } from '../../../constants';
-import { useVoteStateStore, useVoteQuestionStore } from '../../../models/voting';
+import { useVoteStateStore } from '../../../models/voting';
 
 interface Props {
   handleNext: () => void;
 }
 
-export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
+export const Tally: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
   const { state, nextState } = useVoteStateStore();
-  const { question } = useVoteQuestionStore();
 
-  const openVote = async () => {
+  const endVote = async () => {
     // avoids ssl error with certificate
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
 
     try {
-      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, { state: 'VOTING' }, { httpsAgent: agent });
+      const response: AxiosResponse = await axios.post(
+        `${DEV_URL}/state`,
+        { state: 'POST_VOTING' },
+        { httpsAgent: agent }
+      );
 
       if (response.status === 201) {
         const res = response.data;
@@ -41,11 +44,11 @@ export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
 
   return (
     <div>
+      <h1>{`The state of the vote is: ${state}`}</h1>
       <p>{state}</p>
-      <p>{question}</p>
       <div className={classes.actionsContainer}>
-        <Button variant="contained" color="primary" onClick={openVote} className={classes.button}>
-          Open Vote
+        <Button variant="contained" color="primary" onClick={endVote} className={classes.button}>
+          End Vote
         </Button>
       </div>
     </div>

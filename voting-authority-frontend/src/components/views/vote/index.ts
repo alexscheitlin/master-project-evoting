@@ -1,5 +1,5 @@
-import { VoteSetup } from './VoteSetup';
-import { VoteOpen } from './VoteOpen';
-import { VoteDone } from './VoteDone';
+import { Config } from './Config';
+import { Vote } from './Vote';
+import { Tally } from './Tally';
 
-export { VoteSetup, VoteOpen, VoteDone };
+export { Config, Vote, Tally };
