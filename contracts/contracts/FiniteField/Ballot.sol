@@ -77,13 +77,6 @@ contract Ballot {
     }
 
     // /////////////////////////////////
-    // constants
-    // /////////////////////////////////
-
-    // The number of PublicKeyShare needed to create the publicKey (# of authorities)
-    uint256 private constant NR_OF_AUTHORITY_NODES = 2;
-
-    // /////////////////////////////////
     // events
     // /////////////////////////////////
     event VoteStatusEvent(address indexed from, bool success, string reason);
@@ -104,10 +97,13 @@ contract Ballot {
     bool private IS_PUBKEY_SET;
     address private _owner;
 
+    // The number of PublicKeyShare needed to create the publicKey (# of authorities)
+    uint256 private NR_OF_AUTHORITY_NODES;
+
     // /////////////////////////////////
     // constructor
     // /////////////////////////////////
-    constructor(string memory votingQuestion) public {
+    constructor(string memory votingQuestion, uint256 numberOfAuthNodes) public {
         voteVerifier = new VoteProofVerifier();
         sumVerifier = new SumProofVerifier();
         keyGenProofVerifier = new KeyGenProofVerifier();
@@ -125,6 +121,8 @@ contract Ballot {
         election.publicKeyShares.length = 0;
         election.decryptedShares.length = 0;
         election.yesVotes = 0;
+
+        NR_OF_AUTHORITY_NODES = numberOfAuthNodes;
     }
 
     // /////////////////////////////////
