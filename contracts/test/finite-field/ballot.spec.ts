@@ -17,7 +17,7 @@ contract('Ballot.sol', () => {
      * Bund initialized the whole voting process by creating the system parameters, deploying the contract
      * and setting the parameters int the contract
      */
-    const ballotContract = await Ballot.new('Is the dress blue or gold?');
+    const ballotContract = await Ballot.new('Is the dress blue or gold?', 2);
     const votingQuestion = await ballotContract.getVotingQuestion();
     assert(votingQuestion === 'Is the dress blue or gold?', 'voting question not correct');
 
