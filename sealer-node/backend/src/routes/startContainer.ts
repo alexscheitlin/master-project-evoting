@@ -10,6 +10,7 @@ const CONTAINER_STARTED: string = 'Container successfully started!'
 router.get('/startContainer', async (req, res) => {
   const { stdout, stderr } = await runScript('src/scripts/test.sh')
   console.log(stdout)
+  console.log('HI')
 
   res.status(200).json({ msg: CONTAINER_STARTED })
 })
