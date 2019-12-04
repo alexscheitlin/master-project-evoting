@@ -1,0 +1,74 @@
+{
+  "name": "sealer-backend",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "pre-commit": "lint-staged",
+    "test": "nyc --reporter=text ts-mocha ./**/*.spec.ts",
+    "test:watch": "ts-mocha ./**/*.spec.ts -w --watch-extensions ts ",
+    "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
+    "ts-mocha": "./node_modules/.bin/ts-mocha",
+    "tsc": "./node_modules/.bin/tsc",
+    "serve:prod": "NODE_ENV=production ts-node-dev --respawn --transpileOnly ./src/server.ts",
+    "serve:dev": "NODE_ENV=development ts-node-dev --respawn --transpileOnly ./src/server.ts",
+    "debug": "node --nolazy --inspect-brk=9229 ./dist/server.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bn.js": "^4.11.5",
+    "@types/chai": "^4.2.5",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.2",
+    "@types/helmet": "0.0.45",
+    "@types/lowdb": "^1.0.9",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.9",
+    "@types/sinon": "^7.5.0",
+    "chai": "^4.2.0",
+    "lint-staged": "^9.4.3",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "prettier": "^1.19.1",
+    "sinon": "^7.5.0",
+    "ts-mocha": "^6.0.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "@types/shelljs": "^0.8.6",
+    "axios": "^0.19.0",
+    "bn.js": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^3.21.2",
+    "lodash": "^4.17.15",
+    "lowdb": "^1.0.0",
+    "shelljs": "^0.8.3"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.tsx": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "all": true
+  }
+}
