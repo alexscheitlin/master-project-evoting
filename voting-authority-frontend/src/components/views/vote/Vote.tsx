@@ -40,7 +40,7 @@ export const Vote: React.FC<Props> = ({ handleNext }) => {
   };
 
   return (
-    <div>
+    <div className={classes.container}>
       <p>{state}</p>
       <p>{question}</p>
       <div className={classes.actionsContainer}>
@@ -53,12 +53,8 @@ export const Vote: React.FC<Props> = ({ handleNext }) => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  vote: {
-    margin: '0 1em 0 0'
-  },
   container: {
-    display: 'flex',
-    alignItems: 'stretch'
+    padding: '1em'
   },
   button: {
     marginTop: theme.spacing(1),

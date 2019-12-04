@@ -19,7 +19,7 @@ export const VOTE_STATES: string[] = [
 export enum VoteLabels {
   REGISTER = 'Node Registration',
   STARTUP = 'Infrastructure Setup',
-  CONFIG = 'Vote Setup',
+  CONFIG = 'Vote Configuration',
   VOTING = 'Voting Phase',
   TALLY = 'Vote Completed'
 }

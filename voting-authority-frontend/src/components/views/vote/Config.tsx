@@ -51,19 +51,13 @@ export const Config: React.FC<Props> = ({ handleNext }) => {
   };
 
   return (
-    <Grid item>
+    <div className={classes.container}>
       <Grid container direction={'column'}>
-        <Grid item className={classes.container}>
+        <Grid item>
           <h2>Please enter a new question for the vote to be created?</h2>
         </Grid>
-        <Grid item className={classes.container}>
-          <TextField
-            className={classes.vote}
-            label="Vote Question"
-            variant="outlined"
-            required
-            onChange={handleInputChange}
-          />
+        <Grid item>
+          <TextField label="Vote Question" variant="outlined" required onChange={handleInputChange} />
         </Grid>
         <Grid item className={classes.actionsContainer}>
           <Button
@@ -78,17 +72,13 @@ export const Config: React.FC<Props> = ({ handleNext }) => {
         </Grid>
         <ErrorSnackbar open={hasError} message={'Error - Request unsuccessful'} />
       </Grid>
-    </Grid>
+    </div>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  vote: {
-    margin: '0 1em 0 0'
-  },
   container: {
-    display: 'flex',
-    alignItems: 'stretch'
+    padding: '1em'
   },
   button: {
     marginTop: theme.spacing(1),

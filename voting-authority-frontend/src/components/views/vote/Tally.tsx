@@ -43,7 +43,7 @@ export const Tally: React.FC<Props> = ({ handleNext }) => {
   };
 
   return (
-    <div>
+    <div className={classes.container}>
       <h1>{`The state of the vote is: ${state}`}</h1>
       <p>{state}</p>
       <div className={classes.actionsContainer}>
@@ -56,12 +56,8 @@ export const Tally: React.FC<Props> = ({ handleNext }) => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  vote: {
-    margin: '0 1em 0 0'
-  },
   container: {
-    display: 'flex',
-    alignItems: 'stretch'
+    padding: '1em'
   },
   button: {
     marginTop: theme.spacing(1),

@@ -60,33 +60,29 @@ export const Voting: React.FC = () => {
           </Paper>
         )}
       </Grid>
-      <Grid item xs={1}>
+      <Grid item>
         <Divider orientation="vertical" />
       </Grid>
-      <Grid item xs={9}>
+      <Grid item className={classes.mainContainer}>
         {getStep(activeStep)}
       </Grid>
     </Grid>
   );
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1
-    },
-    button: {
-      marginTop: theme.spacing(1),
-      marginRight: theme.spacing(1)
-    },
-    actionsContainer: {
-      marginBottom: theme.spacing(2)
-    },
-    resetContainer: {
-      padding: theme.spacing(3)
-    },
-    divider: {
-      borderRight: `1px solid ${theme.palette.divider}`
-    }
-  })
-);
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    flexGrow: 1
+  },
+  mainContainer: {
+    display: 'flex',
+    flexGrow: 1
+  },
+  button: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  },
+  resetContainer: {
+    padding: theme.spacing(3)
+  }
+}));
