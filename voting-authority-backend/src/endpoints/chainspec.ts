@@ -18,12 +18,12 @@ const router: express.Router = express.Router()
 router.get('/chainspec', (req, res) => {
   const state: string = <string>getValueFromDB(VOTING_STATE)
 
-  // PRE_VOTING -> returns default chainspec for authority account creation
-  if (state === 'PRE_VOTING') {
+  // REGISTER -> returns default chainspec for authority account creation
+  if (state === 'REGISTER') {
     const defaultConfig = getObjectFromDB(DEFAULT_CHAINSPEC)
     res.status(200).json(defaultConfig)
   }
-  // VOTING -> returns the new chainspec containing all authority addresses
+  // STARTUP -> returns the new chainspec containing all authority addresses
   else {
     const customConfig = getObjectFromDB(CHAINSPEC)
     res.status(200).json(customConfig)
