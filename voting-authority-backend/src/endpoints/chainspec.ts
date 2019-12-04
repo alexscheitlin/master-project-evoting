@@ -30,13 +30,11 @@ router.get('/chainspec', (req, res) => {
   }
 })
 
-// TODO: adjust to new states, see state.ts
-
 router.post('/chainspec', (req, res) => {
   const state: string = <string>getValueFromDB(VOTING_STATE)
 
-  // no longer allow authority registration once the voting state has changed to VOTING
-  if (state === 'VOTING') {
+  // no longer allow authority registration once the voting state has changed to STARTUP
+  if (state === 'STARTUP') {
     res.status(400).json({ created: false, msg: AUTHORITY_REGISTRATION_CLOSED })
   }
 
