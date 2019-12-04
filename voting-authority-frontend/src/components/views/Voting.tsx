@@ -1,62 +1,66 @@
 import {
   Button,
   createStyles,
+  Divider,
   Grid,
   makeStyles,
   Paper,
   Step,
-  StepContent,
   StepLabel,
   Stepper,
   Theme,
   Typography
 } from '@material-ui/core';
 import React from 'react';
+import { useActiveStepStore, VOTE_LABELS } from '../../models/voting';
 import { VoteDone, VoteOpen, VoteSetup } from './vote';
-import { useActiveStepStore } from '../../models/voting';
-
-const getSteps = (): string[] => {
-  return ['Vote Setup', 'Vote Open', 'Vote Completed'];
-};
 
 export const Voting: React.FC = () => {
   const classes = useStyles();
-  const steps = getSteps();
 
-  const { activeStep, updateActiveStep, resetActiveStep } = useActiveStepStore();
+  const { activeStep, nextStep, reset } = useActiveStepStore();
 
-  const getStepContent = (step: number): any => {
+  const getStep = (step: number): any => {
     switch (step) {
       case 0:
-        return <VoteSetup handleNext={updateActiveStep} />;
+        return <VoteSetup handleNext={nextStep} />;
       case 1:
-        return <VoteOpen handleNext={updateActiveStep} />;
+        return <VoteOpen handleNext={nextStep} />;
       case 2:
-        return <VoteDone handleNext={updateActiveStep} />;
+        return <VoteDone handleNext={nextStep} />;
       default:
-        throw new Error('Invalid Component Selected!');
+        return (
+          <div>
+            <h1>Error</h1>
+          </div>
+        );
     }
   };
 
   return (
     <Grid container direction={'row'} className={classes.root}>
-      <Grid item>
+      <Grid item xs={2}>
         <Stepper activeStep={activeStep} orientation="vertical">
-          {steps.map((label, index) => (
+          {VOTE_LABELS.map(label => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
-              <StepContent>{getStepContent(index)}</StepContent>
             </Step>
           ))}
         </Stepper>
-        {activeStep === steps.length && (
+        {activeStep === VOTE_LABELS.length && (
           <Paper square elevation={0} className={classes.resetContainer}>
             <Typography>All steps completed. The vote is done.</Typography>
-            <Button onClick={resetActiveStep} className={classes.button}>
+            <Button onClick={reset} className={classes.button}>
               Reset
             </Button>
           </Paper>
         )}
+      </Grid>
+      <Grid item xs={1}>
+        <Divider orientation="vertical" />
+      </Grid>
+      <Grid item xs={9}>
+        {getStep(activeStep)}
       </Grid>
     </Grid>
   );

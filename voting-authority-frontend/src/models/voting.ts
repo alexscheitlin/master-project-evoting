@@ -1,18 +1,42 @@
 import { create } from 'zustand';
 
 export enum VotingState {
-  PRE_VOTING = 'PRE_VOTING',
+  REGISTER = 'REGISTER',
+  STARTUP = 'SETUP',
+  CONFIG = 'CONFIG',
   VOTING = 'VOTING',
-  POST_VOTING = 'POST_VOTING'
+  TALLY = 'TALLY'
 }
 
-const voteStates = [VotingState.PRE_VOTING, VotingState.VOTING, VotingState.POST_VOTING];
+export const VOTE_STATES: string[] = [
+  VotingState.REGISTER,
+  VotingState.STARTUP,
+  VotingState.CONFIG,
+  VotingState.VOTING,
+  VotingState.TALLY
+];
+
+export enum VoteLabels {
+  REGISTER = 'Node Registration',
+  STARTUP = 'Infrastructure Setup',
+  CONFIG = 'Vote Setup',
+  VOTING = 'Voting Phase',
+  TALLY = 'Vote Completed'
+}
+
+export const VOTE_LABELS: string[] = [
+  VoteLabels.REGISTER,
+  VoteLabels.STARTUP,
+  VoteLabels.CONFIG,
+  VoteLabels.VOTING,
+  VoteLabels.TALLY
+];
 
 export const [useVoteStateStore] = create(set => ({
-  state: VotingState.PRE_VOTING,
+  state: VotingState.REGISTER,
   nextState: () =>
-    set(prevState => ({ state: voteStates[(voteStates.indexOf(prevState.state) + 1) % voteStates.length] })),
-  reset: () => set({ state: VotingState.PRE_VOTING })
+    set(prevState => ({ state: VOTE_STATES[(VOTE_STATES.indexOf(prevState.state) + 1) % VOTE_STATES.length] })),
+  reset: () => set({ state: VotingState.REGISTER })
 }));
 
 export const [useVoteQuestionStore] = create(set => ({
@@ -22,6 +46,6 @@ export const [useVoteQuestionStore] = create(set => ({
 
 export const [useActiveStepStore] = create(set => ({
   activeStep: 0,
-  updateActiveStep: () => set(state => ({ activeStep: state.activeStep + 1 })),
-  resetActiveStep: () => set({ activeStep: 0 })
+  nextStep: () => set(prevState => ({ activeStep: prevState.activeStep + 1 })),
+  reset: () => set({ activeStep: 0 })
 }));

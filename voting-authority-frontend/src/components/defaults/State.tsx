@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React, { useState } from 'react';
 import { DEV_URL } from '../../constants';
-import { VotingState } from '../../models/voting';
+import { useVoteStateStore, VOTE_STATES } from '../../models/voting';
 
 type StateResult = {
   state: string;
@@ -12,26 +12,19 @@ type StateResult = {
 
 export const State: React.FC = () => {
   const classes = useStyles();
-  const VOTE_STATES: string[] = [VotingState.PRE_VOTING, VotingState.VOTING, VotingState.POST_VOTING];
-  const [voteState, setVoteState] = useState<string>(VOTE_STATES[0]);
-
-  const nextVoteState = (): string => {
-    return VOTE_STATES[(VOTE_STATES.indexOf(voteState) + 1) % VOTE_STATES.length];
-  };
+  const { state, nextState } = useVoteStateStore();
 
   const changeVoteState = async () => {
-    const newState: string = nextVoteState();
-
     // avoids ssl error with certificate
     const agent = new https.Agent({
       rejectUnauthorized: false
     });
 
-    const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, { state: newState }, { httpsAgent: agent });
+    const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
 
     if (response.status === 201) {
       const res: StateResult = response.data;
-      setVoteState(res.state);
+      nextState();
     } else {
       console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
     }
@@ -41,10 +34,10 @@ export const State: React.FC = () => {
     <Grid item className={classes.container}>
       <Grid item>
         <FormLabel className={classes.vote}>State of Vote: </FormLabel>
-        <FormLabel className={classes.vote}>{voteState}</FormLabel>
+        <FormLabel className={classes.vote}>{state}</FormLabel>
       </Grid>
       <Button className={classes.vote} variant={'outlined'} color={'primary'} onClick={changeVoteState}>
-        Change state to: {nextVoteState()}
+        Change state to: {VOTE_STATES[(VOTE_STATES.indexOf(state) + 1) % VOTE_STATES.length]}
       </Button>
     </Grid>
   );
