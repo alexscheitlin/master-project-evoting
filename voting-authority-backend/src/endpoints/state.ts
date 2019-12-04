@@ -41,10 +41,13 @@ router.post('/state', async (req, res) => {
       break
   }
 
+  let status = false
   if (newState === VotingState.VOTING) {
     await BallotManager.openBallot()
+    status = await BallotManager.isBallotOpen()
   } else if (newState === VotingState.TALLY) {
     await BallotManager.closeBallot()
+    status = await BallotManager.isBallotOpen()
   } else if (newState === '') {
     res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
     return
@@ -52,7 +55,7 @@ router.post('/state', async (req, res) => {
 
   setValue(VOTING_STATE, newState)
 
-  res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'` })
+  res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'`, isBallotOpen: `${status}` })
 })
 
 export default router

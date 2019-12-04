@@ -1,4 +1,6 @@
 import { getWeb3 } from '../../src/utils/web3'
+import { parityConfig } from '../../src/config'
+import { BallotManager } from '../../src/utils/ballotManager'
 
 const ballotContract = require('../toDeploy/Ballot.json')
 const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
@@ -7,9 +9,8 @@ const web3 = getWeb3()
 
 const deploy = async (abi: any, bytecode: string, question?: string): Promise<string> => {
   const hasVotingQuestion = question !== undefined
-  // TODO: figure out how to unlock the prefunded account which we will place inside the
-  // chainspec of the parity chain. Currently asuming that Authority has first account
-  const accounts = await web3.eth.getAccounts()
+
+  BallotManager.getAuthAccount()
 
   const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
@@ -17,9 +18,10 @@ const deploy = async (abi: any, bytecode: string, question?: string): Promise<st
       arguments: hasVotingQuestion ? [question] : undefined,
     })
     .send({
-      from: accounts[0],
+      from: parityConfig.accountAddress,
       gas: 6000000,
     })
+
   return deployedContract.options.address
 }
 

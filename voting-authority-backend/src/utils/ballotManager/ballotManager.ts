@@ -4,6 +4,7 @@ import { FFelGamal } from 'mp-crypto'
 import { getValueFromDB } from '../../database/database'
 import { DEPLOYMENT_ADDRESS } from '../../endpoints/deploy'
 import { getWeb3 } from '../web3'
+import { parityConfig } from '../../config'
 
 const ballotContract = require('../../../solidity/toDeploy/Ballot.json')
 
@@ -25,11 +26,12 @@ const getContract = () => {
 /**
  * Returns the account of the Authority
  */
-const getAuthAccount = async () => {
-  // TODO: figure out how to unlock the prefunded account which we will place inside the
-  // chainspec of the parity chain. Currently asuming that Authority has first account.
-  const accounts = await web3.eth.getAccounts()
-  return accounts[0]
+export const getAuthAccount = async () => {
+  // ignore the unlockAccount call as it expects a number but parity does only work with hex numbers
+  // null => 300 seconds (default)
+  // @ts-ignore
+  await web3.eth.personal.unlockAccount(parityConfig.accountAddress, parityConfig.accountPassword, null)
+  return parityConfig.accountAddress
 }
 
 export const setSystemParameters = async () => {
@@ -108,11 +110,10 @@ export const closeBallot = async () => {
  */
 export const isBallotOpen = async (): Promise<boolean> => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
   try {
-    return await contract.methods.getBallotStatus().call({ from: authAcc })
+    return await contract.methods.getBallotStatus().call()
   } catch (error) {
-    throw new Error('The satus of the Ballot could no be fetched.')
+    throw new Error('The status of the Ballot could no be fetched.')
   }
 }
 
