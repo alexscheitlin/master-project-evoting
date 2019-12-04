@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import { useActiveStepStore, VOTE_LABELS } from '../../models/voting';
-import { Config, Vote, Tally } from './vote';
+import { Register, Startup, Config, Vote, Tally } from './vote';
 
 export const Voting: React.FC = () => {
   const classes = useStyles();
@@ -23,15 +23,19 @@ export const Voting: React.FC = () => {
   const getStep = (step: number): any => {
     switch (step) {
       case 0:
-        return <Config handleNext={nextStep} />;
+        return <Register handleNext={nextStep} />;
       case 1:
-        return <Vote handleNext={nextStep} />;
+        return <Startup handleNext={nextStep} />;
       case 2:
+        return <Config handleNext={nextStep} />;
+      case 3:
+        return <Vote handleNext={nextStep} />;
+      case 4:
         return <Tally handleNext={nextStep} />;
       default:
         return (
           <div>
-            <h1>Error</h1>
+            <h1>Error: Step doesn't exist!</h1>
           </div>
         );
     }
