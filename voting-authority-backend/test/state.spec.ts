@@ -2,7 +2,7 @@ export {}
 import { expect } from 'chai'
 import { describe } from 'mocha'
 
-import * as State from '../src/state/state'
+import * as State from '../src/endpoints/state'
 
 describe('Voting State Tests', () => {
   describe('checkIfStateIsValid - Voting State Change Check', () => {

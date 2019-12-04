@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { FFelGamal } from 'mp-crypto'
 
 import { getValueFromDB } from '../../database/database'
-import { DEPLOYMENT_ADDRESS } from '../../deploy/deploy'
+import { DEPLOYMENT_ADDRESS } from '../../endpoints/deploy'
 import { getWeb3 } from '../web3'
 
 const ballotContract = require('../../../solidity/toDeploy/Ballot.json')

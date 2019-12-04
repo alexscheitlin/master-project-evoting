@@ -11,7 +11,7 @@ export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
 
-  const defaultConfig = JSON.parse(fs.readFileSync('./src/chainspec/defaultChainspec.json', 'utf-8'))
+  const defaultConfig = JSON.parse(fs.readFileSync('./src/database/defaultChainspec.json', 'utf-8'))
 
   // set defaults (if JSON is empty)
   db.defaults({
