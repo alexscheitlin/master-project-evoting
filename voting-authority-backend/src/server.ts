@@ -7,11 +7,11 @@ import cors from 'cors'
 import { config } from 'dotenv'
 import { resolve } from 'path'
 
-import logger from './utils/logger'
-import chainspec from './chainspec/chainspec'
-import state from './state/state'
 import { setupDB } from './database/database'
-import deploy from './deploy/deploy'
+import logger from './utils/logger'
+import chainspec from './endpoints/chainspec'
+import state from './endpoints/state'
+import deploy from './endpoints/deploy'
 
 // load environment variables based on NODE_ENV
 const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false

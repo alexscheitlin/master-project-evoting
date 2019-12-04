@@ -4,7 +4,7 @@ import { expect } from 'chai'
 import { describe } from 'mocha'
 import sinon from 'sinon'
 
-import * as Chainspec from '../src/chainspec/chainspec'
+import * as Chainspec from '../src/endpoints/chainspec'
 import * as DB from '../src/database/database'
 
 const CHAINSPEC: string = 'chainspec'
@@ -14,7 +14,7 @@ describe('Chainspec Tests', () => {
     let defaultChainspec
 
     before(() => {
-      defaultChainspec = JSON.parse(fs.readFileSync('./src/chainspec/defaultChainspec.json', 'utf-8'))
+      defaultChainspec = JSON.parse(fs.readFileSync('./src/database/defaultChainspec.json', 'utf-8'))
     })
 
     beforeEach(() => {
