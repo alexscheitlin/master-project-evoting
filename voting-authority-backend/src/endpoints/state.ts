@@ -15,7 +15,10 @@ const VOTING_STATE: string = 'state'
 
 const router: express.Router = express.Router()
 
-// TODO: create get request for state
+router.get('/state', (req, res) => {
+  const currentState: string = <string>getValueFromDB(VOTING_STATE)
+  res.status(201).json({ state: currentState })
+})
 
 router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
