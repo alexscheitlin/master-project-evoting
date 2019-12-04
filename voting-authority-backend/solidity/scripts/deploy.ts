@@ -7,15 +7,16 @@ const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
 
 const web3 = getWeb3()
 
-const deploy = async (abi: any, bytecode: string, question?: string): Promise<string> => {
+const deploy = async (abi: any, bytecode: string, question?: string, numberOfAuthNodes?: number): Promise<string> => {
   const hasVotingQuestion = question !== undefined
+  const hasNumberOfAuthNodes = numberOfAuthNodes !== undefined
 
   BallotManager.getAuthAccount()
 
   const deployedContract = await new web3.eth.Contract(abi)
     .deploy({
       data: bytecode,
-      arguments: hasVotingQuestion ? [question] : undefined,
+      arguments: [hasVotingQuestion ? question : undefined, hasNumberOfAuthNodes ? numberOfAuthNodes : undefined],
     })
     .send({
       from: parityConfig.accountAddress,
@@ -25,7 +26,7 @@ const deploy = async (abi: any, bytecode: string, question?: string): Promise<st
   return deployedContract.options.address
 }
 
-export const init = async (votingQuestion: string) => {
+export const init = async (votingQuestion: string, numberOfAuthNodes: number) => {
   try {
     const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
     console.log(`Library deployed at address: ${libAddress}`)
@@ -40,7 +41,7 @@ export const init = async (votingQuestion: string) => {
     )
     const Ballot = { ...ballotContract }
     Ballot.bytecode = ballotBytecode
-    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion)
+    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion, numberOfAuthNodes)
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
     return ballotAddress
