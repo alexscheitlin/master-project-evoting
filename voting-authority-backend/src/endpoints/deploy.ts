@@ -2,6 +2,7 @@ import express from 'express'
 import * as Deploy from '../../solidity/scripts/deploy'
 import { getValueFromDB, setValue } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
+import { parityConfig } from '../config'
 
 const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed. System parameters successfully set.'
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
@@ -27,7 +28,7 @@ router.post('/deploy', (req, res) => {
   if (questionIsInvalid) {
     res.status(400).json({ msg: VOTE_QUESTION_INVALID })
   } else {
-    Deploy.init(voteQuestion)
+    Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes)
       .then(address => {
         setValue(DEPLOYMENT_ADDRESS, address)
         setValue(DEPLOYMENT_STATE, true)
