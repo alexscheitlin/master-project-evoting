@@ -16,7 +16,7 @@ export const setupDB = () => {
   // set defaults (if JSON is empty)
   db.defaults({
     authorities: [],
-    state: 'PRE_VOTING',
+    state: 'REGISTER',
     chainspec: defaultConfig,
     defaultChainspec: defaultConfig,
     ballotAddress: '',
