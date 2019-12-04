@@ -1,4 +1,4 @@
-pragma solidity ^0.5.13;
+pragma solidity ^0.5.3;
 
 // based on contracts found here: https://github.com/witnet/elliptic-curve-solidity
 

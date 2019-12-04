@@ -14,7 +14,7 @@ This project also offers a **ganache-cli** dev chain, which is currently used in
 cd crypto
 npm run build
 npm link
-cd ../voter-frontend
+cd ../contracts
 npm link mp-crypto
 ```
 
