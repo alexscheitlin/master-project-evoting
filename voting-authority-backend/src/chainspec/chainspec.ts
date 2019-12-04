@@ -30,6 +30,8 @@ router.get('/chainspec', (req, res) => {
   }
 })
 
+// TODO: adjust to new states, see state.ts
+
 router.post('/chainspec', (req, res) => {
   const state: string = <string>getValueFromDB(VOTING_STATE)
 

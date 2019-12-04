@@ -15,6 +15,12 @@ const VOTING_STATE: string = 'state'
 
 const router: express.Router = express.Router()
 
+// TODO: create get request for state
+
+// TODO: create more states, the new states are: REGISTER, STARTUP, PREVOTING, VOTING, POSTVOTING
+
+// TODO: adjust POST request for changing to NEXT state, empty request body
+
 router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
 
