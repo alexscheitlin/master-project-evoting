@@ -1,6 +1,7 @@
 import express from 'express'
 import { setValue, getValueFromDB } from '../database/database'
 import { BallotManager } from '../utils/ballotManager/index'
+import { parityConfig } from '../config'
 
 export enum VotingState {
   REGISTER = 'REGISTER',
@@ -12,6 +13,7 @@ export enum VotingState {
 
 // database tables
 const VOTING_STATE: string = 'state'
+const AUTHORITIES: string = 'authorities'
 
 const router: express.Router = express.Router()
 
@@ -25,9 +27,20 @@ router.post('/state', async (req, res) => {
 
   var newState: string = ''
 
-  console.log(currentState)
   switch (currentState) {
     case VotingState.REGISTER:
+      // verify that the all sealers are registered
+      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
+      const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
+
+      if (registeredAuthorities.length !== requiredAuthorities) {
+        res.status(400).json({
+          state: currentState,
+          msg: `There are only ${registeredAuthorities.length} sealers registered. ${requiredAuthorities} are needed for the next stage.`,
+        })
+        return
+      }
+
       newState = VotingState.STARTUP
       break
     case VotingState.STARTUP:
