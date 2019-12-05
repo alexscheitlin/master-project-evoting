@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { verifyAddress } from '../utils/addressVerification'
-import { getValueFromDB, getObjectFromDB, setValue } from '../database/database'
+import { getValueFromDB, getObjectFromDB, setValue, addToList } from '../database/database'
 
 const SUCCESS_MSG: string = 'Successfully registered authority address.'
 const ADDRESS_INVALID: string = 'Address registration failed. Address is not valid or has already been registered.'
@@ -44,10 +44,12 @@ router.post('/chainspec', (req, res) => {
 
   if (!isAddressValid) {
     res.status(400).json({ created: false, msg: ADDRESS_INVALID })
+    return
   }
 
   // update list of validators
   const oldChainspec: any = getObjectFromDB(CHAINSPEC)
+  addToList(REGISTERED_AUTHORITIES, [voterAddress])
 
   try {
     const newChainspec: any = addValidatorToChainspec(oldChainspec, voterAddress)
