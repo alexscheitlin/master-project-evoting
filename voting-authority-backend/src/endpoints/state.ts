@@ -52,10 +52,9 @@ router.get('/state', async (req, res) => {
 
 router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
-
-  var newState: string = ''
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
+  let status = false
   switch (currentState) {
     case VotingState.REGISTER:
       // verify that the all sealers are registered
@@ -69,7 +68,7 @@ router.post('/state', async (req, res) => {
         return
       }
 
-      newState = VotingState.STARTUP
+      setValue(VOTING_STATE, VotingState.STARTUP)
       break
     case VotingState.STARTUP:
       // verify that all sealers are connected
@@ -83,30 +82,31 @@ router.post('/state', async (req, res) => {
         return
       }
 
-      newState = VotingState.CONFIG
+      // TODO: verify that the contracts are deployed
+
+      setValue(VOTING_STATE, VotingState.CONFIG)
       break
     case VotingState.CONFIG:
-      newState = VotingState.VOTING
+      // TODO: check that all public key shares are submitted
+      // TODO: check that the public key is generated
+
+      await BallotManager.openBallot()
+      status = await BallotManager.isBallotOpen()
+
+      setValue(VOTING_STATE, VotingState.VOTING)
       break
     case VotingState.VOTING:
-      newState = VotingState.TALLY
+      await BallotManager.closeBallot()
+      status = await BallotManager.isBallotOpen()
+
+      setValue(VOTING_STATE, VotingState.TALLY)
       break
+
+    default:
+      res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
   }
 
-  let status = false
-  if (newState === VotingState.VOTING) {
-    await BallotManager.openBallot()
-    status = await BallotManager.isBallotOpen()
-  } else if (newState === VotingState.TALLY) {
-    await BallotManager.closeBallot()
-    status = await BallotManager.isBallotOpen()
-  } else if (newState === '') {
-    res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
-    return
-  }
-
-  setValue(VOTING_STATE, newState)
-
+  const newState: string = getValueFromDB(VOTING_STATE)
   res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'`, isBallotOpen: `${status}` })
 })
 
