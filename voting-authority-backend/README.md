@@ -35,6 +35,10 @@ Run `npm install` to install all required dependencies.
 
 `npm run serve:prod` to start in https mode
 
+Start the POA-chain within the `poa-chain` sub-project using `./all-in-one.sh`.
+
+Interact with the backend using the requests within the postman collection `eVoting` (only shared with the collaborators und currently not included here).
+
 ## Testing
 
 Run `npm run test` to run all test of the project or `npm run test:watch` to continuously re-run the tests while developing.
