@@ -2,6 +2,9 @@ import express from 'express'
 import { setValue, getValueFromDB } from '../database/database'
 import { BallotManager } from '../utils/ballotManager/index'
 import { parityConfig } from '../config'
+import { getWeb3 } from '../utils/web3'
+
+const web3 = getWeb3()
 
 export enum VotingState {
   REGISTER = 'REGISTER',
@@ -17,17 +20,28 @@ const AUTHORITIES: string = 'authorities'
 
 const router: express.Router = express.Router()
 
-router.get('/state', (req, res) => {
+router.get('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
-  const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {
     case VotingState.REGISTER:
+      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
+
       res.status(201).json({
         state: currentState,
         registeredSealers: registeredAuthorities.length,
-        requiredSealers: requiredAuthorities
+        requiredSealers: requiredAuthorities,
+      })
+      break
+
+    case VotingState.STARTUP:
+      const connectedAuthorities: number = await web3.eth.net.getPeerCount()
+
+      res.status(201).json({
+        state: currentState,
+        connectedSealers: connectedAuthorities,
+        requiredSealers: requiredAuthorities,
       })
       break
 
