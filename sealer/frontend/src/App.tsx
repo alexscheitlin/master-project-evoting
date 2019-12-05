@@ -4,9 +4,14 @@ import axios from "axios";
 const App: React.FC = () => {
   const [status, setStatus] = useState("");
   const sendRequest = () => {
-    axios.post("/register", { address: "0x" }).then(res => {
-      setStatus(res.data.msg);
-    });
+    axios
+      .post(
+        "http://localhost:" + process.env.REACT_APP_BACKEND_PORT + "/register",
+        { address: "0x" }
+      )
+      .then(res => {
+        setStatus(res.data.msg);
+      });
   };
   return (
     <div>

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sealerNr=$1
 
 # copy keys
@@ -9,7 +11,7 @@ touch .env
 echo PARITY_VERSION=stable  >> .env
 echo NETWORK_NAME=Parity_PoA  >> .env
 echo SIGNER_ADDRESS=0x$(cat ../keys/sealer$sealerNr.json | jq --raw-output .address)  >> .env
-echo RPC_PORT=700$sealerNr >> .env
+echo RPC_PORT=701$sealerNr >> .env
 
 # copy chainspec
 cp ../chainspec/chain$sealerNr.json ../../sealer/node/chain.json
