@@ -69,15 +69,22 @@ export const addValidatorToChainspec = (chainspec: any, address: string): any =>
     throw new TypeError('Cannot read chainspec since it is null.')
   }
 
+  // updates the list of current validators in the current chainspec
   const validators: string[] = chainspec['engine']['authorityRound']['params']['validators']['list']
-
   if (validators === null || typeof validators === undefined) {
     throw new TypeError('Validators cannot be retrieved from chainspec since it is null.')
   }
-
-  // updates the list of current validators in the current chainspec
   validators.push(address)
   chainspec['engine']['authorityRound']['params']['validators']['list'] = validators
+
+  // pre-fund validator
+  const accounts: any = chainspec['accounts']
+  if (accounts === null || typeof accounts === undefined) {
+    throw new TypeError('Accounts cannot be retrieved from chainspec since it is null.')
+  }
+  accounts[`${address}`] = { balance: "10000000000000000000000" }
+  chainspec['accounts'] = accounts
+
   return chainspec
 }
 
