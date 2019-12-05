@@ -7,6 +7,14 @@ import FileSync from 'lowdb/adapters/FileSync'
 // TODO: replace with correct type
 let db: any
 
+// database tables
+export const STATE_TABLE: string = 'state'
+export const AUTHORITIES_TABLE: string = 'authorities'
+export const BALLOT_ADDRESS_TABLE: string = 'ballotAddress'
+export const BALLOT_DEPLOYED_TABLE: string = 'ballotDeployed'
+export const DEFAULT_CHAINSPEC_TABLE: string = 'defaultChainspec'
+export const CHAINSPEC_TABLE: string = 'chainspec'
+
 export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
@@ -15,12 +23,12 @@ export const setupDB = () => {
 
   // set defaults (if JSON is empty)
   db.defaults({
-    authorities: [],
     state: 'REGISTER',
-    chainspec: defaultConfig,
-    defaultChainspec: defaultConfig,
+    authorities: [],
     ballotAddress: '',
     ballotDeployed: false,
+    defaultChainspec: defaultConfig,
+    chainspec: defaultConfig,
   }).write()
 }
 

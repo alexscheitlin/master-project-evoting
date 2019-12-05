@@ -1,5 +1,5 @@
 import express from 'express'
-import { setValue, getValueFromDB } from '../database/database'
+import { setValue, getValueFromDB, STATE_TABLE, AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager/index'
 import { parityConfig } from '../config'
 import { getWeb3 } from '../utils/web3'
@@ -14,20 +14,15 @@ export enum VotingState {
   TALLY = 'TALLY',
 }
 
-// database tables
-const VOTING_STATE: string = 'state'
-const AUTHORITIES: string = 'authorities'
-const DEPLOYMENT_STATE: string = 'ballotDeployed'
-
 const router: express.Router = express.Router()
 
 router.get('/state', async (req, res) => {
-  const currentState: string = <string>getValueFromDB(VOTING_STATE)
+  const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {
     case VotingState.REGISTER:
-      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
+      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
 
       res.status(201).json({
         state: currentState,
@@ -52,14 +47,14 @@ router.get('/state', async (req, res) => {
 })
 
 router.post('/state', async (req, res) => {
-  const currentState: string = <string>getValueFromDB(VOTING_STATE)
+  const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   let status = false
   switch (currentState) {
     case VotingState.REGISTER:
       // verify that the all sealers are registered
-      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
+      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
 
       if (registeredAuthorities.length !== requiredAuthorities) {
         res.status(400).json({
@@ -69,7 +64,7 @@ router.post('/state', async (req, res) => {
         return
       }
 
-      setValue(VOTING_STATE, VotingState.STARTUP)
+      setValue(STATE_TABLE, VotingState.STARTUP)
       break
     case VotingState.STARTUP:
       // verify that all sealers are connected
@@ -84,7 +79,7 @@ router.post('/state', async (req, res) => {
       }
 
       // verify that the contracts are deployed
-      const isDeployed: boolean = <boolean>getValueFromDB(DEPLOYMENT_STATE)
+      const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
       if (!isDeployed) {
         res.status(400).json({
           msg: `The ballot contract is not deployed yet. Please create a voting question and deploy all contracts!`,
@@ -92,7 +87,7 @@ router.post('/state', async (req, res) => {
         return
       }
 
-      setValue(VOTING_STATE, VotingState.CONFIG)
+      setValue(STATE_TABLE, VotingState.CONFIG)
       break
     case VotingState.CONFIG:
       // TODO: check that all public key shares are submitted
@@ -101,20 +96,20 @@ router.post('/state', async (req, res) => {
       await BallotManager.openBallot()
       status = await BallotManager.isBallotOpen()
 
-      setValue(VOTING_STATE, VotingState.VOTING)
+      setValue(STATE_TABLE, VotingState.VOTING)
       break
     case VotingState.VOTING:
       await BallotManager.closeBallot()
       status = await BallotManager.isBallotOpen()
 
-      setValue(VOTING_STATE, VotingState.TALLY)
+      setValue(STATE_TABLE, VotingState.TALLY)
       break
 
     default:
       res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
   }
 
-  const newState: string = getValueFromDB(VOTING_STATE)
+  const newState: string = getValueFromDB(STATE_TABLE)
   res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'`, isBallotOpen: `${status}` })
 })
 
