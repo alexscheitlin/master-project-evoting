@@ -1,5 +1,7 @@
 # Voting Authority Backend
 
+![stages](./assets/stages.svg)
+
 ## Prerequisites
 
 - NodeJS 13+
