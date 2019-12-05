@@ -7,7 +7,8 @@ import { config } from 'dotenv'
 
 import logger from './utils/logger'
 import { setupDB } from './database/database'
-import startContainer from './routes/startContainer'
+import register from './routes/register'
+import boot from './routes/boot'
 
 config()
 
@@ -22,7 +23,8 @@ server.use(logger)
 server.use(cors({ origin: ['http://localhost:3004'] }))
 
 // add all routes
-server.use('/', startContainer)
+server.use('/', register)
+server.use('/', boot)
 
 // setup the database
 setupDB()
