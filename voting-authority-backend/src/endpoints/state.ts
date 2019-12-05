@@ -54,12 +54,12 @@ router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
 
   var newState: string = ''
+  const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {
     case VotingState.REGISTER:
       // verify that the all sealers are registered
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
-      const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
       if (registeredAuthorities.length !== requiredAuthorities) {
         res.status(400).json({
@@ -72,6 +72,17 @@ router.post('/state', async (req, res) => {
       newState = VotingState.STARTUP
       break
     case VotingState.STARTUP:
+      // verify that all sealers are connected
+      const connectedAuthorities: number = await web3.eth.net.getPeerCount()
+
+      if (connectedAuthorities !== requiredAuthorities) {
+        res.status(400).json({
+          state: currentState,
+          msg: `There are only ${connectedAuthorities} sealers connected. ${requiredAuthorities} are needed for the next stage.`,
+        })
+        return
+      }
+
       newState = VotingState.CONFIG
       break
     case VotingState.CONFIG:
