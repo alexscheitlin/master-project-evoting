@@ -37,8 +37,9 @@ router.post('/chainspec', (req, res) => {
   const state: string = <string>getValueFromDB(STATE_TABLE)
 
   // no longer allow authority registration once the voting state has changed to STARTUP
-  if (state === 'STARTUP') {
+  if (state !== 'REGISTER') {
     res.status(400).json({ created: false, msg: AUTHORITY_REGISTRATION_CLOSED })
+    return
   }
 
   // validate authority ethereum address
