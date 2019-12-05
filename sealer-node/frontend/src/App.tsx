@@ -4,13 +4,14 @@ import axios from "axios";
 const App: React.FC = () => {
   const [status, setStatus] = useState("");
   const sendRequest = () => {
-    axios.get("/startContainer").then(res => {
-      console.log(res);
+    axios.post("/boot").then(res => {
+      setStatus(res.data.msg);
     });
   };
   return (
     <div>
-      <h3>Response{status}</h3>
+      <h3>Response</h3>
+      <p>{status}</p>
       <button onClick={sendRequest}>send Request</button>
     </div>
   );
