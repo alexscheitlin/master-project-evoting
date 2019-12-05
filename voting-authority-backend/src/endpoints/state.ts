@@ -17,6 +17,7 @@ export enum VotingState {
 // database tables
 const VOTING_STATE: string = 'state'
 const AUTHORITIES: string = 'authorities'
+const DEPLOYMENT_STATE: string = 'ballotDeployed'
 
 const router: express.Router = express.Router()
 
@@ -82,7 +83,14 @@ router.post('/state', async (req, res) => {
         return
       }
 
-      // TODO: verify that the contracts are deployed
+      // verify that the contracts are deployed
+      const isDeployed: boolean = <boolean>getValueFromDB(DEPLOYMENT_STATE)
+      if (!isDeployed) {
+        res.status(400).json({
+          msg: `The ballot contract is not deployed yet. Please create a voting question and deploy all contracts!`,
+        })
+        return
+      }
 
       setValue(VOTING_STATE, VotingState.CONFIG)
       break
