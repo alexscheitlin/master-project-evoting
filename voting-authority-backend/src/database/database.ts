@@ -21,7 +21,6 @@ export const setupDB = () => {
     defaultChainspec: defaultConfig,
     ballotAddress: '',
     ballotDeployed: false,
-    tokens: [],
   }).write()
 }
 
