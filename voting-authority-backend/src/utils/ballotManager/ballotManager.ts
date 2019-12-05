@@ -1,8 +1,7 @@
 import BN = require('bn.js')
 import { FFelGamal } from 'mp-crypto'
 
-import { getValueFromDB } from '../../database/database'
-import { DEPLOYMENT_ADDRESS } from '../../endpoints/deploy'
+import { getValueFromDB, BALLOT_ADDRESS_TABLE } from '../../database/database'
 import { getWeb3 } from '../web3'
 import { parityConfig } from '../../config'
 
@@ -18,7 +17,7 @@ const toHex = (number: BN) => web3.utils.toHex(number)
  * Returns a Contract object with which one can interface with the Ballot.
  */
 const getContract = () => {
-  const contractAddress: string = getValueFromDB(DEPLOYMENT_ADDRESS)
+  const contractAddress: string = getValueFromDB(BALLOT_ADDRESS_TABLE)
   const contract = new web3.eth.Contract(ballotContract.abi, contractAddress)
   return contract
 }
