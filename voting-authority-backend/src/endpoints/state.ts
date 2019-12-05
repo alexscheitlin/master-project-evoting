@@ -19,7 +19,21 @@ const router: express.Router = express.Router()
 
 router.get('/state', (req, res) => {
   const currentState: string = <string>getValueFromDB(VOTING_STATE)
-  res.status(201).json({ state: currentState })
+  const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES)
+  const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
+
+  switch (currentState) {
+    case VotingState.REGISTER:
+      res.status(201).json({
+        state: currentState,
+        registeredSealers: registeredAuthorities.length,
+        requiredSealers: requiredAuthorities
+      })
+      break
+
+    default:
+      res.status(201).json({ state: currentState })
+  }
 })
 
 router.post('/state', async (req, res) => {
