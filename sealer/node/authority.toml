@@ -4,18 +4,9 @@ chain = "/parity/config/chain.json"
 [network]
 port = 30301
 
-# [rpc]
-# port = 7001
-# apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts"]
-
 [rpc]
-interface = "0.0.0.0"
 cors = ["all"]
-hosts = ["all"]
 apis = ["web3", "eth", "net", "parity", "traces", "rpc", "personal", "parity_accounts", "signer", "parity_set"]
-
-# [websockets]
-# port = 7001
 
 [account]
 password = ["/parity/config/authority.pwd"]

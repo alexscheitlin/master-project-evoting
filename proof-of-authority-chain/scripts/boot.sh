@@ -9,12 +9,13 @@ touch .env
 echo PARITY_VERSION=stable  >> .env
 echo NETWORK_NAME=Parity_PoA  >> .env
 echo SIGNER_ADDRESS=0x$(cat ../keys/sealer$sealerNr.json | jq --raw-output .address)  >> .env
+echo RPC_PORT=700$sealerNr >> .env
 
 # copy chainspec
 cp ../chainspec/chain$sealerNr.json ../../sealer/node/chain.json
 
 # boot the node with the given config
-docker-compose -f ../../sealer/docker-compose.sealer.yml up --build --detach
+docker-compose -p sealer$sealerNr -f ../../sealer/docker-compose.sealer.yml up --build --detach
 
 # delete keys, chainspec and .env
 rm .env

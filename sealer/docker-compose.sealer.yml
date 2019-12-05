@@ -14,9 +14,6 @@ services:
       --jsonrpc-cors all
       --no-persistent-txqueue
       --fast-unlock
+      --jsonrpc-port=${RPC_PORT}
     ports:
-      - 8545:8545
-      - 8546:8546
-      - 8180:8180
-      - 30303:30303
-      # TODO: make ports also dynamic with env file
+      - ${RPC_PORT}:${RPC_PORT}
