@@ -12,15 +12,12 @@ import boot from './routes/boot'
 
 config()
 
-// get NODE_ENV "param"
-const NODE_ENV = process.env.NODE_ENV
-
 // setup express server with request body parsing and logging
 const server = express()
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(logger)
-server.use(cors({ origin: ['http://localhost:3004'] }))
+server.use(cors({ origin: 'http://localhost:' + process.env.FRONTEND_PORT }))
 
 // add all routes
 server.use('/', register)
@@ -29,6 +26,9 @@ server.use('/', boot)
 // setup the database
 setupDB()
 
-server.listen(process.env.PORT, () => {
-  console.log(`HTTP server started at http://localhost:${process.env.PORT}`)
+console.log(process.env.FRONTEND_PORT)
+
+server.listen(4000, () => {
+  console.log(`HTTP server started at http://localhost:${4000}`)
+  console.log(`The chain can be reached via: ${process.env.CHAIN_URL} if it's running`)
 })
