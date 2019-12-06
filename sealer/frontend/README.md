@@ -1,1 +1,0 @@
-# Sealer Node Frontend
