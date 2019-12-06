@@ -1,0 +1,10 @@
+[parity]
+chain = "chain/spec-1.json"
+base_path = "/tmp/parity/user"
+[network]
+port = 30300
+[rpc]
+port = 8540
+apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts"]
+[websockets]
+port = 8450
