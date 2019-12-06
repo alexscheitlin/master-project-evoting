@@ -1,4 +1,0 @@
-#!/bin/bash
-
-docker stop sealer2_authority_1 sealer1_authority_1 sealer0_authority_1
-docker rm sealer2_authority_1 sealer1_authority_1 sealer0_authority_1
