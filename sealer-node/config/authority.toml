@@ -1,0 +1,14 @@
+[parity]
+chain = "/parity/config/chain.json"
+
+[account]
+password = ["/parity/sealer.pwd"]
+
+[rpc]
+cors = ["all"]
+hosts = ["all"]
+apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts", "signer"]
+
+[mining]
+reseal_on_txs = "none"
+usd_per_tx = "0"
