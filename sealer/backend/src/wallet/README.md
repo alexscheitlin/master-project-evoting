@@ -1,1 +1,0 @@
-The key store file (`JSON`) will be copied here before the two containers are started. This key is needed by the authority at runtime to register with the authority backend. This wallet address will also be prefunded on the chain in order to send transactions.
