@@ -1,0 +1,37 @@
+version: "3"
+services:
+  authority0:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        NETWORK_NAME: ${NETWORK_NAME}
+        ID: ${ID}
+    command: >
+      --jsonrpc-cors all
+      --port ${PORT}
+      --jsonrpc-port ${RPC_PORT}
+      --ws-port ${WS_PORT}
+      --jsonrpc-interface all
+      --engine-signer ${SIGNER_ADDRESS}
+      --config /parity/config/authority.toml
+    ports:
+      - ${RPC_PORT}:${RPC_PORT}
+
+  authority1:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        NETWORK_NAME: ${NETWORK_NAME}
+        ID: ${ID2}
+    command: >
+      --jsonrpc-cors all
+      --port ${PORT2}
+      --jsonrpc-port ${RPC_PORT2}
+      --ws-port ${WS_PORT2}
+      --jsonrpc-interface all
+      --engine-signer ${SIGNER_ADDRESS2}
+      --config /parity/config/authority.toml
+    ports:
+      - ${RPC_PORT2}:${RPC_PORT2}
