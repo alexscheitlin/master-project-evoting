@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  backend:
+    build: ./backend
+    expose:
+      - ${BACKEND_PORT}
+    environment:
+      API_HOST: ${BACKEND_PORT}
+      APP_SERVER_PORT: ${BACKEND_PORT}
+    ports:
+      - ${BACKEND_PORT}:4000 # map the internal express port to ${BACKEND_PORT}
+    volumes:
+      - ./backend/src:/usr/src/backend/src
+      - ./backend/src/chainspec:/usr/src/backend/chainspec
+    command: npm run serve:dev
+
+  frontend:
+    build: ./frontend
+    environment:
+      - REACT_APP_PORT=${FRONTEND_PORT}
+      - REACT_APP_BACKEND_PORT=${BACKEND_PORT}
+    expose:
+      - ${FRONTEND_PORT}
+    ports:
+      - ${FRONTEND_PORT}:3000 # map the internal react port to ${FRONTEND_PORT}
+    volumes:
+      - ./frontend/src:/usr/src/frontend/src
+      - ./frontend/public:/usr/src/frontend/public
+    links:
+      - backend
+    command: npm run start
