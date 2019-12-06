@@ -12,7 +12,7 @@ enode=$(./execute-rpc-call.sh "$host" "$method" "$params" | jq .result)
 echo $enode
 
 # register node
-host="localhost:7010"
+host="localhost:$2"
 method="parity_addReservedPeer"
 params="$enode"
 result=$(./execute-rpc-call.sh "$host" "$method" "$params")

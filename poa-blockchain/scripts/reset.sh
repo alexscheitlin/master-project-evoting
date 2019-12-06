@@ -1,0 +1,7 @@
+docker stop sealer2_authority_1
+docker stop sealer1_authority_1
+docker stop sealer0_authority_1
+
+docker rm sealer2_authority_1
+docker rm sealer1_authority_1
+docker rm sealer0_authority_1
