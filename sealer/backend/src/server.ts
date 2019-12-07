@@ -8,7 +8,7 @@ import { config } from 'dotenv'
 import logger from './utils/logger'
 import { setupDB } from './database/database'
 import register from './routes/register'
-import boot from './routes/boot'
+import generateKeys from './routes/generateKeys'
 
 config()
 
@@ -21,7 +21,7 @@ server.use(cors({ origin: 'http://localhost:' + process.env.FRONTEND_PORT }))
 
 // add all routes
 server.use('/', register)
-server.use('/', boot)
+server.use('/', generateKeys)
 
 // setup the database
 setupDB()

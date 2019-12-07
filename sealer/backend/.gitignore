@@ -70,3 +70,6 @@ dist/
 # vscode launch command
 .vscode/*
 !.vscode/launch.json
+
+# dont commit chain keys
+/src/wallet/sealer*
