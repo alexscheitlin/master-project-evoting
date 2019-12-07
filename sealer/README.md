@@ -1,69 +1,27 @@
-# Authority Node (Docker)
+# Sealer Node
 
-example: https://github.com/mukul13/docker-example
+The Sealer node consists of a minimal Backend, Frontend and a full Parity-Node, with which it will seal blocks on the PoA Blockchain and send cryptographic material to the `Ballot` for **Distributed Key Generation**.
 
-## Needed function
+**Important: the two sealer containers + the parity-node should be started from within `poa-blockchain/scripts/start-sealer.sh` and `poa-blockchain/scripts/dev-chain.sh`**
 
-1. `getChainspec()`
-2. `startNode(chainspec)`
-3. `createSealerWallet()`
-4. `shutdownNode()`
-5. `registerSealerWalletWithAuthority()`
-6. wait until all sealers submitted their wallet address to authority (`isPrevotingPhaseDone(): boolean`)
-7. `getChainspec()`
-8. `startNode(chainspec)`
-9. `registerENode()`
-10. ... authority deploys `Ballot` (GET `/deploy` -> returns address or undefined)
-11. `crypto.generateKeyPair()`
-12. `ballotContract.submitPublicKeyPair()`
-13. VOTING PHASE IS OPEN until `ballotContract.isBallotOpen() === false`
-14. `tallyVotes()`
-    - `ballotContract.fetchVotes()` (just get the votes)
-    - `homomorphicallyAddVotes()`
-    - `createDecryptedShare()`
-    - `createDecryptionProof()`
-    - `ballotContract.submitDecryptedShare()`
+The general steps to take are the following:
 
-# TODOs
+1. Sealer creates a KEY FILE (JSON) and stores it with the password - there are already some in `poa-blockchain/keys`
+1. Start `poa-blockchain/scripts/start-sealer.sh 0` (will start backend and frontend of sealer 0).
+1. **TODO** register the address with the auth backend (the one generated beforehand)
+1. **TODO** wait for some time...
+1. **TODO** get chainspec
+1. Start parity nodes with `poa-blockchain/scripts/dev-chain.sh` (will start three sealer nodes, with `chain.json` taken from `/backend/src/chainspec`)
+1. **TODO** Make RPC call to peer with other nodes. (basically send the enode)
+1. **TODO** Wait for Authority to deploy the `Ballot.sol` and set the System Parameters.
+1. **TODO** Get address of Ballot contract (GET on `/deploy` auth backend)
+1. **TODO** `crypto.generateKeyPair()`
+1. **TODO** `ballotContract.submitPublicKeyPair()`
+1. VOTING PHASE...
+1. **TODO** `tallyVotes()` (Once the VOTING PHASE is over)
 
-- create one project for starting ONE sealer node
-  - specify location of key in docker-compose.yml
-- test dockerode
-
-1. Sealer creates a KEY FILE (JSON)
-2. Save key file and password somewhere
-3. Start docker-compose.yml and specify where the key is
-4. docker-cmpose will start backend and frontend
-5. register the address with the auth backend (the one generated beforehand)
-6. wait for some time...
-7. get chainspec
-8. backend starts parity node (copy keys, mount poa-node)
-9. GET authority URL:PORT to send enode to
-10. RPC call to register enode
-
-## Options
-
-### Option 1
-
-Frontend locally
-Backend locally
-Node -> docker
-
-### Option 2
-
-**compose**
-
-Frontend docker
-Backend docker -> get chainspec --> save to shared volumne
-
-**compose/script**
-
-script gets chainspec from shared volume
-Node docker (shared volume for chainspec)
-
-- Node needs to be started manually via CLI at some point
-
-### Option 3 - Docker in Docker
-
-Frontend
-Backend[docker -> build and spin up Node]
+   - `ballotContract.fetchVotes()` (just get the votes)
+   - `homomorphicallyAddVotes()`
+   - `createDecryptedShare()`
+   - `createDecryptionProof()`
+   - `ballotContract.submitDecryptedShare()`
