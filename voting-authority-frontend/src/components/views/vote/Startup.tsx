@@ -1,5 +1,5 @@
+import { Button, makeStyles, Theme } from '@material-ui/core';
 import React from 'react';
-import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
 import { useVoteStateStore } from '../../../models/voting';
 
 interface Props {
