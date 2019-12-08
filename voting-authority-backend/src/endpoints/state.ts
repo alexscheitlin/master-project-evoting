@@ -26,7 +26,7 @@ router.get('/state', async (req, res) => {
     case VotingState.REGISTER:
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
 
-      res.status(201).json({
+      res.status(200).json({
         state: currentState,
         registeredSealers: registeredAuthorities.length,
         requiredSealers: requiredAuthorities,
@@ -37,7 +37,7 @@ router.get('/state', async (req, res) => {
     case VotingState.STARTUP:
       const connectedAuthorities: number = await web3.eth.net.getPeerCount()
 
-      res.status(201).json({
+      res.status(200).json({
         state: currentState,
         connectedSealers: connectedAuthorities,
         requiredSealers: requiredAuthorities,
@@ -45,7 +45,7 @@ router.get('/state', async (req, res) => {
       break
 
     default:
-      res.status(201).json({ state: currentState })
+      res.status(200).json({ state: currentState })
   }
 })
 
