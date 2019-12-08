@@ -72,4 +72,4 @@ dist/
 !.vscode/launch.json
 
 # dont commit chain keys
-/src/wallet/sealer*
+/wallet/sealer*
