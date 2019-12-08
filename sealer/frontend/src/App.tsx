@@ -2,6 +2,7 @@ import {
   Divider,
   Grid,
   makeStyles,
+  Paper,
   Step,
   StepLabel,
   Stepper,
@@ -33,12 +34,13 @@ const phases = [
 const App: React.FC = () => {
   const classes = useStyles();
 
+  const voteStore = Store.useVoteStateStore();
   const { activeStep, nextStep, reset } = Store.useActiveStepStore();
 
   const getStep = (step: number): any => {
     switch (step) {
       case 0:
-        return <Register />;
+        return <Register nextStep={nextStep} />;
       case 1:
         return <StartNode />;
       case 2:
@@ -54,8 +56,8 @@ const App: React.FC = () => {
     <Grid container direction={"row"} className={classes.root}>
       <Grid item xs={2}>
         <Stepper activeStep={activeStep} orientation="vertical">
-          {phases.map((label: any) => (
-            <Step key={label.label}>
+          {phases.map((label: any, i) => (
+            <Step key={i}>
               <StepLabel>{label.title}</StepLabel>
             </Step>
           ))}
@@ -65,9 +67,8 @@ const App: React.FC = () => {
         <Divider orientation="vertical" />
       </Grid>
       <Grid item className={classes.mainContainer}>
-        <div className={classes.contentWrapper}>{getStep(activeStep)}</div>
+        <Paper className={classes.contentWrapper}>{getStep(activeStep)}</Paper>
       </Grid>
-      <button onClick={nextStep}>next</button>
     </Grid>
   );
 };
@@ -80,10 +81,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   mainContainer: {
     display: "flex",
-    flexGrow: 1
+    flexGrow: 1,
+    padding: theme.spacing(1)
   },
   contentWrapper: {
-    padding: theme.spacing(1)
+    margin: "auto",
+    padding: theme.spacing(3, 2)
   },
   button: {
     marginTop: theme.spacing(1),
