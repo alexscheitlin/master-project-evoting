@@ -33,8 +33,6 @@ const phases = [
 
 const App: React.FC = () => {
   const classes = useStyles();
-
-  const voteStore = Store.useVoteStateStore();
   const { activeStep, nextStep, reset } = Store.useActiveStepStore();
 
   const getStep = (step: number): any => {
@@ -42,7 +40,7 @@ const App: React.FC = () => {
       case 0:
         return <Register nextStep={nextStep} />;
       case 1:
-        return <StartNode />;
+        return <StartNode nextStep={nextStep} />;
       case 2:
         return <KeyGeneration />;
       case 3:
