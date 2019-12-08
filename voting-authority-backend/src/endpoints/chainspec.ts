@@ -1,18 +1,11 @@
 import express from 'express'
-import {
-  addToList,
-  AUTHORITIES_TABLE,
-  CHAINSPEC_TABLE,
-  DEFAULT_CHAINSPEC_TABLE,
-  getObjectFromDB,
-  getValueFromDB,
-  setValue,
-  STATE_TABLE,
-} from '../database/database'
+import { addToList, AUTHORITIES_TABLE, CHAINSPEC_TABLE, getObjectFromDB, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
 import { verifyAddress } from '../utils/addressVerification'
+import { parityConfig } from '../config'
 
 const SUCCESS_MSG: string = 'Successfully registered authority address.'
 const ADDRESS_INVALID: string = 'Address registration failed. Address is not valid or has already been registered.'
+const AUTHORITY_REGISTRATION_ONGOING: string = 'Authority registration is ongoing. Please wait until it is finished.'
 const AUTHORITY_REGISTRATION_CLOSED: string = 'Authority registration is closed. Cannot register Authority address.'
 
 let clients: RegisteredClient[] = []
@@ -64,13 +57,18 @@ const sendValidatorToAllClients = (newValidator: string) => {
 
 router.get('/chainspec', (req, res) => {
   const state: string = <string>getValueFromDB(STATE_TABLE)
+  const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
+  const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
 
   // REGISTER -> returns default chainspec for authority account creation
   if (state === 'REGISTER') {
-    const defaultConfig = getObjectFromDB(DEFAULT_CHAINSPEC_TABLE)
-    res.status(200).json(defaultConfig)
+    res.status(400).json({
+      msg: AUTHORITY_REGISTRATION_ONGOING,
+      registeredSealers: registeredAuthorities.length,
+      requiredSealers: requiredAuthorities,
+    })
   }
-  // STARTUP -> returns the new chainspec containing all authority addresses
+  // STARTUP -> returns the chainspec containing all authority addresses
   else {
     const customConfig = getObjectFromDB(CHAINSPEC_TABLE)
     res.status(200).json(customConfig)
