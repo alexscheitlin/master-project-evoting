@@ -8,44 +8,24 @@ import {
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import clsx from "clsx";
+import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 
+import { config } from "../../config";
 import { SealerBackend } from "../../services";
 import { delay } from "../../utils/helper";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: "flex",
-      alignItems: "center"
-    },
-    wrapper: {
-      display: "flex",
-      alignItems: "center"
-    },
-    buttonSuccess: {
-      backgroundColor: green[500],
-      "&:hover": {
-        backgroundColor: green[700]
-      }
-    },
-    buttonProgress: {
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      marginTop: -12,
-      marginLeft: -12
-    },
-    statusButtonWrapper: {
-      marginLeft: 10
-    }
-  })
-);
+interface StateResponse {
+  state: any;
+  registeredSealers: number;
+  requiredSealers: number;
+}
 
-interface Props {}
+interface Props {
+  nextStep: () => void;
+}
 
-export const Register: React.FC<Props> = () => {
+export const Register: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -53,10 +33,55 @@ export const Register: React.FC<Props> = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [wallet, setWallet] = useState("");
 
+  const [state, setState] = useState();
+  const [requiredSealers, setRequiredSealers] = useState<number>(3);
+  const [sealers, setSealers] = useState<string[]>([]);
+  const [listening, setListening] = useState<boolean>(false);
+
+  const [readyForNextStep, setReadyForNextStep] = useState<boolean>(false);
+
+  useEffect(() => {
+    setReadyForNextStep(requiredSealers === sealers.length);
+  }, [sealers, requiredSealers]);
+
+  useEffect(() => {
+    const getRequiredValidators = async () => {
+      try {
+        const response: AxiosResponse<StateResponse> = await axios.get(
+          config.authBackend.devUrl + "/state"
+        );
+        if (response.status === 201) {
+          setRequiredSealers(response.data.requiredSealers);
+          setState(response.data.state);
+        } else {
+          throw new Error(
+            `GET /state -> status code not 200. Status code is: ${response.status}`
+          );
+        }
+      } catch (error) {
+        console.log("ERROR");
+      }
+    };
+
+    getRequiredValidators();
+  }, []);
+
+  useEffect(() => {
+    if (!listening) {
+      const events = new EventSource(config.authBackend.devUrl + "/registered");
+      events.onmessage = event => {
+        const parsedData = JSON.parse(event.data);
+        setSealers(sealers => sealers.concat(parsedData));
+      };
+
+      setListening(true);
+    }
+  }, [listening, sealers]);
+
   useEffect(() => {
     async function init() {
       const address = await SealerBackend.getWalletAddress();
-      setWallet("0x" + address);
+      setWallet(address);
     }
     init();
     return () => {};
@@ -64,48 +89,88 @@ export const Register: React.FC<Props> = () => {
 
   const register = async () => {
     try {
-      setSuccess(false);
       setLoading(true);
-      await SealerBackend.registerWallet(wallet);
+      setSuccess(false);
       await delay(1000);
+      await SealerBackend.registerWallet(wallet);
       setSuccess(true);
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      setSuccess(true);
       setError(true);
+      console.log(error);
       setErrorMsg(
         "Could not register Address. You are probably already registered."
       );
     }
   };
 
-  const buttonClassname = clsx({
-    [classes.buttonSuccess]: success
-  });
-
   return (
-    <div>
+    <div className={classes.root}>
+      <Typography variant="h3">REGISTRATION</Typography>
       <Typography>
         <strong>Sealer Wallet: </strong> {wallet}
       </Typography>
+      <div className={classes.sealerInfo}>
+        <Typography variant="body2">
+          {sealers.length} of {requiredSealers} Sealers registered
+        </Typography>
+      </div>
       <div className={classes.wrapper}>
         <Button
-          className={buttonClassname}
+          className={classes.button}
           variant="contained"
-          color="primary"
-          disabled={loading || success}
+          disabled={loading}
           onClick={register}
         >
-          Register Wallet
+          Submit
         </Button>
+        <Button
+          className={classes.button}
+          variant="contained"
+          disabled={!readyForNextStep}
+          onClick={nextStep}
+          color="primary"
+        >
+          Next
+        </Button>
+      </div>
+      <div className={classes.successIcon}>
         <div className={classes.statusButtonWrapper}>
           {loading && <CircularProgress size={24} />}
-          {success && (
-            <CheckCircleIcon style={{ fontSize: 24, color: green[500] }} />
-          )}
         </div>
+        {success && (
+          <CheckCircleIcon style={{ fontSize: 24, color: green[500] }} />
+        )}
       </div>
-      <div>{error && <div>{errorMsg}</div>}</div>
+      <Typography variant="caption">{error && errorMsg}</Typography>
     </div>
   );
 };
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      position: "relative"
+    },
+    wrapper: {
+      display: "flex",
+      alignItems: "center"
+    },
+    button: {
+      marginRight: theme.spacing(1)
+    },
+    statusButtonWrapper: {
+      marginLeft: 10
+    },
+    sealerInfo: {
+      padding: theme.spacing(3, 0)
+    },
+    successIcon: {
+      position: "absolute",
+      bottom: 0,
+      right: 0
+    }
+  })
+);
