@@ -31,7 +31,7 @@ cp ../backend/src/chainspec/chain.json ./config
 
 # create env variable for docker-compose
 echo ID=$node >> .env
-echo NETWORK_NAME=Parity_PoA >> .env
+echo NETWORK_NAME=VotingPoA >> .env
 echo PORT=3030$node >> .env
 echo WS_PORT=501$node >> .env
 echo RPC_PORT=701$node >> .env
