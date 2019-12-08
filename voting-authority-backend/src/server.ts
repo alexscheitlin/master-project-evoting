@@ -10,6 +10,7 @@ import { resolve } from 'path'
 import { setupDB } from './database/database'
 import logger from './utils/logger'
 import chainspec from './endpoints/chainspec'
+import connection from './endpoints/connection'
 import state from './endpoints/state'
 import deploy from './endpoints/deploy'
 
@@ -27,6 +28,7 @@ server.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'ht
 
 // add all routes
 server.use('/', chainspec)
+server.use('/', connection)
 server.use('/', state)
 server.use('/', deploy)
 

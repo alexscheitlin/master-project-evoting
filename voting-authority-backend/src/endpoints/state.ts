@@ -20,7 +20,9 @@ router.get('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
+  // report current state along with information about ...
   switch (currentState) {
+    // ... how many sealers are required and already registered
     case VotingState.REGISTER:
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
 
@@ -31,6 +33,7 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // ... how many sealers are required and already connected
     case VotingState.STARTUP:
       const connectedAuthorities: number = await web3.eth.net.getPeerCount()
 
@@ -50,12 +53,12 @@ router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
-  let status = false
+  let isBallotOpen = false
+
   switch (currentState) {
     case VotingState.REGISTER:
-      // verify that the all sealers are registered
+      // verify that all sealers are registered
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
-
       if (registeredAuthorities.length !== requiredAuthorities) {
         res.status(400).json({
           state: currentState,
@@ -69,7 +72,6 @@ router.post('/state', async (req, res) => {
     case VotingState.STARTUP:
       // verify that all sealers are connected
       const connectedAuthorities: number = await web3.eth.net.getPeerCount()
-
       if (connectedAuthorities !== requiredAuthorities) {
         res.status(400).json({
           state: currentState,
@@ -94,13 +96,13 @@ router.post('/state', async (req, res) => {
       // TODO: check that the public key is generated
 
       await BallotManager.openBallot()
-      status = await BallotManager.isBallotOpen()
+      isBallotOpen = await BallotManager.isBallotOpen()
 
       setValue(STATE_TABLE, VotingState.VOTING)
       break
     case VotingState.VOTING:
       await BallotManager.closeBallot()
-      status = await BallotManager.isBallotOpen()
+      isBallotOpen = await BallotManager.isBallotOpen()
 
       setValue(STATE_TABLE, VotingState.TALLY)
       break
@@ -110,7 +112,7 @@ router.post('/state', async (req, res) => {
   }
 
   const newState: string = getValueFromDB(STATE_TABLE)
-  res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'`, isBallotOpen: `${status}` })
+  res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'`, isBallotOpen: `${isBallotOpen}` })
 })
 
 export default router
