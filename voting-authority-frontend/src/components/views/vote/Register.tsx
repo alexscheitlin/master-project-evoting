@@ -35,15 +35,20 @@ const List: React.FC<Validators> = ({ items }: Validators) => (
 export const Register: React.FC<Props> = ({ handleNext }: Props) => {
   const classes = useStyles();
 
+  const { state, nextState } = useVoteStateStore();
+
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
 
-  const [requiredSealers, setRequiredSealers] = useState<number>(10000);
+  const [requiredSealers, setRequiredSealers] = useState<number>(3);
   const [sealers, setSealers] = useState<string[]>([]);
-
   const [listening, setListening] = useState<boolean>(false);
 
-  const { state, nextState } = useVoteStateStore();
+  const [readyForNextStep, setReadyForNextStep] = useState<boolean>(false);
+
+  useEffect(() => {
+    setReadyForNextStep(requiredSealers !== sealers.length);
+  }, [sealers, requiredSealers]);
 
   useEffect(() => {
     const getRequiredValidators = async () => {
@@ -59,7 +64,7 @@ export const Register: React.FC<Props> = ({ handleNext }: Props) => {
           throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
         }
       } catch (error) {
-        setErrorMessage(error);
+        setErrorMessage(error.message);
         setHasError(true);
       }
     };
@@ -72,17 +77,21 @@ export const Register: React.FC<Props> = ({ handleNext }: Props) => {
       const events = new EventSource(`${DEV_URL}/registered`);
       events.onmessage = event => {
         const parsedData = JSON.parse(event.data);
-        console.log('parsed data:', parsedData);
-        setSealers([...sealers, ...parsedData]);
+        setSealers(sealers => sealers.concat(parsedData));
       };
 
       setListening(true);
     }
   }, [listening, sealers]);
 
-  const nextStep = () => {
-    handleNext();
-    nextState();
+  const nextStep = async () => {
+    try {
+      await nextState();
+      handleNext();
+    } catch (error) {
+      setErrorMessage(error.message);
+      setHasError(true);
+    }
   };
 
   return (
@@ -94,7 +103,13 @@ export const Register: React.FC<Props> = ({ handleNext }: Props) => {
         <List items={sealers} />
       </div>
       <div className={classes.actionsContainer}>
-        <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={nextStep}
+          className={classes.button}
+          disabled={readyForNextStep}
+        >
           Next Step
         </Button>
       </div>
