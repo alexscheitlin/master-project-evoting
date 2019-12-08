@@ -35,8 +35,17 @@ export const VOTE_LABELS: string[] = [
   VoteLabels.TALLY
 ];
 
-export const [useVoteStateStore] = create(set => ({
+export const [useVoteStateStore] = create((set, get) => ({
   state: VotingState.REGISTER,
+  setState: (newState: VotingState) =>
+    set({
+      state: newState
+    }),
+  syncState: async () => {
+    const currentState = get().state;
+    const newState: VotingState = await tryToUpdateState(currentState);
+    set({ state: newState });
+  },
   nextState: async () => {
     try {
       // avoids ssl error with certificate
@@ -58,9 +67,29 @@ export const [useVoteStateStore] = create(set => ({
       // TODO: rethrow the error -> higher level component should handle it. We don't want to handle it here. But maybe we could return a Promise instead? Or how do we enusre that we can catch it higher up?
       throw new Error(error);
     }
-  },
-  reset: () => set({ state: VotingState.REGISTER })
+  }
 }));
+
+const tryToUpdateState = async (currentState: VotingState): Promise<VotingState> => {
+  try {
+    // avoids ssl error with certificate
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+
+    // there is no error handling here on purpose -> handle in calling component
+    const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`, { httpsAgent: agent });
+    if (response.status === 200) {
+      const newState: VotingState = response.data.state;
+      return newState;
+    } else {
+      throw new Error(`State cannot be updated. ${response.status}, ${JSON.stringify(response.data)}`);
+    }
+  } catch (error) {
+    // if we cannot retrieve the state from the BE, we return the old state
+    return currentState;
+  }
+};
 
 interface StateResponse {
   state: VotingState;

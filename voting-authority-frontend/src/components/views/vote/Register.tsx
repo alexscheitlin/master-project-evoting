@@ -1,7 +1,7 @@
 import { Button, makeStyles, Theme } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { DEV_URL } from '../../../constants';
-import { useVoteStateStore } from '../../../models/voting';
+import { useVoteStateStore, VotingState } from '../../../models/voting';
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
@@ -15,7 +15,7 @@ interface Validators {
 }
 
 interface StateResponse {
-  state: string;
+  state: VotingState;
   registeredSealers: number;
   requiredSealers: number;
 }
@@ -35,7 +35,7 @@ const List: React.FC<Validators> = ({ items }: Validators) => (
 export const Register: React.FC<Props> = ({ handleNext }: Props) => {
   const classes = useStyles();
 
-  const { state, nextState } = useVoteStateStore();
+  const { state, nextState, setState } = useVoteStateStore();
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
@@ -60,6 +60,7 @@ export const Register: React.FC<Props> = ({ handleNext }: Props) => {
         const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`, { httpsAgent: agent });
         if (response.status === 200) {
           setRequiredSealers(response.data.requiredSealers);
+          setState(response.data.state);
         } else {
           throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
         }
