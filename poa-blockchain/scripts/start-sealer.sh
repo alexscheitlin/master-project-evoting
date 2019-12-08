@@ -3,8 +3,8 @@
 sealerNr=$1
 
 # copy keys
-cp ../keys/sealer$sealerNr.json ../../sealer/backend/src/wallet/sealer.json
-cp ../keys/sealer$sealerNr.pwd ../../sealer/backend/src/wallet/sealer.pwd
+cp ../keys/sealer$sealerNr.json ../../sealer/backend/wallet/sealer.json
+cp ../keys/sealer$sealerNr.pwd ../../sealer/backend/wallet/sealer.pwd
 
 # create env variables for docker-compose with the proper configs
 echo BACKEND_PORT=401$sealerNr >> .env
@@ -20,7 +20,7 @@ echo FRONTEND_PORT=301$sealerNr >>  ../../sealer/backend/.env
 docker-compose -p controller_$sealerNr -f ../../sealer/docker-compose.yml up --build --detach
 
 # remove all temp files
-rm -rf ../../sealer/backend/src/wallet/sealer.json
-rm -rf ../../sealer/backend/src/wallet/sealer.pwd
+rm -rf ../../sealer/backend/wallet/sealer.json
+rm -rf ../../sealer/backend/wallet/sealer.pwd
 rm -rf ../../sealer/backend/.env
 rm -rf .env
