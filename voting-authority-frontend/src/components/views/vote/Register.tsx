@@ -2,6 +2,9 @@ import { Button, makeStyles, Theme } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { DEV_URL } from '../../../constants';
 import { useVoteStateStore } from '../../../models/voting';
+import axios, { AxiosResponse } from 'axios';
+import https from 'https';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 
 interface Props {
   handleNext: () => void;
@@ -9,6 +12,12 @@ interface Props {
 
 interface Validators {
   items: string[];
+}
+
+interface StateResponse {
+  state: string;
+  registeredSealers: number;
+  requiredSealers: number;
 }
 
 const List: React.FC<Validators> = ({ items }: Validators) => (
@@ -26,10 +35,37 @@ const List: React.FC<Validators> = ({ items }: Validators) => (
 export const Register: React.FC<Props> = ({ handleNext }: Props) => {
   const classes = useStyles();
 
-  const [validators, setValidators] = useState<string[]>([]);
-  const [listening, setListening] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  const [requiredSealers, setRequiredSealers] = useState<number>(10000);
+  const [sealers, setSealers] = useState<string[]>([]);
+
+  const [listening, setListening] = useState<boolean>(false);
 
   const { state, nextState } = useVoteStateStore();
+
+  useEffect(() => {
+    const getRequiredValidators = async () => {
+      try {
+        // avoids ssl error with certificate
+        const agent = new https.Agent({
+          rejectUnauthorized: false
+        });
+        const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`, { httpsAgent: agent });
+        if (response.status === 200) {
+          setRequiredSealers(response.data.requiredSealers);
+        } else {
+          throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
+        }
+      } catch (error) {
+        setErrorMessage(error);
+        setHasError(true);
+      }
+    };
+
+    getRequiredValidators();
+  }, []);
 
   useEffect(() => {
     if (!listening) {
@@ -37,12 +73,12 @@ export const Register: React.FC<Props> = ({ handleNext }: Props) => {
       events.onmessage = event => {
         const parsedData = JSON.parse(event.data);
         console.log('parsed data:', parsedData);
-        setValidators([...validators, ...parsedData]);
+        setSealers([...sealers, ...parsedData]);
       };
 
       setListening(true);
     }
-  }, [listening, validators]);
+  }, [listening, sealers]);
 
   const nextStep = () => {
     handleNext();
@@ -54,14 +90,15 @@ export const Register: React.FC<Props> = ({ handleNext }: Props) => {
       <div>
         <h1>Sealer Node Registration Phase</h1>
         <div>{`The state is: ${state}`}</div>
-        <h2>List of registered Validators</h2>
-        <List items={validators} />
+        <h2>{`${sealers.length}/${requiredSealers}: Sealears are registered!`}</h2>
+        <List items={sealers} />
       </div>
       <div className={classes.actionsContainer}>
         <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
           Next Step
         </Button>
       </div>
+      <ErrorSnackbar open={hasError} message={errorMessage} />
     </div>
   );
 };
