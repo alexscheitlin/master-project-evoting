@@ -13,6 +13,8 @@ echo FRONTEND_PORT=301$sealerNr >> .env
 # create env file for backend where to find chain etc.
 echo NODE_ENV=development >> ../../sealer/backend/.env
 echo CHAIN_URL=http://localhost:701$sealerNr >>  ../../sealer/backend/.env
+echo REGISTRATION_NODE_URL=7010 >> ../../sealer/backend/.env
+echo SEALER_NODE_URL=701$sealerNr >>  ../../sealer/backend/.env
 echo BACKEND_PORT=401$sealerNr >>  ../../sealer/backend/.env
 echo FRONTEND_PORT=301$sealerNr >>  ../../sealer/backend/.env
 
