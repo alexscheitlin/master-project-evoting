@@ -1,8 +1,9 @@
-version: "3"
+version: "3.4"
 
 services:
   backend:
     build: ./backend
+    network_mode: host
     expose:
       - ${BACKEND_PORT}
     environment:
