@@ -1,0 +1,1 @@
+export { TallyVotes } from "./TallyVotes";
