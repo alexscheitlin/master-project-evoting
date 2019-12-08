@@ -15,9 +15,6 @@ const SUCCESS_MSG: string = 'Successfully registered authority address.'
 const ADDRESS_INVALID: string = 'Address registration failed. Address is not valid or has already been registered.'
 const AUTHORITY_REGISTRATION_CLOSED: string = 'Authority registration is closed. Cannot register Authority address.'
 
-// database tables
-const CHAINSPEC: string = 'chainspec'
-
 let clients: RegisteredClient[] = []
 
 const router: express.Router = express.Router()
@@ -37,7 +34,7 @@ router.get('/registered', (req: express.Request, res: express.Response) => {
   res.writeHead(200, headers)
 
   // Get existing validators from DB
-  const chainspec: any = getObjectFromDB(CHAINSPEC)
+  const chainspec: any = getObjectFromDB(CHAINSPEC_TABLE)
   const validators: string[] = chainspec['engine']['authorityRound']['params']['validators']['list']
 
   // After client opens connection send all nests as string
@@ -105,7 +102,7 @@ router.post('/chainspec', (req, res) => {
   try {
     // create the new chainspec
     const newChainspec: any = addValidatorToChainspec(oldChainspec, voterAddress)
-    setValue(CHAINSPEC, newChainspec)
+    setValue(CHAINSPEC_TABLE, newChainspec)
 
     // update all registered clients -> send the new validator
     sendValidatorToAllClients(voterAddress)
