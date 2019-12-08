@@ -73,3 +73,6 @@ dist/
 
 # dont commit chain keys
 /wallet/sealer*
+
+# dont commit chain.json
+src/chainspec/chain*
