@@ -9,7 +9,7 @@ services:
       API_HOST: ${BACKEND_PORT}
       APP_SERVER_PORT: ${BACKEND_PORT}
     ports:
-      - ${BACKEND_PORT}:4000 # map the internal express port to ${BACKEND_PORT}
+      - ${BACKEND_PORT}:${BACKEND_PORT} # map the internal express port to ${BACKEND_PORT}
     volumes:
       - ./backend/src:/usr/src/backend/src
       - ./backend/src/chainspec:/usr/src/backend/chainspec
