@@ -10,6 +10,7 @@
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
     "ts-mocha": "./node_modules/.bin/ts-mocha",
     "tsc": "./node_modules/.bin/tsc",
+    "dev": "./dev.sh",
     "serve:prod": "NODE_ENV=production ts-node-dev --respawn --transpileOnly ./src/server.ts",
     "serve:dev": "NODE_ENV=development ts-node-dev --respawn --transpileOnly ./src/server.ts",
     "debug": "node --nolazy --inspect-brk=9229 ./dist/server.js"
