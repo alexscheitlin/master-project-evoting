@@ -12,7 +12,6 @@ export const STATE_TABLE: string = 'state'
 export const AUTHORITIES_TABLE: string = 'authorities'
 export const BALLOT_ADDRESS_TABLE: string = 'ballotAddress'
 export const BALLOT_DEPLOYED_TABLE: string = 'ballotDeployed'
-export const DEFAULT_CHAINSPEC_TABLE: string = 'defaultChainspec'
 export const CHAINSPEC_TABLE: string = 'chainspec'
 
 export const setupDB = () => {
@@ -27,7 +26,6 @@ export const setupDB = () => {
     authorities: [],
     ballotAddress: '',
     ballotDeployed: false,
-    defaultChainspec: defaultConfig,
     chainspec: defaultConfig,
   }).write()
 }
