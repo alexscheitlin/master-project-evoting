@@ -14,7 +14,7 @@ const WALLET_NOT_REGISTERED_MSG: string = 'Wallet not registed with authority.'
 router.post('/register', async (req, res) => {
   // read out wallet address
   const wallet = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../wallet/sealer.json'), 'utf8'))
-  const addressToRegister = wallet.address
+  const addressToRegister = '0x' + wallet.address
 
   // Send wallet address to authority backend to register
   try {
@@ -27,6 +27,18 @@ router.post('/register', async (req, res) => {
   }
 
   // TODO: if possible subscribe to nr of registered sealer -> to know when to download chainspec
+})
+
+router.get('/register', async (req, res) => {
+  // read out wallet address
+  const wallet = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../wallet/sealer.json'), 'utf8'))
+  const addressToRegister = '0x' + wallet.address
+
+  if (addressToRegister !== '' || addressToRegister !== undefined) {
+    res.status(200).json({ result: addressToRegister })
+  } else {
+    res.status(400).json({ result: 'No Address available..' })
+  }
 })
 
 export default router
