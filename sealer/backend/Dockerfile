@@ -12,6 +12,7 @@ RUN npm install
 
 # Bundle app source
 COPY . .
+COPY ./wallet ./wallet
 
 EXPOSE 4004
 CMD [ "npm", "run", "serve:dev" ]
