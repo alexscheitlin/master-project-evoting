@@ -24,7 +24,18 @@ const server = express()
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(logger)
-server.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:4002'] }))
+server.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3010',
+      'http://localhost:3011',
+      'http://localhost:3012',
+      'http://localhost:4002',
+    ],
+  })
+)
 
 // add all routes
 server.use('/', chainspec)
