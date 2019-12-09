@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React, { useState } from 'react';
 import { DEV_URL } from '../../../constants';
-import { useVoteQuestionStore } from '../../../models/voting';
+import { useVoteQuestionStore, useVoteStateStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 
 interface Props {
@@ -14,6 +14,7 @@ export const Config: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
   const [hasError, setError] = useState<boolean>(false);
   const { question, setQuestion } = useVoteQuestionStore();
+  const { nextState } = useVoteStateStore();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(event.currentTarget.value);
@@ -37,6 +38,7 @@ export const Config: React.FC<Props> = ({ handleNext }) => {
         console.log(res);
 
         // move to the next UI component
+        await nextState();
         handleNext();
       } else {
         setError(true);
@@ -70,7 +72,7 @@ export const Config: React.FC<Props> = ({ handleNext }) => {
             Create Vote
           </Button>
         </Grid>
-        <ErrorSnackbar open={hasError} message={'Error - Request unsuccessful'} />
+        {hasError && <ErrorSnackbar open={hasError} message={'Error - Request unsuccessful'} />}
       </Grid>
     </div>
   );

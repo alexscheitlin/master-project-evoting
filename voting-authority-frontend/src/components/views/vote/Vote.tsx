@@ -21,7 +21,7 @@ export const Vote: React.FC<Props> = ({ handleNext }) => {
     });
 
     try {
-      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, { state: 'VOTING' }, { httpsAgent: agent });
+      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
 
       if (response.status === 201) {
         const res = response.data;
@@ -32,7 +32,7 @@ export const Vote: React.FC<Props> = ({ handleNext }) => {
         handleNext();
       } else {
         console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
-        throw new Error('Status Code not 201');
+        throw new Error(`Status Code not 201. Instead: ${response.status}`);
       }
     } catch (error) {
       console.error(error);

@@ -20,11 +20,7 @@ export const Tally: React.FC<Props> = ({ handleNext }) => {
     });
 
     try {
-      const response: AxiosResponse = await axios.post(
-        `${DEV_URL}/state`,
-        { state: 'POST_VOTING' },
-        { httpsAgent: agent }
-      );
+      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
 
       if (response.status === 201) {
         const res = response.data;
