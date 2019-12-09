@@ -9,7 +9,7 @@ interface Props {
   handleNext: () => void;
 }
 
-export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
+export const Vote: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
   const { state, nextState } = useVoteStateStore();
   const { question } = useVoteQuestionStore();
@@ -21,7 +21,7 @@ export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
     });
 
     try {
-      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, { state: 'VOTING' }, { httpsAgent: agent });
+      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
 
       if (response.status === 201) {
         const res = response.data;
@@ -32,7 +32,7 @@ export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
         handleNext();
       } else {
         console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
-        throw new Error('Status Code not 201');
+        throw new Error(`Status Code not 201. Instead: ${response.status}`);
       }
     } catch (error) {
       console.error(error);
@@ -40,7 +40,7 @@ export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
   };
 
   return (
-    <div>
+    <div className={classes.container}>
       <p>{state}</p>
       <p>{question}</p>
       <div className={classes.actionsContainer}>
@@ -53,12 +53,8 @@ export const VoteOpen: React.FC<Props> = ({ handleNext }) => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  vote: {
-    margin: '0 1em 0 0'
-  },
   container: {
-    display: 'flex',
-    alignItems: 'stretch'
+    padding: '1em'
   },
   button: {
     marginTop: theme.spacing(1),

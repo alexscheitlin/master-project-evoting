@@ -1,1 +1,1 @@
-export const DEV_URL: string = 'https://localhost:4001';
+export const DEV_URL: string = 'http://localhost:4001';

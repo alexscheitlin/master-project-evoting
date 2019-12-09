@@ -9,7 +9,7 @@ interface Props {
   handleNext: () => void;
 }
 
-export const VoteDone: React.FC<Props> = ({ handleNext }) => {
+export const Tally: React.FC<Props> = ({ handleNext }) => {
   const classes = useStyles();
   const { state, nextState } = useVoteStateStore();
 
@@ -20,11 +20,7 @@ export const VoteDone: React.FC<Props> = ({ handleNext }) => {
     });
 
     try {
-      const response: AxiosResponse = await axios.post(
-        `${DEV_URL}/state`,
-        { state: 'POST_VOTING' },
-        { httpsAgent: agent }
-      );
+      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
 
       if (response.status === 201) {
         const res = response.data;
@@ -43,7 +39,7 @@ export const VoteDone: React.FC<Props> = ({ handleNext }) => {
   };
 
   return (
-    <div>
+    <div className={classes.container}>
       <h1>{`The state of the vote is: ${state}`}</h1>
       <p>{state}</p>
       <div className={classes.actionsContainer}>
@@ -56,12 +52,8 @@ export const VoteDone: React.FC<Props> = ({ handleNext }) => {
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  vote: {
-    margin: '0 1em 0 0'
-  },
   container: {
-    display: 'flex',
-    alignItems: 'stretch'
+    padding: '1em'
   },
   button: {
     marginTop: theme.spacing(1),

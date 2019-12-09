@@ -1,6 +1,6 @@
 import { Snackbar, SnackbarContent, Theme, makeStyles, IconButton } from '@material-ui/core';
 import { Error as ErrorIcon, Close as CloseIcon } from '@material-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface Props {
   open: boolean;
@@ -10,7 +10,11 @@ interface Props {
 export const ErrorSnackbar: React.FC<Props> = ({ open, message }) => {
   const classes = useStyles();
 
-  const doNothing = () => {};
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+
+  const close = () => {
+    setIsOpen(false);
+  };
 
   return (
     <Snackbar
@@ -18,23 +22,24 @@ export const ErrorSnackbar: React.FC<Props> = ({ open, message }) => {
         vertical: 'bottom',
         horizontal: 'center'
       }}
-      open={open}
-      autoHideDuration={6000}
+      open={isOpen && open}
+      autoHideDuration={5000}
+      onClick={close}
     >
       <SnackbarContent
         className={classes.error}
         aria-describedby="client-snackbar"
         message={
           <span id="client-snackbar" className={classes.message}>
-            <ErrorIcon className={classes.icon} />
-            {message}
+            <ErrorIcon className={classes.icon} /> {` ${message}`}
           </span>
         }
         action={[
-          <IconButton key="close" aria-label="close" color="inherit" onClick={doNothing}>
+          <IconButton key="close" aria-label="close" color="inherit" onClick={close}>
             <CloseIcon className={classes.icon} />
           </IconButton>
         ]}
+        onClick={close}
       />
     </Snackbar>
   );
