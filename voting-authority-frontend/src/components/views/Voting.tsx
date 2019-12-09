@@ -1,6 +1,5 @@
 import {
   Button,
-  createStyles,
   Divider,
   Grid,
   makeStyles,
@@ -11,21 +10,63 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import React from 'react';
-import { useActiveStepStore, VOTE_LABELS } from '../../models/voting';
-import { Register, Startup, Config, Vote, Tally } from './vote';
+import axios, { AxiosResponse } from 'axios';
+import https from 'https';
+import React, { useEffect, useState } from 'react';
+import { DEV_URL } from '../../constants';
+import { useActiveStepStore, useVoteStateStore, VOTE_LABELS, VotingState, VOTE_STATES } from '../../models/voting';
+import { Config, Register, Startup, Tally, Vote } from './vote';
+import { ErrorSnackbar } from '../defaults/ErrorSnackbar';
+
+interface StateResponse {
+  state: VotingState;
+  registeredSealers: number;
+  requiredSealers: number;
+}
 
 export const Voting: React.FC = () => {
   const classes = useStyles();
 
-  const { activeStep, nextStep, reset } = useActiveStepStore();
+  const [requiredSealers, setRequiredSealers] = useState<number>(3);
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  const { setState } = useVoteStateStore();
+  const { activeStep, setActiveStep, nextStep, reset } = useActiveStepStore();
+
+  useEffect(() => {
+    const getRequiredValidators = async () => {
+      try {
+        // avoids ssl error with certificate
+        const agent = new https.Agent({
+          rejectUnauthorized: false
+        });
+
+        const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`, { httpsAgent: agent });
+
+        if (response.status === 200) {
+          setRequiredSealers(response.data.requiredSealers);
+          setState(response.data.state);
+          setActiveStep(VOTE_STATES.indexOf(response.data.state));
+        } else {
+          throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
+        }
+      } catch (error) {
+        setErrorMessage(error.message);
+        setHasError(true);
+      }
+    };
+
+    getRequiredValidators();
+  }, []);
 
   const getStep = (step: number): any => {
     switch (step) {
       case 0:
-        return <Register handleNext={nextStep} />;
+        return <Register handleNext={nextStep} requiredSealers={requiredSealers} />;
       case 1:
-        return <Startup handleNext={nextStep} />;
+        return <Startup handleNext={nextStep} requiredSealers={requiredSealers} />;
       case 2:
         return <Config handleNext={nextStep} />;
       case 3:
@@ -36,6 +77,7 @@ export const Voting: React.FC = () => {
         return (
           <div>
             <h1>Error: Step doesn't exist!</h1>
+            <ErrorSnackbar open={hasError} message={errorMessage} />
           </div>
         );
     }

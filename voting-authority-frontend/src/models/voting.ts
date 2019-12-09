@@ -5,7 +5,7 @@ import { DEV_URL } from '../constants';
 
 export enum VotingState {
   REGISTER = 'REGISTER',
-  STARTUP = 'SETUP',
+  STARTUP = 'STARTUP',
   CONFIG = 'CONFIG',
   VOTING = 'VOTING',
   TALLY = 'TALLY'
@@ -20,11 +20,11 @@ export const VOTE_STATES: string[] = [
 ];
 
 export enum VoteLabels {
-  REGISTER = 'Node Registration',
-  STARTUP = 'Infrastructure Setup',
-  CONFIG = 'Vote Configuration',
-  VOTING = 'Voting Phase',
-  TALLY = 'Vote Completed'
+  REGISTER = 'REGISTER',
+  STARTUP = 'STARTUP',
+  CONFIG = 'CONFIG',
+  VOTING = 'VOTING',
+  TALLY = 'TALLY'
 }
 
 export const VOTE_LABELS: string[] = [
@@ -104,6 +104,9 @@ export const [useVoteQuestionStore] = create(set => ({
 
 export const [useActiveStepStore] = create(set => ({
   activeStep: 0,
+  setActiveStep: (step: number) => {
+    set({ activeStep: step });
+  },
   nextStep: () => set(prevState => ({ activeStep: prevState.activeStep + 1 })),
   reset: () => set({ activeStep: 0 })
 }));
