@@ -35,12 +35,16 @@ cp $parentDir/poa-blockchain/keys/sealer$sealerNr.json $dir/backend/wallet/seale
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/backend/wallet/sealer.pwd
 
 # create env file for backend where to find chain etc.
-echo NODE_ENV=development >> $dir/.env
-echo CHAIN_URL=http://localhost:701$sealerNr >> $dir/.env
-echo SEALER_NODE_URL=701$sealerNr >> $dir/.env
+echo NODE_ENV=development >> $dir/backend/.env
+echo CHAIN_URL=http://localhost:701$sealerNr >> $dir/backend/.env
+echo SEALER_NODE_URL=701$sealerNr >> $dir/backend/.env
+echo BACKEND_PORT=401$sealerNr >> $dir/backend/.env
+echo FRONTEND_PORT=301$sealerNr >> $dir/backend/.env
+echo REGISTRATION_NODE_URL=7010 >> $dir/backend/.env # TODO: remove & fetch at runtime from auth-backend
+
+#
 echo BACKEND_PORT=401$sealerNr >> $dir/.env
 echo FRONTEND_PORT=301$sealerNr >> $dir/.env
-echo REGISTRATION_NODE_URL=7010 >> $dir/.env # TODO: remove & fetch at runtime from auth-backend
 
 # go into correct directory to start docker compose with the .env file
 cd $dir
@@ -52,3 +56,4 @@ docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
 rm -rf $dir/backend/wallet/sealer.json
 rm -rf $dir/backend/wallet/sealer.pwd
 rm -rf $dir/backend/.env
+rm -rf $dir/.env
