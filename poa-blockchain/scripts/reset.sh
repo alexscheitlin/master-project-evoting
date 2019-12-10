@@ -1,7 +1,10 @@
-docker stop sealer2_authority_1
-docker stop sealer1_authority_1
-docker stop sealer0_authority_1
+#!/bin/bash
 
-docker rm sealer2_authority_1
-docker rm sealer1_authority_1
-docker rm sealer0_authority_1
+readonly name=$(basename $0)
+readonly dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+# stop all controllers (frontends and backends)
+docker stop $dir/stop-containers.sh controller
+
+# stop all sealers
+docker stop $dir/stop-containers.sh sealer
