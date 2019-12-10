@@ -44,6 +44,8 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // TODO: Add case CONFIG and return number of submitedKeyShares and requiredKeyShares
+
     default:
       res.status(200).json({ state: currentState })
   }
