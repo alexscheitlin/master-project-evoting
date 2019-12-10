@@ -4,7 +4,7 @@ import { BallotManager } from '../utils/ballotManager/index'
 import { parityConfig } from '../config'
 import { getWeb3 } from '../utils/web3'
 
-const web3 = getWeb3()
+import { getNumberOfConnectedAuthorities } from '../utils/web3'
 
 export enum VotingState {
   REGISTER = 'REGISTER',
@@ -35,7 +35,7 @@ router.get('/state', async (req, res) => {
 
     // ... how many sealers are required and already connected
     case VotingState.STARTUP:
-      const connectedAuthorities: number = await web3.eth.net.getPeerCount()
+      const connectedAuthorities: number = await getNumberOfConnectedAuthorities()
 
       res.status(200).json({
         state: currentState,
@@ -78,7 +78,7 @@ router.post('/state', async (req, res) => {
       break
     case VotingState.STARTUP:
       // verify that all sealers are connected
-      const connectedAuthorities: number = await web3.eth.net.getPeerCount()
+      const connectedAuthorities: number = await getNumberOfConnectedAuthorities()
       if (connectedAuthorities !== requiredAuthorities) {
         res.status(400).json({
           state: currentState,

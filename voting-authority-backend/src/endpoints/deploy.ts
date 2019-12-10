@@ -3,7 +3,7 @@ import * as Deploy from '../../solidity/scripts/deploy'
 import { getValueFromDB, setValue, BALLOT_DEPLOYED_TABLE, BALLOT_ADDRESS_TABLE, STATE_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { parityConfig } from '../config'
-import { getWeb3 } from '../utils/web3'
+import { getNumberOfConnectedAuthorities } from '../utils/web3'
 import { VotingState } from './state'
 
 const TOO_EARLY: string = 'We are in the REGISTER stage. Please wait with the deployment!'
@@ -12,7 +12,6 @@ const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
 const VOTE_QUESTION_INVALID: string = 'Vote Question was not provided or is not of type String.'
 const NOT_ALL_SEALERS_CONNECTED: string = 'Not all sealers are connected. Please wait!'
 
-const web3 = getWeb3()
 const router: express.Router = express.Router()
 
 router.post('/deploy', async (req, res) => {
@@ -31,7 +30,7 @@ router.post('/deploy', async (req, res) => {
   }
 
   // verify that all sealers are connected
-  const connectedAuthorities: number = await web3.eth.net.getPeerCount()
+  const connectedAuthorities: number = await getNumberOfConnectedAuthorities()
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
   if (connectedAuthorities !== requiredAuthorities) {
     res.status(400).json({
