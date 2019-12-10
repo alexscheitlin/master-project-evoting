@@ -31,11 +31,11 @@ router.post('/connectionNode', async (req, res) => {
 
       // only add the url if it is not already stored
       if (nodes.includes(url)) {
-        res.status(400).json({ msg: URL_ALREADY_STORED, yourUrl: url, connectTo: nodes[0] })
+        res.status(200).json({ msg: URL_ALREADY_STORED, yourUrl: url, connectTo: nodes[0] })
         return
       } else {
         addToList(NODES_TABLE, [url])
-        res.status(200).json({ msg: ON_TIME_MSG, yourUrl: url, connectTo: nodes[0] })
+        res.status(201).json({ msg: ON_TIME_MSG, yourUrl: url, connectTo: nodes[0] })
         return
       }
     case VotingState.CONFIG:
