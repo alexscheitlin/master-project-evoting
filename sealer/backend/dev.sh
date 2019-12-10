@@ -12,8 +12,7 @@ cp ../../poa-blockchain/keys/sealer$sealerNr.pwd ./wallet/sealer.pwd
 
 # create env file for backend where to find chain etc.
 echo NODE_ENV=development >> .env
-echo REGISTRATION_NODE_URL=7010 >> .env
-echo SEALER_NODE_URL=701$sealerNr >>  .env
+echo SEALER_NODE_PORT=701$sealerNr >>  .env
 echo BACKEND_PORT=401$sealerNr >>  .env
 echo FRONTEND_PORT=301$sealerNr >>  .env
 

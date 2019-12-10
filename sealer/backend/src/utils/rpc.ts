@@ -17,12 +17,12 @@ export const getEnodeAtPort = async (port: string): Promise<string> => {
   return response.data.result
 }
 
-export const registerEnodeWithAuthority = async (enode: string) => {
+export const registerEnodeWithAuthority = async (enode: string, connectTo: string) => {
   const body = {
     jsonrpc: '2.0',
     method: 'parity_addReservedPeer',
     params: [enode],
     id: 0,
   }
-  await axios.post('http://localhost:' + process.env.REGISTRATION_NODE_URL, body, config)
+  await axios.post(connectTo, body, config)
 }

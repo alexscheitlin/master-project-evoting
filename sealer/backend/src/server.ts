@@ -1,14 +1,13 @@
-import express from 'express'
 import cors from 'cors'
-
 import { config } from 'dotenv'
+import express from 'express'
 
-import logger from './utils/logger'
 import { setupDB } from './database/database'
-import register from './routes/register'
-import generateKeys from './routes/generateKeys'
 import chainspec from './routes/chainspec'
+import generateKeys from './routes/generateKeys'
 import peer from './routes/peer'
+import register from './routes/register'
+import logger from './utils/logger'
 
 config()
 
@@ -32,6 +31,5 @@ console.log(process.env.FRONTEND_PORT)
 
 server.listen(process.env.BACKEND_PORT, () => {
   console.log(`HTTP server started at http://localhost:${process.env.BACKEND_PORT}`)
-  console.log(`enode registration RPC calls will be sent to ${process.env.REGISTRATION_NODE_URL}`)
-  console.log(`This parity node will be running on ${process.env.SEALER_NODE_URL}`)
+  console.log(`This parity node will be running on ${process.env.SEALER_NODE_PORT}`)
 })

@@ -36,11 +36,9 @@ cp $parentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/backend/wallet/sealer
 
 # create env file for backend where to find chain etc.
 echo NODE_ENV=development >> $dir/backend/.env
-echo CHAIN_URL=http://localhost:701$sealerNr >> $dir/backend/.env
-echo SEALER_NODE_URL=701$sealerNr >> $dir/backend/.env
+echo SEALER_NODE_PORT=701$sealerNr >> $dir/backend/.env
 echo BACKEND_PORT=401$sealerNr >> $dir/backend/.env
 echo FRONTEND_PORT=301$sealerNr >> $dir/backend/.env
-echo REGISTRATION_NODE_URL=7010 >> $dir/backend/.env # TODO: remove & fetch at runtime from auth-backend
 
 #
 echo BACKEND_PORT=401$sealerNr >> $dir/.env
