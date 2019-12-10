@@ -54,9 +54,13 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
   return (
     <div className={classes.container}>
       <div>
-        <h1>Sealer Node Registration Phase</h1>
-        <div>{`The state is: ${state}`}</div>
-        <h2>{`${sealers.length}/${requiredSealers}: Sealears are registered!`}</h2>
+        <h1>{`Sealer Registration`}</h1>
+        <h3>
+          {`${sealers.length}/${requiredSealers}: Sealears are registered!`}
+          {sealers.length !== requiredSealers
+            ? ` Please wait for all selears to be registered!`
+            : ` All sealers are registered, you can proceed to the next step!`}
+        </h3>
         <List items={sealers} />
       </div>
       <div className={classes.actionsContainer}>

@@ -61,11 +61,6 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
-  useInterval(() => {
-    checkNumberOfAuthoritiesOnline();
-    // TODO: Implement a way to end the setInterval
-  }, REFRESH_INTERVAL_MS);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(event.currentTarget.value);
   };
@@ -91,7 +86,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         setAddress(response.data.address);
         setVoteQuestionDeployed(true);
       } else {
-        throw new Error(`Unable to deploy vote! Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
+        throw new Error(`Unable to deploy vote! Status: ${response.status}\nMessage: ${JSON.stringify(response)}`);
       }
     } catch (error) {
       // show error or popup
@@ -110,6 +105,16 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       setHasError(true);
     }
   };
+
+  checkNumberOfAuthoritiesOnline();
+
+  // call request initially once before starting to poll with useInterval
+  useInterval(
+    () => {
+      checkNumberOfAuthoritiesOnline();
+    },
+    connectedSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 0
+  );
 
   return (
     <div className={classes.container}>
@@ -135,7 +140,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
                   color="primary"
                   onClick={createVote}
                   className={classes.button}
-                  disabled={connectedSealers === 0 || question.length < 5}
+                  disabled={connectedSealers !== requiredSealers || question.length < 5}
                 >
                   Create Votequestion
                 </Button>
@@ -152,17 +157,13 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
           )}
         </Paper>
       </div>
-      <div className={classes.actionsContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={nextStep}
-          className={classes.button}
-          disabled={!voteQuestionDeployed || requiredSealers !== connectedSealers}
-        >
-          Next Step
-        </Button>
-      </div>
+      {voteQuestionDeployed && requiredSealers === connectedSealers && (
+        <div className={classes.actionsContainer}>
+          <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
+            Next Step
+          </Button>
+        </div>
+      )}
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>
   );
