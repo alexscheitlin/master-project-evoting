@@ -30,9 +30,12 @@ router.post('/peer', async (req, res) => {
       res.status(200).json({ msg: PEER_SUCCESS_MSG })
       return
     }
-
     res.status(200).json({ msg: PEER_BOOTNODE_MSG })
   } catch (error) {
+    if (error.response.status === 400) {
+      res.status(200).json({ msg: error.response.data.msg })
+      return
+    }
     res.status(400).json({ msg: PEER_FAIL_MSG })
   }
 })
