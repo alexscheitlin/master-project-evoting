@@ -1,5 +1,5 @@
 {
-  "name": "Parity_PoA",
+  "name": "VotingPoA",
   "engine": {
     "authorityRound": {
       "params": {
