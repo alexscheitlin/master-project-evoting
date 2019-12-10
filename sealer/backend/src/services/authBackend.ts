@@ -17,3 +17,9 @@ export const getBootNodeUrl = async (myUrl: string) => {
 
   return response.data.connectTo
 }
+
+export const registerWallet = async (addressToRegister: string) => {
+  await axios.post(config.authBackend.devUrl + '/chainspec', {
+    address: addressToRegister,
+  })
+}
