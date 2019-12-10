@@ -26,6 +26,7 @@ const getContract = () => {
  * Returns the account of the Authority
  */
 export const getAuthAccount = async () => {
+  // TODO: create voting-auth-account with axios/RPC (see _old, create account)
   // ignore the unlockAccount call as it expects a number but parity does only work with hex numbers
   // null => 300 seconds (default)
   // @ts-ignore
