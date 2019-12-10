@@ -7,3 +7,8 @@ export const getWeb3 = (): Web3 => {
 
   return web3
 }
+
+export const getNumberOfConnectedAuthorities = async (): Promise<number> => {
+  const connectedAuthorities: number = await getWeb3().eth.net.getPeerCount()
+  return connectedAuthorities + 1
+}
