@@ -45,6 +45,11 @@ router.get('/state', async (req, res) => {
       break
 
     // TODO: Add case CONFIG and return number of submitedKeyShares and requiredKeyShares
+    // ... how many key shares are required and already submitted
+    case VotingState.CONFIG:
+      const submittedKeyShares: number = 2
+      const requiredKeyShares: number = requiredAuthorities
+      break
 
     default:
       res.status(200).json({ state: currentState })
