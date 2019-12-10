@@ -1,79 +1,133 @@
-import { Button, Grid, makeStyles, TextField, Theme } from '@material-ui/core';
+import { Button, makeStyles, Theme } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
 import https from 'https';
 import React, { useState } from 'react';
 import { DEV_URL } from '../../../constants';
-import { useVoteQuestionStore, useVoteStateStore } from '../../../models/voting';
+import { useVoteStateStore, VotingState } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { useInterval } from '../helper/UseInterval';
 
-interface Props {
+interface ConfigProps {
   handleNext: () => void;
 }
 
-export const Config: React.FC<Props> = ({ handleNext }) => {
+interface ConfigStateReponse {
+  state: VotingState;
+  submittedKeyShares: number;
+  requiredKeyShares: number;
+}
+
+export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   const classes = useStyles();
-  const [hasError, setError] = useState<boolean>(false);
-  const { question, setQuestion } = useVoteQuestionStore();
+  const REFRESH_INTERVAL_MS: number = 4000;
+
   const { nextState } = useVoteStateStore();
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuestion(event.currentTarget.value);
-  };
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
 
-  const createVote = async () => {
-    // avoids ssl error with certificate
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
+  const [requiredKeyShares, setRequiredKeyShares] = useState<number>(1000);
+  const [submittedKeyShares, setSubmittedKeyShares] = useState<number>(0);
+  const [publicKeyGenerated, setPublicKeyGenerated] = useState<boolean>(false);
 
+  const generatePublicKey = async () => {
     try {
-      const response: AxiosResponse = await axios.post(
-        `${DEV_URL}/deploy`,
-        { question: question },
-        { httpsAgent: agent }
+      // avoids ssl error with certificate
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+
+      const response: AxiosResponse<ConfigStateReponse> = await axios.post(
+        `${DEV_URL}/keyshare`,
+        {},
+        {
+          httpsAgent: agent
+        }
       );
 
       if (response.status === 201) {
-        const res = response.data;
-        console.log(res);
-
-        // move to the next UI component
-        await nextState();
-        handleNext();
+        setPublicKeyGenerated(true);
       } else {
-        setError(true);
-        console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
-        throw new Error('Status Code not 201');
+        throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
       }
     } catch (error) {
-      // show error or popup
-      setError(true);
-      console.error(error);
+      setErrorMessage(error.message);
+      setHasError(true);
     }
   };
 
+  const checkNumberOfSubmittedPublicKeyShares = async () => {
+    try {
+      // avoids ssl error with certificate
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+
+      const response: AxiosResponse<ConfigStateReponse> = await axios.get(`${DEV_URL}/state`, {
+        httpsAgent: agent
+      });
+
+      if (response.status === 200) {
+        setRequiredKeyShares(response.data.requiredKeyShares);
+        setSubmittedKeyShares(response.data.submittedKeyShares);
+      } else {
+        throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      setHasError(true);
+    }
+  };
+
+  const nextStep = async () => {
+    try {
+      await nextState();
+      handleNext();
+    } catch (error) {
+      setErrorMessage(error.message);
+      setHasError(true);
+    }
+  };
+
+  // initial request before polling
+  checkNumberOfSubmittedPublicKeyShares();
+
+  useInterval(() => {
+    checkNumberOfSubmittedPublicKeyShares();
+    // TODO: Implement a way to end the setInterval
+  }, REFRESH_INTERVAL_MS);
+
   return (
     <div className={classes.container}>
-      <Grid container direction={'column'}>
-        <Grid item>
-          <h2>Please enter a new question for the vote to be created?</h2>
-        </Grid>
-        <Grid item>
-          <TextField label="Vote Question" variant="outlined" required onChange={handleInputChange} />
-        </Grid>
-        <Grid item className={classes.actionsContainer}>
+      <div>
+        <h1>{`Vote Configuration Phase`}</h1>
+        <h4>
+          {`${submittedKeyShares}/${requiredKeyShares}: Public Key Shares have been submitted!`}
+          {requiredKeyShares === submittedKeyShares
+            ? publicKeyGenerated
+              ? ` You can open the vote now!`
+              : ` You can create the public key now!`
+            : ``}
+        </h4>
+      </div>
+      <div className={classes.actionsContainer}>
+        {!publicKeyGenerated ? (
           <Button
             variant="contained"
             color="primary"
-            onClick={createVote}
+            onClick={generatePublicKey}
             className={classes.button}
-            disabled={question.length < 5}
+            disabled={requiredKeyShares !== submittedKeyShares}
           >
-            Create Vote
+            Generate Public Key
           </Button>
-        </Grid>
-        {hasError && <ErrorSnackbar open={hasError} message={'Error - Request unsuccessful'} />}
-      </Grid>
+        ) : (
+          <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
+            Open Vote
+          </Button>
+        )}
+      </div>
+      {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>
   );
 };
