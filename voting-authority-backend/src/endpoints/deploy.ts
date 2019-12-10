@@ -1,10 +1,12 @@
 import express from 'express'
 import * as Deploy from '../../solidity/scripts/deploy'
-import { getValueFromDB, setValue, BALLOT_DEPLOYED_TABLE, BALLOT_ADDRESS_TABLE } from '../database/database'
+import { getValueFromDB, setValue, BALLOT_DEPLOYED_TABLE, BALLOT_ADDRESS_TABLE, STATE_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { parityConfig } from '../config'
 import { getWeb3 } from '../utils/web3'
+import { VotingState } from './state'
 
+const TOO_EARLY: string = 'We are in the REGISTER stage. Please wait with the deployment!'
 const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed. System parameters successfully set.'
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
 const VOTE_QUESTION_INVALID: string = 'Vote Question was not provided or is not of type String.'
@@ -14,6 +16,12 @@ const web3 = getWeb3()
 const router: express.Router = express.Router()
 
 router.post('/deploy', async (req, res) => {
+  const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  if (currentState === VotingState.REGISTER) {
+    res.status(400).json({ msg: TOO_EARLY })
+    return
+  }
+
   // check if the contracts are already deployed
   const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
   if (isDeployed) {
