@@ -61,11 +61,6 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
-  useInterval(() => {
-    checkNumberOfAuthoritiesOnline();
-    // TODO: Implement a way to end the setInterval
-  }, REFRESH_INTERVAL_MS);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(event.currentTarget.value);
   };
@@ -111,6 +106,14 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
+  // initial request before polling
+  checkNumberOfAuthoritiesOnline();
+
+  useInterval(() => {
+    checkNumberOfAuthoritiesOnline();
+    // TODO: Implement a way to end the setInterval
+  }, REFRESH_INTERVAL_MS);
+
   return (
     <div className={classes.container}>
       <div>
@@ -135,7 +138,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
                   color="primary"
                   onClick={createVote}
                   className={classes.button}
-                  disabled={connectedSealers === 0 || question.length < 5}
+                  disabled={connectedSealers !== requiredSealers || question.length < 5}
                 >
                   Create Votequestion
                 </Button>
