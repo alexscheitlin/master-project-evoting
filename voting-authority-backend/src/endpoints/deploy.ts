@@ -3,19 +3,34 @@ import * as Deploy from '../../solidity/scripts/deploy'
 import { getValueFromDB, setValue, BALLOT_DEPLOYED_TABLE, BALLOT_ADDRESS_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { parityConfig } from '../config'
+import { getWeb3 } from '../utils/web3'
 
 const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed. System parameters successfully set.'
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
 const VOTE_QUESTION_INVALID: string = 'Vote Question was not provided or is not of type String.'
+const NOT_ALL_SEALERS_CONNECTED: string = 'Not all sealers are connected. Please wait!'
 
+const web3 = getWeb3()
 const router: express.Router = express.Router()
 
-router.post('/deploy', (req, res) => {
+router.post('/deploy', async (req, res) => {
+  // check if the contracts are already deployed
   const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
-
   if (isDeployed) {
     const address: boolean = <boolean>getValueFromDB(BALLOT_ADDRESS_TABLE)
     res.status(201).json({ address: address, msg: BALLOT_ALREADY_DEPLOYED_MESSAGE })
+    return
+  }
+
+  // verify that all sealers are connected
+  const connectedAuthorities: number = await web3.eth.net.getPeerCount()
+  const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
+  if (connectedAuthorities !== requiredAuthorities) {
+    res.status(400).json({
+      msg: NOT_ALL_SEALERS_CONNECTED,
+      connectedSealers: connectedAuthorities,
+      requiredSealers: requiredAuthorities,
+    })
     return
   }
 
