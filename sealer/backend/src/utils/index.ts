@@ -1,3 +1,3 @@
-import * as RPC from './rpc'
+import * as urlUtil from './url'
 
-export { RPC }
+export { urlUtil }

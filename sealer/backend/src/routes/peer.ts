@@ -1,9 +1,7 @@
-import axios from 'axios'
 import express from 'express'
 
-import { config } from '../config'
-import { RPC } from '../utils'
-import { getWeb3 } from '../utils/web3'
+import { AuthBackend, ChainService, RPC } from '../services'
+import { urlUtil } from '../utils'
 
 const router: express.Router = express.Router()
 
@@ -13,16 +11,11 @@ const PEER_FAIL_MSG: string = 'Could not connect to the network'
 
 router.post('/peer', async (req, res) => {
   try {
-    const myUrl = 'http://localhost:' + process.env.SEALER_NODE_PORT
+    const myUrl = urlUtil.getParityUrl()
 
-    // get bootnode from auth backend
-    const response = await axios.post(config.authBackend.devUrl + '/connectionNode', {
-      url: myUrl,
-    })
+    const bootNodeUrl = await AuthBackend.getBootNodeUrl(myUrl)
 
-    const bootNodeUrl = response.data.connectTo
-
-    let iAmBootNode = (bootNodeUrl === myUrl) === response.data.yourUrl
+    let iAmBootNode = bootNodeUrl === myUrl
 
     if (!iAmBootNode) {
       const enode = await RPC.getEnodeAtPort(process.env.SEALER_NODE_PORT as string)
@@ -42,8 +35,7 @@ router.post('/peer', async (req, res) => {
 
 router.get('/peer', async (req, res) => {
   try {
-    const web3 = getWeb3()
-    const connectedAuthorities = await web3.eth.net.getPeerCount()
+    const connectedAuthorities = await ChainService.getPeerCount()
     res.status(200).json({ msg: PEER_SUCCESS_MSG, nrOfPeers: connectedAuthorities })
   } catch (error) {
     res.status(400).json({ msg: PEER_FAIL_MSG })
