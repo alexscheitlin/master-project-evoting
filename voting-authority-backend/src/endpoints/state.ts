@@ -1,8 +1,8 @@
 import express from 'express'
-import { setValue, getValueFromDB, STATE_TABLE, AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE } from '../database/database'
-import { BallotManager } from '../utils/ballotManager/index'
+
 import { parityConfig } from '../config'
-import { getWeb3 } from '../utils/web3'
+import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
+import { BallotManager } from '../utils/ballotManager'
 
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 
@@ -44,11 +44,15 @@ router.get('/state', async (req, res) => {
       })
       break
 
-    // TODO: Add case CONFIG and return number of submitedKeyShares and requiredKeyShares
-    // ... how many key shares are required and already submitted
     case VotingState.CONFIG:
-      const submittedKeyShares: number = 2
+      const submittedKeyShares: number = await BallotManager.getNrOfPublicKeyShares()
       const requiredKeyShares: number = requiredAuthorities
+
+      res.status(200).json({
+        state: currentState,
+        submittedKeyShares: submittedKeyShares,
+        requiredKeyShares: requiredKeyShares,
+      })
       break
 
     default:
