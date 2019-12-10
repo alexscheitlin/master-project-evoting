@@ -106,10 +106,12 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
+  checkNumberOfAuthoritiesOnline();
+
+  // call request initially once before starting to poll with useInterval
   useInterval(
     () => {
       checkNumberOfAuthoritiesOnline();
-      // TODO: Implement a way to end the setInterval
     },
     connectedSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 0
   );
