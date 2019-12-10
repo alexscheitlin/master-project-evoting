@@ -18,7 +18,7 @@ router.post('/deploy', async (req, res) => {
   const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
   if (isDeployed) {
     const address: boolean = <boolean>getValueFromDB(BALLOT_ADDRESS_TABLE)
-    res.status(201).json({ address: address, msg: BALLOT_ALREADY_DEPLOYED_MESSAGE })
+    res.status(409).json({ address: address, msg: BALLOT_ALREADY_DEPLOYED_MESSAGE })
     return
   }
 
