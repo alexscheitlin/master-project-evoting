@@ -1,5 +1,5 @@
-import { Button, makeStyles, Theme, Grid, TextField } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
+import { Button, makeStyles, Theme, Paper, TextField, CircularProgress } from '@material-ui/core';
+import React, { useState } from 'react';
 import { useVoteStateStore, VotingState, useVoteQuestionStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import https from 'https';
@@ -18,18 +18,26 @@ interface StartupStateResponse {
   requiredSealers: number;
 }
 
+interface VoteDeployResponse {
+  address: string;
+  message: string;
+}
+
 export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }: StartupProps) => {
   const classes = useStyles();
   const REFRESH_INTERVAL_MS: number = 4000;
 
-  const { state, nextState } = useVoteStateStore();
+  const { nextState } = useVoteStateStore();
   const { question, setQuestion } = useVoteQuestionStore();
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
 
+  const [isLoading, setLoading] = useState<boolean>(false);
+
   const [connectedSealers, setConnectedSealers] = useState<number>(0);
   const [voteQuestionDeployed, setVoteQuestionDeployed] = useState<boolean>(false);
+  const [address, setAddress] = useState<string>('');
 
   const checkNumberOfAuthoritiesOnline = async () => {
     try {
@@ -69,16 +77,19 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     });
 
     try {
-      const response: AxiosResponse = await axios.post(
+      setLoading(true);
+
+      const response: AxiosResponse<VoteDeployResponse> = await axios.post(
         `${DEV_URL}/deploy`,
         { question: question },
         { httpsAgent: agent }
       );
 
+      setLoading(false);
+
       if (response.status === 201) {
-        const res = response.data;
+        setAddress(response.data.address);
         setVoteQuestionDeployed(true);
-        // TODO: Display that vote has been deployed
       } else {
         throw new Error(`Unable to deploy vote! Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
       }
@@ -103,27 +114,43 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   return (
     <div className={classes.container}>
       <div>
-        <h1>{`Vote Startup Phase - Current State: ${state}`}</h1>
-        <h2>{`${connectedSealers}/${requiredSealers}: Authorities are online!`}</h2>
-        <Grid container direction={'column'}>
-          <Grid item>
-            <h2>Please enter a new question for the vote to be created?</h2>
-          </Grid>
-          <Grid item>
-            <TextField label="Vote Question" variant="outlined" required onChange={handleInputChange} />
-          </Grid>
-          <Grid item className={classes.actionsContainer}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={createVote}
-              className={classes.button}
-              disabled={connectedSealers === 0 || question.length < 5}
-            >
-              Create Vote
-            </Button>
-          </Grid>
-        </Grid>
+        <h1>{`Vote Startup Phase: Create and Deploy the Voting Question`}</h1>
+        <h4>
+          {`${connectedSealers}/${requiredSealers}: Authorities are online!`}
+          {requiredSealers === connectedSealers && ` You can deploy the vote question now!`}
+        </h4>
+        <Paper className={classes.questionContainer}>
+          {isLoading ? (
+            <div>
+              <h3>{`Your vote question is currently being deployed.`}</h3>
+              <CircularProgress />
+            </div>
+          ) : !voteQuestionDeployed ? (
+            <div>
+              <h3>Please enter a new question for the vote to be created?</h3>
+              <TextField label="Vote Question" variant="outlined" required onChange={handleInputChange} />
+              <div className={classes.actionsContainer}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={createVote}
+                  className={classes.button}
+                  disabled={connectedSealers === 0 || question.length < 5}
+                >
+                  Create Votequestion
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h3>{`Vote Question Successfully Deployed!`}</h3>
+              <ul>
+                <li>{`Address: ${address}`}</li>
+                <li>{`Question: ${question}`}</li>
+              </ul>
+            </div>
+          )}
+        </Paper>
       </div>
       <div className={classes.actionsContainer}>
         <Button
@@ -147,6 +174,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between'
+  },
+  questionContainer: {
+    padding: '0.5rem',
+    elevation: 2
   },
   button: {
     marginTop: theme.spacing(1),
