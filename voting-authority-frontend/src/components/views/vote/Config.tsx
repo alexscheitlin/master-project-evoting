@@ -89,13 +89,13 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
     }
   };
 
-  // initial request before polling
-  checkNumberOfSubmittedPublicKeyShares();
-
-  useInterval(() => {
-    checkNumberOfSubmittedPublicKeyShares();
-    // TODO: Implement a way to end the setInterval
-  }, REFRESH_INTERVAL_MS);
+  useInterval(
+    () => {
+      checkNumberOfSubmittedPublicKeyShares();
+      // TODO: Implement a way to end the setInterval
+    },
+    requiredKeyShares !== submittedKeyShares ? REFRESH_INTERVAL_MS : 0
+  );
 
   return (
     <div className={classes.container}>
