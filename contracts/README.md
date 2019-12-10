@@ -22,11 +22,9 @@ If something changed in `/crypto`, run `npm run build` inside `/crypto`
 
 ## Compile
 
-run `npm run compile` to compile all contracts inside `/contracts` into `/compiled`
+Run `npm run compile` to compile all contracts inside `/contracts` into `/compiled`.
 
-The compiled contracts are `JSON` files which can be used to deploy or to interface with the contract.
-
-These are the files that are needed inside `voter-frontend/src/contract-abis` and `voting-authority-backend/solidity/toDeploy`
+The compiled contracts are `JSON` files which can be used to deploy or to interface with the contract. The `npm run compile` command automatically distributes the `JSON` files. Adjust the `distribute-contracts.sh` to change this.
 
 ## Migrate
 
