@@ -10,6 +10,7 @@ let db: any
 // database tables
 export const STATE_TABLE: string = 'state'
 export const AUTHORITIES_TABLE: string = 'authorities'
+export const NODES_TABLE: string = 'nodes'
 export const BALLOT_ADDRESS_TABLE: string = 'ballotAddress'
 export const BALLOT_DEPLOYED_TABLE: string = 'ballotDeployed'
 export const CHAINSPEC_TABLE: string = 'chainspec'
@@ -24,6 +25,7 @@ export const setupDB = () => {
   db.defaults({
     state: 'REGISTER',
     authorities: [],
+    nodes: [],
     ballotAddress: '',
     ballotDeployed: false,
     chainspec: defaultConfig,
