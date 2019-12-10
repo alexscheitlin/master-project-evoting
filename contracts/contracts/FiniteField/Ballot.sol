@@ -293,6 +293,11 @@ contract Ballot {
         return [systemParameters.p, systemParameters.q, systemParameters.g];
     }
 
+    // get the total number of public key shares
+    function getNrOfPublicKeyShares() public view returns (uint256) {
+        return election.publicKeyShares.length;
+    }
+
     // get combined public key of the system
     function getPublicKey() public view returns (uint256) {
         require(IS_PUBKEY_SET, 'Public Key of the System not yet set');
