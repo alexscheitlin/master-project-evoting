@@ -1,8 +1,11 @@
-import { AdapterSync } from 'lowdb'
-
-import low from 'lowdb'
-import fs from 'fs'
+import low, { AdapterSync } from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
+
+export const WALLET_TABLE = 'wallet'
+export const PASSWORD_TABLE = 'password'
+export const BALLOT_ADDRESS_TABLE = 'ballotAddress'
+export const PRIVATE_KEY_SHARE_TABLE = 'privateKeyShare'
+export const PUBLIC_KEY_SHARES_TABLE = 'publicKeyShare'
 
 // TODO: replace with correct type
 let db: any
@@ -12,7 +15,13 @@ export const setupDB = () => {
   db = low(adapter)
 
   // set defaults (if JSON is empty)
-  db.defaults({}).write()
+  db.defaults({
+    wallet: '',
+    password: '',
+    ballotAddress: '',
+    privateKeyShare: '',
+    publicKeyShare: '',
+  }).write()
 }
 
 export const addToList = (table: string, value: any[]) => {
