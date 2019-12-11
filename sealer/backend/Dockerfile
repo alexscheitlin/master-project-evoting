@@ -1,5 +1,8 @@
 FROM node:12-alpine
 
+# install bash
+RUN apk add --no-cache bash
+
 # Create app directory
 WORKDIR /usr/src/backend
 
@@ -22,5 +25,3 @@ EXPOSE 4004
 # and add the custom weier curve to the elliptic package
 RUN chmod +x crypto.sh
 RUN ./crypto.sh
-
-CMD ["npm", "run", "serve:dev" ]

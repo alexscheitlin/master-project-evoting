@@ -9,6 +9,6 @@ readonly parentParentDir="$(dirname "$parentDir")"
 $dir/dev-chain-parity-nodes.sh
 
 # start the three sealers (frontend + backend pairs)
-$parentParentDir/sealer/start-sealer.sh 0
 $parentParentDir/sealer/start-sealer.sh 1
 $parentParentDir/sealer/start-sealer.sh 2
+$parentParentDir/sealer/start-sealer.sh 3

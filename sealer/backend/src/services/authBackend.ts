@@ -19,7 +19,12 @@ export const getBootNodeUrl = async (myUrl: string) => {
 }
 
 export const registerWallet = async (addressToRegister: string) => {
-  await axios.post(config.authBackend.devUrl + '/chainspec', {
-    address: addressToRegister,
-  })
+  try {
+    const response = await axios.post(config.authBackend.devUrl + '/chainspec', {
+      address: addressToRegister,
+    })
+    console.log(response)
+  } catch (error) {
+    console.log(error)
+  }
 }

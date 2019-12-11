@@ -12,24 +12,30 @@ const PEER_FAIL_MSG: string = 'Could not connect to the network'
 router.post('/peer', async (req, res) => {
   try {
     const myUrl = urlUtil.getParityUrl()
+    console.log('parityurl', myUrl)
 
-    const bootNodeUrl = await AuthBackend.getBootNodeUrl(myUrl)
+    // const bootNodeUrl = await AuthBackend.getBootNodeUrl(myUrl)
+    // TODO: FIX BOOTNODE URL
+    const bootNodeUrl = 'http://172.1.0.1:7011'
+    console.log('bootnodeurl', bootNodeUrl)
 
     let iAmBootNode = bootNodeUrl === myUrl
 
     if (!iAmBootNode) {
       const enode = await RPC.getEnodeAtPort(process.env.SEALER_NODE_PORT as string)
+      console.log(enode)
       await RPC.registerEnodeWithAuthority(enode, bootNodeUrl)
       res.status(200).json({ msg: PEER_SUCCESS_MSG })
-      return
+    } else {
+      res.status(200).json({ msg: PEER_BOOTNODE_MSG })
     }
-    res.status(200).json({ msg: PEER_BOOTNODE_MSG })
   } catch (error) {
-    if (error.response.status === 400) {
-      res.status(200).json({ msg: error.response.data.msg })
-      return
-    }
+    console.log(error)
+    // if (error.response.status === 400) {
+    //   res.status(200).json({ msg: error.response.data.msg })
+    // } else {
     res.status(400).json({ msg: PEER_FAIL_MSG })
+    // }
   }
 })
 
