@@ -14,5 +14,5 @@ export const getWallet = () => {
 }
 
 export const getPassword = () => {
-  const password = fs.readFileSync(path.resolve(__dirname, '../../wallet/sealer.pwd'), 'utf8')
+  return fs.readFileSync(path.resolve(__dirname, '../../wallet/sealer.pwd'), 'utf8')
 }
