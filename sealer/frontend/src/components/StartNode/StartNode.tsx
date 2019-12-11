@@ -23,6 +23,7 @@ interface Props {
 
 export const StartNode: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
+  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_PORT);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -99,7 +100,8 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
             <pre>
               <code>
                 cd parity-node/ <br />
-                ./run.sh 0
+                ./run.sh{" "}
+                {frontendPort && frontendPort.charAt(frontendPort.length - 1)}
               </code>
             </pre>
           </div>
