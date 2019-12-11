@@ -3,23 +3,31 @@ version: "3.7"
 services:
   backend:
     build: ./backend
-    expose:
-      - ${BACKEND_PORT}
     environment:
+      FRONTEND_IP: ${FRONTEND_IP}
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      BACKEND_IP: ${BACKEND_IP}
       API_HOST: ${BACKEND_PORT}
       APP_SERVER_PORT: ${BACKEND_PORT}
+    expose:
+      - ${BACKEND_PORT}
     ports:
-      - ${BACKEND_PORT}:4000 # map the internal express port to ${BACKEND_PORT}
+      - ${BACKEND_PORT}:${BACKEND_PORT} # map the internal express port to ${BACKEND_PORT}
     volumes:
       - ./backend/src:/usr/src/backend/src
     networks:
-      - vote-auth
+      internal:
+        ipv4_address: ${BACKEND_IP}
+      vote-auth:
+        ipv4_address: ${VOTE_AUTH_BACKEND_IP}
     command: npm run serve:dev
 
   frontend:
     build: ./frontend
     environment:
+      - REACT_APP_FRONTEND_IP=${FRONTEND_IP}
       - REACT_APP_PORT=${FRONTEND_PORT}
+      - REACT_APP_BACKEND_IP=${BACKEND_IP}
       - REACT_APP_BACKEND_PORT=${BACKEND_PORT}
     expose:
       - ${FRONTEND_PORT}
@@ -29,7 +37,8 @@ services:
       - ./frontend/src:/usr/src/frontend/src
       - ./frontend/public:/usr/src/frontend/public
     networks:
-      - frontend
+      internal:
+        ipv4_address: ${FRONTEND_IP}
     depends_on:
       - backend
     command: npm run start
@@ -37,5 +46,9 @@ services:
 networks:
   vote-auth:
     external: true
-  frontend:
+  internal:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.1.11.0/24

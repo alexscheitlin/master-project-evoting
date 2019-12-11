@@ -34,6 +34,9 @@ server.use(
       'http://localhost:3011',
       'http://localhost:3012',
       'http://localhost:4002',
+      `http://${process.env.FRONTEND_IP}:3000`,
+      `http://${process.env.FRONTEND_IP}:3001`,
+      `http://172.1.10.5:4001`,
     ],
   })
 )
@@ -73,12 +76,13 @@ if (isProduction) {
   }
 
   // we will pass our 'server' to 'https'
-  https.createServer(options, server).listen(process.env.PORT, () => {
-    console.log(`HTTPS server started at https://localhost:${process.env.PORT}`)
+  https.createServer(options, server).listen(process.env.BACKEND_PORT, () => {
+    console.log(`HTTPS server started at https://${process.env.BACKEND_IP}:${process.env.BACKEND_PORT}`)
   })
 } else {
   // start the Express server
-  server.listen(process.env.PORT, () => {
-    console.log(`HTTP server started at http://localhost:${process.env.PORT}`)
+  server.listen({ port: process.env.BACKEND_PORT }, () => {
+    console.log(`HTTP server started at http://${process.env.BACKEND_IP}:${process.env.BACKEND_PORT}`)
+    console.log('FRONTEND RUNS ON:', `http://${process.env.FRONTEND_IP}:3000`)
   })
 }
