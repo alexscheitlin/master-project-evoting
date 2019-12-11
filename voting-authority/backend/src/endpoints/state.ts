@@ -3,7 +3,6 @@ import express from 'express'
 import { parityConfig } from '../config'
 import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
-
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 
 export enum VotingState {
@@ -25,7 +24,6 @@ router.get('/state', async (req, res) => {
     // ... how many sealers are required and already registered
     case VotingState.REGISTER:
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
-
       res.status(200).json({
         state: currentState,
         registeredSealers: registeredAuthorities.length,
@@ -35,8 +33,13 @@ router.get('/state', async (req, res) => {
 
     // ... how many sealers are required and already connected
     case VotingState.STARTUP:
-      const connectedAuthorities: number = await getNumberOfConnectedAuthorities()
-
+      let connectedAuthorities: number = 0
+      try {
+        connectedAuthorities = await getNumberOfConnectedAuthorities()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
       res.status(200).json({
         state: currentState,
         connectedSealers: connectedAuthorities,
@@ -44,10 +47,17 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // ... how many public key shares are required and already submitted
     case VotingState.CONFIG:
-      const submittedKeyShares: number = await BallotManager.getNrOfPublicKeyShares()
-      const requiredKeyShares: number = requiredAuthorities
+      let submittedKeyShares: number = 0
+      try {
+        submittedKeyShares = await BallotManager.getNrOfPublicKeyShares()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
 
+      const requiredKeyShares: number = requiredAuthorities
       res.status(200).json({
         state: currentState,
         submittedKeyShares: submittedKeyShares,
@@ -82,7 +92,14 @@ router.post('/state', async (req, res) => {
       break
     case VotingState.STARTUP:
       // verify that all sealers are connected
-      const connectedAuthorities: number = await getNumberOfConnectedAuthorities()
+      let connectedAuthorities: number = 0
+      try {
+        connectedAuthorities = await getNumberOfConnectedAuthorities()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+
       if (connectedAuthorities !== requiredAuthorities) {
         res.status(400).json({
           state: currentState,
@@ -105,15 +122,24 @@ router.post('/state', async (req, res) => {
     case VotingState.CONFIG:
       // TODO: check that all public key shares are submitted
       // TODO: check that the public key is generated
-
-      await BallotManager.openBallot()
-      isBallotOpen = await BallotManager.isBallotOpen()
+      try {
+        await BallotManager.openBallot()
+        isBallotOpen = await BallotManager.isBallotOpen()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
 
       setValue(STATE_TABLE, VotingState.VOTING)
       break
     case VotingState.VOTING:
-      await BallotManager.closeBallot()
-      isBallotOpen = await BallotManager.isBallotOpen()
+      try {
+        await BallotManager.closeBallot()
+        isBallotOpen = await BallotManager.isBallotOpen()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
 
       setValue(STATE_TABLE, VotingState.TALLY)
       break

@@ -1,15 +1,12 @@
-import BN = require('bn.js');
-import { FFelGamal } from 'mp-crypto';
+import BN = require('bn.js')
+import { FFelGamal } from 'mp-crypto'
 
-import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database';
-import { getWeb3, unlockAuthAccount } from '../web3';
+import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database'
+import { getWeb3, unlockAuthAccount } from '../web3'
 
 const ballotContract = require('../../../solidity/toDeploy/Ballot.json')
-
 const web3 = getWeb3()
-
 const GAS_LIMIT = 6000000
-
 const toHex = (number: BN) => web3.utils.toHex(number)
 
 /**
