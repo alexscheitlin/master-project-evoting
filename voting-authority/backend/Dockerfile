@@ -1,4 +1,7 @@
-FROM node:13-alpine
+FROM node:12-alpine
+
+# install bash
+RUN apk add --no-cache bash
 
 # Create app directory
 WORKDIR /usr/src/backend
@@ -13,7 +16,14 @@ RUN npm install --force
 # Bundle app source
 COPY . .
 
+# Copy over source files of crypto library
+COPY ./mp-crypto ./mp-crypto
+
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 CMD [ "curl localhost:4000/state" ]
 
 EXPOSE 4004
-CMD [ "npm", "run", "clean:db", "&&", "npm", "run", "serve:dev" ]
+
+# This script will install dependencies inside /mp-crypto
+# and add the custom weier curve to the elliptic package
+RUN chmod +x crypto.sh
+RUN ./crypto.sh
