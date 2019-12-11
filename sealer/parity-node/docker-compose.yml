@@ -19,7 +19,8 @@ services:
     ports:
       - ${RPC_PORT}:${RPC_PORT}
     networks:
-      - parity-nodes
+      parity-nodes:
+        ipv4_address: ${IP}
 
 networks:
   parity-nodes:
