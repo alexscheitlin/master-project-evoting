@@ -13,6 +13,13 @@ RUN npm install
 # Bundle app source
 COPY . .
 COPY ./wallet ./wallet
+COPY ./mp-crypto ./mp-crypto
 
 EXPOSE 4004
-CMD [ "npm", "run", "serve:dev" ]
+
+RUN chmod +x crypto.sh
+RUN ./crypto.sh
+
+# RUN yes |cp -rf ./node_modules/mp-crypto/node_modules/elliptic/lib/elliptic/curves.js ./node_modules/elliptic/lib/elliptic/curves.js
+
+CMD ["npm", "run", "serve:dev" ]

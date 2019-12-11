@@ -30,6 +30,14 @@ readonly parentParentDir="$(dirname "$parentDir")"
 
 sealerNr=$1
 
+# get crypto library into the mix
+# build it and copy the dist folder into the backend
+cryptoPath=$parentDir/crypto
+cp -r $cryptoPath $dir/backend/mp-crypto
+
+rm -rf $dir/backend/mp-crypto/node_modules
+rm -rf $dir/backend/mp-crypto/dist
+
 # copy keys
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.json $dir/backend/wallet/sealer.json
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/backend/wallet/sealer.pwd
@@ -48,10 +56,11 @@ echo FRONTEND_PORT=301$sealerNr >> $dir/.env
 cd $dir
 
 # start docker containers
-docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
+docker-compose -p controller_$sealerNr -f docker-compose.yml up --build
 
 # remove all temp files
 rm -rf $dir/backend/wallet/sealer.json
 rm -rf $dir/backend/wallet/sealer.pwd
 rm -rf $dir/backend/.env
+rm -rf $dir/backend/mp-crypto
 rm -rf $dir/.env

@@ -76,3 +76,6 @@ dist/
 
 # dont commit chain.json
 src/chainspec/chain*
+
+# dont commit crypto library
+mp-crypto
