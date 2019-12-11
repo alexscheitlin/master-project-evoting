@@ -16,12 +16,6 @@ $parentParentDir/sealer/parity-node/clean.sh
 
 # copy chain.json to the project
 cp $from $to
-$parentParentDir/sealer/parity-node/run.sh 0
-$parentParentDir/sealer/parity-node/clean.sh
-sleep 1
-
-# copy chain.json to the project
-cp $from $to
 $parentParentDir/sealer/parity-node/run.sh 1
 $parentParentDir/sealer/parity-node/clean.sh
 sleep 1
@@ -29,6 +23,12 @@ sleep 1
 # copy chain.json to the project
 cp $from $to
 $parentParentDir/sealer/parity-node/run.sh 2
+$parentParentDir/sealer/parity-node/clean.sh
+sleep 1
+
+# copy chain.json to the project
+cp $from $to
+$parentParentDir/sealer/parity-node/run.sh 3
 $parentParentDir/sealer/parity-node/clean.sh
 sleep 1
 
@@ -45,5 +45,7 @@ sleep 1; printf "."
 sleep 1; printf "."
 echo
 
-$dir/register-node.sh 7011 7010
-$dir/register-node.sh 7012 7010
+$dir/register-node.sh 12:7012 11:7011
+$dir/register-node.sh 13:7013 11:7011
+
+echo "Done!"
