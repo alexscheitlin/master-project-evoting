@@ -38,8 +38,14 @@ router.post('/publickey', async (req, res) => {
       }
 
       // check if all shares are available
-      const submittedKeyShares: number = await BallotManager.getNrOfPublicKeyShares()
       const requiredKeyShares: number = requiredAuthorities
+      let submittedKeyShares: number = 0
+      try {
+        submittedKeyShares = await BallotManager.getNrOfPublicKeyShares()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
       if (submittedKeyShares !== requiredKeyShares) {
         res.status(400).json({
           msg: KEYSHARE_GENERATION_ONGOING,
