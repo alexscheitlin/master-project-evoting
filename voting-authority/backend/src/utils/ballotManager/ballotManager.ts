@@ -1,9 +1,8 @@
-import BN = require('bn.js')
-import { FFelGamal } from 'mp-crypto'
+import BN = require('bn.js');
+import { FFelGamal } from 'mp-crypto';
 
-import { getValueFromDB, BALLOT_ADDRESS_TABLE } from '../../database/database'
-import { getWeb3 } from '../web3'
-import { parityConfig } from '../../config'
+import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database';
+import { getWeb3, unlockAuthAccount } from '../web3';
 
 const ballotContract = require('../../../solidity/toDeploy/Ballot.json')
 
@@ -22,21 +21,9 @@ const getContract = () => {
   return contract
 }
 
-/**
- * Returns the account of the Authority
- */
-export const getAuthAccount = async () => {
-  // TODO: create voting-auth-account with axios/RPC (see _old, create account)
-  // ignore the unlockAccount call as it expects a number but parity does only work with hex numbers
-  // null => 300 seconds (default)
-  // @ts-ignore
-  await web3.eth.personal.unlockAccount(parityConfig.accountAddress, parityConfig.accountPassword, null)
-  return parityConfig.accountAddress
-}
-
 export const setSystemParameters = async () => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
 
   // TODO: how do we generate suitable params?
   const p_: number = 23
@@ -67,7 +54,7 @@ export const getPublicKey = async (): Promise<BN> => {
  */
 export const generatePublicKey = async () => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     await contract.methods.generatePublicKey().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -80,7 +67,7 @@ export const generatePublicKey = async () => {
  */
 export const createVerifiers = async () => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     await contract.methods.createVerifiers().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -93,7 +80,7 @@ export const createVerifiers = async () => {
  */
 export const openBallot = async () => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     await contract.methods.openBallot().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -106,7 +93,7 @@ export const openBallot = async () => {
  */
 export const closeBallot = async () => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     await contract.methods.closeBallot().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -141,7 +128,7 @@ export const getNrOfPublicKeyShares = async (): Promise<number> => {
  */
 export const combineDecryptedShares = async (): Promise<boolean> => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     return await contract.methods.combineDecryptedShares().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -154,7 +141,7 @@ export const combineDecryptedShares = async (): Promise<boolean> => {
  */
 export const getVoteResult = async (): Promise<number> => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     return await contract.methods.getVoteResult().call({ from: authAcc })
   } catch (error) {
@@ -167,7 +154,7 @@ export const getVoteResult = async (): Promise<number> => {
  */
 export const getNumberOfVotes = async (): Promise<number> => {
   const contract = getContract()
-  const authAcc = await getAuthAccount()
+  const authAcc = await unlockAuthAccount()
   try {
     return await contract.methods.getNumberOfVotes().call({ from: authAcc })
   } catch (error) {

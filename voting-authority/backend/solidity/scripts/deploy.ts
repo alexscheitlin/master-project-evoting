@@ -1,6 +1,6 @@
-import { getWeb3 } from '../../src/utils/web3'
-import { parityConfig } from '../../src/config'
-import { BallotManager } from '../../src/utils/ballotManager'
+import { Contract } from 'web3-eth-contract'
+
+import { getWeb3, unlockAuthAccount } from '../../src/utils/web3'
 
 const ballotContract = require('../toDeploy/Ballot.json')
 const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
@@ -11,28 +11,34 @@ const deploy = async (abi: any, bytecode: string, question?: string, numberOfAut
   const hasVotingQuestion = question !== undefined
   const hasNumberOfAuthNodes = numberOfAuthNodes !== undefined
 
-  BallotManager.getAuthAccount()
+  const authAccount = await unlockAuthAccount()
 
-  const deployedContract = await new web3.eth.Contract(abi)
-    .deploy({
-      data: bytecode,
-      arguments: [hasVotingQuestion ? question : undefined, hasNumberOfAuthNodes ? numberOfAuthNodes : undefined],
-    })
-    .send({
-      from: parityConfig.accountAddress,
-      gas: 6000000,
-    })
+  let deployedContract: Contract
+  try {
+    deployedContract = await new web3.eth.Contract(abi)
+      .deploy({
+        data: bytecode,
+        arguments: [hasVotingQuestion ? question : undefined, hasNumberOfAuthNodes ? numberOfAuthNodes : undefined],
+      })
+      .send({ from: authAccount, gas: 6000000 })
+  } catch (error) {
+    throw new Error('Could not deploy the contract (web3.eth.Contract(abi).deploy).')
+  }
 
   return deployedContract.options.address
 }
 
-export const init = async (votingQuestion: string, numberOfAuthNodes: number) => {
+export const init = async (votingQuestion: string, numberOfAuthNodes: number): Promise<string> => {
   try {
+    // deploy the modulo math library contract
     const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
     console.log(`Library deployed at address: ${libAddress}`)
-    // replaces the given pattern with the address of the library
-    // at compile-time, these "placeholders" are inserted for later
-    // replacement by an address
+
+    // deploy the ballot contract
+
+    // replace the given pattern with the address of the modulo math library
+    // at compile-time
+    // these "placeholders" are inserted for later replacement by an address
     // we need to manually set the address of the deployed library in order
     // for the Ballot.sol to find it
     const ballotBytecode = ballotContract.bytecode.replace(
@@ -41,11 +47,11 @@ export const init = async (votingQuestion: string, numberOfAuthNodes: number) =>
     )
     const Ballot = { ...ballotContract }
     Ballot.bytecode = ballotBytecode
-    const ballotAddress = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion, numberOfAuthNodes)
+    const ballotAddress: string = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion, numberOfAuthNodes)
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
     return ballotAddress
   } catch (error) {
-    throw new Error(`Contract Deployment failed: ${JSON.stringify(error)}`)
+    throw new Error(`Contract Deployment failed: ${error.message}`)
   }
 }
