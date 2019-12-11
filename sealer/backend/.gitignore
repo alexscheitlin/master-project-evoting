@@ -71,11 +71,11 @@ dist/
 .vscode/*
 !.vscode/launch.json
 
-# dont commit chain keys
+# don't commit chain keys
 /wallet/sealer*
 
-# dont commit chain.json
+# don't commit chain.json
 src/chainspec/chain*
 
-# dont commit crypto library
+# don't commit crypto library
 mp-crypto
