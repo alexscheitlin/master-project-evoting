@@ -1,8 +1,10 @@
 import express from 'express'
+
 import * as Deploy from '../../solidity/scripts/deploy'
-import { getValueFromDB, setValue, BALLOT_DEPLOYED_TABLE, BALLOT_ADDRESS_TABLE, STATE_TABLE } from '../database/database'
-import { BallotManager } from '../utils/ballotManager'
 import { parityConfig } from '../config'
+import { BALLOT_ADDRESS_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, NODES_TABLE, setValue, STATE_TABLE } from '../database/database'
+import { BallotManager } from '../utils/ballotManager'
+import { createAccount } from '../utils/rpc'
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 import { VotingState } from './state'
 
@@ -11,6 +13,7 @@ const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed. S
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
 const VOTE_QUESTION_INVALID: string = 'Vote Question was not provided or is not of type String.'
 const NOT_ALL_SEALERS_CONNECTED: string = 'Not all sealers are connected. Please wait!'
+const ACCOUNT_CREATION_FAILED: string = 'The wallet could not be created!'
 
 const router: express.Router = express.Router()
 
@@ -41,8 +44,10 @@ router.post('/deploy', async (req, res) => {
     return
   }
 
+  const nodes: string[] = getValueFromDB(NODES_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
   if (connectedAuthorities !== requiredAuthorities) {
+    // from chain
     res.status(400).json({
       msg: NOT_ALL_SEALERS_CONNECTED,
       connectedSealers: connectedAuthorities,
@@ -50,25 +55,52 @@ router.post('/deploy', async (req, res) => {
     })
     return
   }
+  if (nodes.length !== requiredAuthorities) {
+    // from db
+    res.status(400).json({
+      msg: NOT_ALL_SEALERS_CONNECTED,
+      connectedSealers: nodes.length,
+      requiredSealers: requiredAuthorities,
+    })
+    return
+  }
 
   const voteQuestion: string = <string>req.body.question
   const questionIsInvalid: boolean = validateVoteQuestion(voteQuestion)
-
   if (questionIsInvalid) {
     res.status(400).json({ msg: VOTE_QUESTION_INVALID })
     return
-  } else {
-    Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes)
-      .then(address => {
-        setValue(BALLOT_ADDRESS_TABLE, address)
-        setValue(BALLOT_DEPLOYED_TABLE, true)
-
-        // initialize the parameters of the system
-        BallotManager.setSystemParameters()
-        res.status(201).json({ address: address, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
-      })
-      .catch((error: Error) => res.status(500).json({ msg: error.message }))
   }
+
+  // create voting auth account
+  let accountAddress: string = ''
+  try {
+    accountAddress = await createAccount(nodes[0], parityConfig.accountPassword, parityConfig.accountPassword)
+  } catch (error) {
+    res.status(400).json({ msg: ACCOUNT_CREATION_FAILED, error: error.message })
+    return
+  }
+
+  if (accountAddress !== parityConfig.accountAddress) {
+    res.status(400).json({
+      msg: ACCOUNT_CREATION_FAILED,
+      expectedAddress: parityConfig.accountAddress,
+      createdAddress: accountAddress,
+    })
+    return
+  }
+
+  // deploy contracts
+  Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes)
+    .then(address => {
+      setValue(BALLOT_ADDRESS_TABLE, address)
+      setValue(BALLOT_DEPLOYED_TABLE, true)
+
+      // initialize the parameters of the system
+      BallotManager.setSystemParameters()
+      res.status(201).json({ address: address, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
+    })
+    .catch((error: Error) => res.status(500).json({ msg: error.message }))
 })
 
 router.get('/deploy', (req, res) => {
