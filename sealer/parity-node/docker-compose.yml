@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 
 services:
   authority:
@@ -19,7 +19,8 @@ services:
     ports:
       - ${RPC_PORT}:${RPC_PORT}
     networks:
-      - parity-node_default
+      - parity-nodes
+
 networks:
-  parity-node_default:
+  parity-nodes:
     external: true

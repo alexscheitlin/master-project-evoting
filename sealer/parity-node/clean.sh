@@ -1,8 +1,8 @@
 # delete keys
-rm -rf ./keys/sealer*
+rm -f ./keys/sealer*
 
 # delete chainspec from backend
-rm -rf ./config/chain.json
+rm -f ./config/chain.json
 
 # delete .env
-rm -rf .env
+rm -f .env
