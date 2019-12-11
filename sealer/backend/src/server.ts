@@ -27,9 +27,6 @@ server.use('/', peer)
 // setup the database
 setupDB()
 
-console.log(process.env.FRONTEND_PORT)
-
 server.listen(process.env.BACKEND_PORT, () => {
   console.log(`HTTP server started at http://localhost:${process.env.BACKEND_PORT}`)
-  console.log(`This parity node will be running on ${process.env.SEALER_NODE_PORT}`)
 })
