@@ -1,20 +1,22 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const getWalletAddress = async (): Promise<string> => {
-  const url = "http://localhost:" + process.env.REACT_APP_BACKEND_PORT;
-  const response = await axios.get(url + "/register");
+  const url = `http://${process.env.REACT_APP_SEALER_BE_IP}:${process.env.REACT_APP_SEALER_BE_PORT}`;
+  const response = await axios.get(url + '/register');
 
   return response.data.result;
 };
 
 export const registerWallet = async (wallet: string) => {
-  const url = "http://localhost:" + process.env.REACT_APP_BACKEND_PORT;
-  await axios.post(url + "/register");
+  const url = `http://${process.env.REACT_APP_SEALER_BE_IP}:${process.env.REACT_APP_SEALER_BE_PORT}`;
+  console.log(url);
+  const response = await axios.post(url + '/register');
+  console.log(response);
 };
 
 export const loadConfiguration = async () => {
-  const url = "http://localhost:" + process.env.REACT_APP_BACKEND_PORT;
-  const response = await axios.get(url + "/chainspec");
+  const url = `http://${process.env.REACT_APP_SEALER_BE_IP}:${process.env.REACT_APP_SEALER_BE_PORT}`;
+  const response = await axios.get(url + '/chainspec');
   if (response.status === 200) {
     return true;
   } else {
@@ -23,8 +25,9 @@ export const loadConfiguration = async () => {
 };
 
 export const findPeers = async () => {
-  const url = "http://localhost:" + process.env.REACT_APP_BACKEND_PORT;
-  const response = await axios.post(url + "/peer");
+  const url = `http://${process.env.REACT_APP_SEALER_BE_IP}:${process.env.REACT_APP_SEALER_BE_PORT}`;
+  const response = await axios.post(url + '/peer');
+  console.log(response);
   if (response.status === 200) {
     return true;
   } else {
@@ -33,7 +36,7 @@ export const findPeers = async () => {
 };
 
 export const getNrPeers = async (): Promise<number> => {
-  const url = "http://localhost:" + process.env.REACT_APP_BACKEND_PORT;
-  const response = await axios.get(url + "/peer");
+  const url = `http://${process.env.REACT_APP_SEALER_BE_IP}:${process.env.REACT_APP_SEALER_BE_PORT}`;
+  const response = await axios.get(url + '/peer');
   return response.data.nrOfPeers;
 };

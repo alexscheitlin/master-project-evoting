@@ -13,7 +13,7 @@ export const getEnodeAtPort = async (port: string): Promise<string> => {
     params: [],
     id: 0,
   }
-  const response = await axios.post('http://localhost:' + port, body, config)
+  const response = await axios.post(`http://${process.env.PARITY_NODE_IP}:${port}`, body, config)
   return response.data.result
 }
 
@@ -24,5 +24,7 @@ export const registerEnodeWithAuthority = async (enode: string, connectTo: strin
     params: [enode],
     id: 0,
   }
-  await axios.post(connectTo, body, config)
+  console.log('before response', connectTo, body, config)
+  const response = await axios.post(connectTo, body, config)
+  console.log('response:', response)
 }

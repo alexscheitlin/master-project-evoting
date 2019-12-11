@@ -1,5 +1,8 @@
 FROM node:12-alpine
 
+# install bash
+RUN apk add --no-cache bash
+
 # Create app directory
 WORKDIR /usr/src/frontend
 
@@ -14,4 +17,3 @@ RUN npm install --force
 COPY . .
 
 EXPOSE 40004
-CMD [ "npm", "run", "start" ]

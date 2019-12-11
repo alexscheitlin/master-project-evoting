@@ -1,5 +1,5 @@
 export const config = {
   authBackend: {
-    devUrl: 'http://localhost:4001',
+    devUrl: `http://${process.env.VOTH_AUTH_BE_IP}:${process.env.VOTH_AUTH_BE_PORT}`,
   },
 }

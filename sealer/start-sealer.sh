@@ -29,6 +29,7 @@ readonly parentParentDir="$(dirname "$parentDir")"
 # * (the actual node needs to be started separately via CLI during registration)
 
 sealerNr=$1
+internal=10
 
 # get crypto library into the mix
 
@@ -46,15 +47,34 @@ rm -rf $dir/backend/mp-crypto/dist
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.json $dir/backend/wallet/sealer.json
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/backend/wallet/sealer.pwd
 
+# ports
+echo SEALER_BE_PORT=401$sealerNr >> $dir/.env
+echo FRONTEND_PORT=301$sealerNr >> $dir/.env
+
+# internal IP's for BE <-> FE
+echo SEALER_BE_IP=172.1.$internal$sealerNr.20 >> $dir/.env
+echo FRONTEND_IP=172.1.$internal$sealerNr.10 >> $dir/.env
+echo INTERNAL_IP_RANGE=172.1.$internal$sealerNr.0/24 >> $dir/.env
+
+# ip and port of Vote Authority Backend (vote-auth network)
+echo VOTH_AUTH_BE_IP=172.1.10.5 >> $dir/.env
+echo VOTH_AUTH_BE_PORT=4001 >> $dir/.env
+
+# ip of Sealer Backend in vot-auth network
+echo VOTE_AUTH_NETWORK_IP=172.1.10.$sealerNr$internal >> $dir/.env
+
+# ip of Sealer's Parity Node (parity-node network)
+echo PARITY_NODE_IP=172.1.1.$sealerNr >> $dir/.env
+
+# ip of Sealer Backend in parity-node network
+echo PARITY_NETWORK_IP=172.1.1.10$sealerNr >> $dir/.env
+
+# copy file to backend
+cp $dir/.env $dir/backend/.env
+
 # create env file for backend where to find chain etc.
 echo NODE_ENV=development >> $dir/backend/.env
 echo SEALER_NODE_PORT=701$sealerNr >> $dir/backend/.env
-echo BACKEND_PORT=401$sealerNr >> $dir/backend/.env
-echo FRONTEND_PORT=301$sealerNr >> $dir/backend/.env
-
-#
-echo BACKEND_PORT=401$sealerNr >> $dir/.env
-echo FRONTEND_PORT=301$sealerNr >> $dir/.env
 
 # go into correct directory to start docker compose with the .env file
 cd $dir
@@ -66,5 +86,5 @@ docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
 rm -f $dir/backend/wallet/sealer.json
 rm -f $dir/backend/wallet/sealer.pwd
 rm -f $dir/backend/.env
-rm -f $dir/backend/mp-crypto
+rm -rf $dir/backend/mp-crypto
 rm -f $dir/.env
