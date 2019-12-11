@@ -1,20 +1,23 @@
-version: "3.4"
+version: "3.7"
 
 services:
   backend:
     build: ./backend
-    network_mode: host
     expose:
       - ${BACKEND_PORT}
     environment:
       API_HOST: ${BACKEND_PORT}
       APP_SERVER_PORT: ${BACKEND_PORT}
     ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT} # map the internal express port to ${BACKEND_PORT}
+      - ${BACKEND_PORT}:4000 # map the internal express port to ${BACKEND_PORT}
     volumes:
       - ./backend/src:/usr/src/backend/src
       - ./backend/src/chainspec:/usr/src/backend/chainspec
-    command: npm run serve:dev
+    networks:
+      - frontend
+      - parity-nodes
+      - vote-auth
+    command: npm run clean:db && npm run serve:dev
 
   frontend:
     build: ./frontend
@@ -28,6 +31,16 @@ services:
     volumes:
       - ./frontend/src:/usr/src/frontend/src
       - ./frontend/public:/usr/src/frontend/public
-    links:
+    networks:
+      - frontend
+    depends_on:
       - backend
     command: npm run start
+
+networks:
+  frontend:
+    driver: bridge
+  parity-nodes:
+    external: true
+  vote-auth:
+    external: true
