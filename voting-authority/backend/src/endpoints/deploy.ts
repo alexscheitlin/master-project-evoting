@@ -30,7 +30,17 @@ router.post('/deploy', async (req, res) => {
   }
 
   // verify that all sealers are connected
-  const connectedAuthorities: number = await getNumberOfConnectedAuthorities()
+  let connectedAuthorities: number = 0
+  try {
+    connectedAuthorities = await getNumberOfConnectedAuthorities()
+  } catch (error) {
+    res.status(400).json({
+      msg: 'Could not verify whether all sealers are connected or not!',
+      error: 'web3: ' + error.message,
+    })
+    return
+  }
+
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
   if (connectedAuthorities !== requiredAuthorities) {
     res.status(400).json({
@@ -46,6 +56,7 @@ router.post('/deploy', async (req, res) => {
 
   if (questionIsInvalid) {
     res.status(400).json({ msg: VOTE_QUESTION_INVALID })
+    return
   } else {
     Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes)
       .then(address => {
@@ -54,13 +65,9 @@ router.post('/deploy', async (req, res) => {
 
         // initialize the parameters of the system
         BallotManager.setSystemParameters()
-
         res.status(201).json({ address: address, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
       })
-      .catch((err: Error) => {
-        // TODO: Think of a better error status code -> the request was valid but some processing on the blockchain failed and, therefore, it is a server error and not a client side error -> better way to handle this.
-        res.status(500).json({ msg: err })
-      })
+      .catch((error: Error) => res.status(500).json({ msg: error.message }))
   }
 })
 
@@ -71,7 +78,10 @@ router.get('/deploy', (req, res) => {
     const address: boolean = <boolean>getValueFromDB(BALLOT_ADDRESS_TABLE)
     res.status(200).json({ address: address, msg: BALLOT_ALREADY_DEPLOYED_MESSAGE })
   } else {
-    // reason why we don't return anything at all -> if the contract has not been deployed yet, there is nothing there so there will be nothing returned. Nevertheless, the request and the processing was successful.
+    // reason why we don't return anything at all
+    // if the contract has not been deployed yet, there is nothing there
+    // so there will be nothing returned. Nevertheless, the request and the
+    // processing was successful.
     res.sendStatus(204)
   }
 })
