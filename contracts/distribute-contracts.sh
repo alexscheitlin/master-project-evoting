@@ -32,3 +32,16 @@ done
 echo
 
 echo "> If you want to distribute more contracts, please adjust 'distribute.contracts.sh'."
+
+# distribute to sealer backend
+DESTINATION_DIR="sealer/backend/src/contract-abis/"
+CONTRACTS=("Ballot.json")
+
+echo "> Distribute to: $DESTINATION_DIR"
+for contract in "${CONTRACTS[@]}"; do
+    echo "  - $contract"
+    cp $COMPILED_DIR/$contract $PROJECT_DIR/$DESTINATION_DIR
+done
+echo
+
+echo "> If you want to distribute more contracts, please adjust 'distribute.contracts.sh'."
