@@ -60,7 +60,7 @@ echo FRONTEND_PORT=301$sealerNr >> $dir/.env
 cd $dir
 
 # start docker containers
-docker-compose -p controller_$sealerNr -f docker-compose.yml up --build
+docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
 
 # remove all temp files
 rm -rf $dir/backend/wallet/sealer.json
