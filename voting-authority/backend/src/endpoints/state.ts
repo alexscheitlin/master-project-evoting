@@ -120,6 +120,7 @@ router.post('/state', async (req, res) => {
 
     default:
       res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
+      return
   }
 
   const newState: string = getValueFromDB(STATE_TABLE)
