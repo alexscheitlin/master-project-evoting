@@ -12,13 +12,13 @@ readonly parentParentDir="$(dirname "$parentDir")"
 # ---------------------
 # Backend     port 4010
 # Frontend    port 3010
-# Parity-node port 7010* 
+# Parity-node port 7010*
 
 # Sealer 1
 # ---------------------
 # Backend     port 4011
 # Frontend    port 3011
-# Parity-node port 7011* 
+# Parity-node port 7011*
 
 # Sealer 2
 # ---------------------
@@ -63,8 +63,8 @@ cd $dir
 docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
 
 # remove all temp files
-rm -rf $dir/backend/wallet/sealer.json
-rm -rf $dir/backend/wallet/sealer.pwd
-rm -rf $dir/backend/.env
-rm -rf $dir/backend/mp-crypto
-rm -rf $dir/.env
+rm -f $dir/backend/wallet/sealer.json
+rm -f $dir/backend/wallet/sealer.pwd
+rm -f $dir/backend/.env
+rm -f $dir/backend/mp-crypto
+rm -f $dir/.env

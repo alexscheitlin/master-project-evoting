@@ -1,18 +1,12 @@
-import express from "express";
+import express from 'express'
 
-const logger = (
-  request: express.Request,
-  response: express.Response,
-  next: express.NextFunction
-) => {
-  if (request.method === "POST") {
-    console.log(
-      `${request.method} ${request.path} ${JSON.stringify(request.body)}`
-    );
+const logger = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+  if (request.method === 'POST') {
+    console.log(`${request.method} ${request.path} ${JSON.stringify(request.body)}`)
   } else {
-    console.log(`${request.method} ${request.path}`);
+    console.log(`${request.method} ${request.path}`)
   }
-  next();
-};
+  next()
+}
 
-export default logger;
+export default logger

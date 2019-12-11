@@ -4,6 +4,7 @@ readonly name=$(basename $0)
 readonly dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly parentDir="$(dirname "$dir")"
 readonly parentParentDir="$(dirname "$parentDir")"
+readonly network_name="parity-nodes"
 
 # check a number is provided to start a specific sealer
 if [ -z "$1" ]; then
@@ -23,7 +24,7 @@ fi
 
 echo 'Removing old files for you...'
 # delete old .env file
-rm -rf $dir/.env
+rm -f $dir/.env
 
 node=$1
 
@@ -45,5 +46,13 @@ echo SIGNER_ADDRESS=0x$(cat $dir/keys/sealer$node.json | jq --raw-output .addres
 # go into correct dir to use docker-compose with the .env in this directory
 cd $dir
 
-# start docker compose
+# check if parity-nodes docker network exists, otherwise create it
+if [[ $(docker network ls | xargs | grep -q $network_name) == 0 ]]; then
+    echo "network: $network_name exists!"
+else
+    echo "creating network: $network_name"
+    docker network create $network_name > /dev/null 2>&1
+fi
+
+# start docker compose for parity-node
 docker-compose -p sealer$node up --build --detach

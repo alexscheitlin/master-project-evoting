@@ -12,12 +12,9 @@ services:
       - ${BACKEND_PORT}:4000 # map the internal express port to ${BACKEND_PORT}
     volumes:
       - ./backend/src:/usr/src/backend/src
-      - ./backend/src/chainspec:/usr/src/backend/chainspec
     networks:
-      - frontend
-      - parity-nodes
       - vote-auth
-    command: npm run clean:db && npm run serve:dev
+    command: npm run serve:dev
 
   frontend:
     build: ./frontend
@@ -38,9 +35,7 @@ services:
     command: npm run start
 
 networks:
-  frontend:
-    driver: bridge
-  parity-nodes:
-    external: true
   vote-auth:
     external: true
+  frontend:
+    driver: bridge
