@@ -12,6 +12,7 @@ router.get('/chainspec', async (req, res) => {
     await AuthBackend.fetchAndStoreChainspec()
     res.status(200).json({ msg: SUCESS_MSG })
   } catch (error) {
+    console.log(error)
     res.status(400).json({ msg: SUCESS_FAIL })
   }
 })
