@@ -51,6 +51,15 @@ export const setSystemParameters = async () => {
   }
 }
 
+export const getPublicKey = async (): Promise<BN> => {
+  const contract = getContract()
+  try {
+    return await contract.methods.getPublicKey().call()
+  } catch (error) {
+    throw new Error('Could not get public key.')
+  }
+}
+
 /**
  * Generates the public key of the system. The public key will consist of multiple
  * key shares submitted by the sealer nodes. Hence, this function can only be called

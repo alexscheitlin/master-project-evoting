@@ -11,8 +11,9 @@ import { setupDB } from './database/database'
 import logger from './utils/logger'
 import chainspec from './endpoints/chainspec'
 import connection from './endpoints/connection'
-import state from './endpoints/state'
 import deploy from './endpoints/deploy'
+import publicKey from './endpoints/publicKey'
+import state from './endpoints/state'
 
 // load environment variables based on NODE_ENV
 const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
@@ -40,8 +41,9 @@ server.use(
 // add all routes
 server.use('/', chainspec)
 server.use('/', connection)
-server.use('/', state)
 server.use('/', deploy)
+server.use('/', publicKey)
+server.use('/', state)
 
 // setup the database
 setupDB()
