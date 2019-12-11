@@ -13,13 +13,14 @@ RUN npm install
 # Bundle app source
 COPY . .
 COPY ./wallet ./wallet
+# Copy over source files of crypto library
 COPY ./mp-crypto ./mp-crypto
 
 EXPOSE 4004
 
+# This script will install dependencies inside /mp-crypto
+# and add the custom weier curve to the elliptic package
 RUN chmod +x crypto.sh
 RUN ./crypto.sh
-
-# RUN yes |cp -rf ./node_modules/mp-crypto/node_modules/elliptic/lib/elliptic/curves.js ./node_modules/elliptic/lib/elliptic/curves.js
 
 CMD ["npm", "run", "serve:dev" ]

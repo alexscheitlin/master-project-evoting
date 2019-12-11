@@ -31,10 +31,14 @@ readonly parentParentDir="$(dirname "$parentDir")"
 sealerNr=$1
 
 # get crypto library into the mix
-# build it and copy the dist folder into the backend
+
+# copy mp-crypto into the backend project
 cryptoPath=$parentDir/crypto
 cp -r $cryptoPath $dir/backend/mp-crypto
 
+# make sure we don't copy over node_modules and the dist
+# folder into the docker containers
+# we will install the dependencies inside the container
 rm -rf $dir/backend/mp-crypto/node_modules
 rm -rf $dir/backend/mp-crypto/dist
 
