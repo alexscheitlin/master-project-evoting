@@ -1,52 +1,59 @@
 import {
+  Box,
   Button,
-  CircularProgress,
   createStyles,
   makeStyles,
   Theme,
-  Typography,
-  Box,
-  Divider
+  Typography
 } from "@material-ui/core";
-import { green } from "@material-ui/core/colors";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 
-import { config } from "../../config";
+import { useInterval } from "../../hooks/useInterval";
 import { SealerBackend } from "../../services";
 import { delay } from "../../utils/helper";
+import { LoadSuccess } from "../shared/LoadSuccess";
+import { StepTitle } from "../shared/StepTitle";
 
 interface Props {
   nextStep: () => void;
 }
 
 export const StartNode: React.FC<Props> = ({ nextStep }) => {
+  const REFRESH_INTERVAL_MS: number = 3000;
   const classes = useStyles();
   const [frontendPort, setFrontendPort] = useState(
     process.env.REACT_APP_SEALER_FRONTEND_PORT
   );
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+
+  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_PORT);
+
+  const [chainSpecLoaded, setChainSpecLoaded] = useState(false);
 
   const [isNodeRunning, setIsNodeRunning] = useState(false);
+  const [isBootNode, setIsBootNode] = useState(false);
+
+  const [notification, setNotification] = useState("");
 
   const [peers, setPeers] = useState(0);
 
   const [isLookingForPeers, setIsLookingForPeers] = useState(false);
 
-  let intervalID = 0;
-
   const loadConfiguration = async () => {
     setLoading(true);
-    setSuccess(false);
-    await delay(1000);
-    const success = await SealerBackend.loadConfiguration();
-    setLoading(false);
-    setSuccess(success);
+    setChainSpecLoaded(false);
+    await delay(500);
+    try {
+      const success = await SealerBackend.loadConfiguration();
+      setLoading(false);
+      setChainSpecLoaded(true);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
-  const confirmNodeIsRunning = () => {
+  const confirmNodeIsRunning = async () => {
+    await findPeers();
     setIsNodeRunning(true);
   };
 
@@ -57,47 +64,46 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
 
   const findPeers = async () => {
     setIsLookingForPeers(true);
-    const success = await SealerBackend.findPeers();
-    if (success) {
-      intervalID = window.setInterval(pollPeers, 2000);
-    } else {
-      throw new Error("Could not find peers");
+    try {
+      const response = await SealerBackend.findPeers();
+      setIsBootNode(response.bootnode);
+      if (response.bootnode) {
+        setNotification(response.msg);
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
-  useEffect(() => {
-    return () => {
-      window.clearInterval(intervalID);
-    };
-  });
+  // only poll for peers if this node is not the bootnode
+  useInterval(pollPeers, isNodeRunning ? REFRESH_INTERVAL_MS : 0);
 
   return (
     <div className={classes.root}>
-      <Typography variant="h3">SEALER NODE</Typography>
-      <div className={classes.button}>
+      <StepTitle title="SEALER NODE SETUP" />
+      <div className={classes.contentSection}>
         <Box textAlign="center">
           <Button
             variant="contained"
-            disabled={success}
+            disabled={chainSpecLoaded}
             onClick={loadConfiguration}
           >
             Load Blockchain Configuration
           </Button>
           <div className={classes.statusIcons}>
-            {success && (
-              <CheckCircleIcon style={{ fontSize: 24, color: green[500] }} />
-            )}
-            {loading && <CircularProgress size={24} />}
+            <LoadSuccess loading={loading} success={chainSpecLoaded} />
           </div>
         </Box>
       </div>
 
-      {success && (
-        <div>
-          <Divider />
-          <Box textAlign="center">
-            <Typography variant="h6">start your sealer node</Typography>
+      {chainSpecLoaded && (
+        <div className={classes.contentSection}>
+          <Box textAlign="center" className={classes.textBox}>
+            <Typography variant="caption">
+              Please start your sealer node. Once it's running confirm below.
+            </Typography>
           </Box>
+
           <div className={classes.instructions}>
             <pre>
               <code>
@@ -110,59 +116,55 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
           <div className={classes.confirmation}>
             <Box textAlign="center">
               {!isNodeRunning && (
-                <>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={confirmNodeIsRunning}
-                  >
-                    my node is running
-                  </Button>
-                </>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={confirmNodeIsRunning}
+                >
+                  my node is running
+                </Button>
               )}
               {isNodeRunning && (
                 <>
-                  <Typography>Node is runnning</Typography>
                   <Box textAlign="center">
-                    <CheckCircleIcon
-                      style={{ fontSize: 24, color: green[500] }}
-                    />
+                    <Typography>Node is runnning</Typography>
+                    <div className={classes.statusIcons}>
+                      <LoadSuccess loading={loading} success={isNodeRunning} />
+                    </div>
                   </Box>
                 </>
               )}
             </Box>
           </div>
-          <Divider />
         </div>
       )}
+
       {isNodeRunning && (
-        <div>
-          <Divider />
+        <div className={classes.contentSection}>
+          <Box textAlign="center" className={classes.textBox}>
+            {isBootNode ? (
+              <Typography variant="caption">{notification}</Typography>
+            ) : (
+              <Typography variant="caption">looking for peers...</Typography>
+            )}
+          </Box>
+
+          <Box textAlign="center" className={classes.textBox}>
+            <Typography variant="caption">
+              ...connected to {peers} peers
+            </Typography>
+          </Box>
+
           <Box textAlign="center">
-            {!isLookingForPeers && (
-              <>
-                <Typography variant="h6">find peers on network</Typography>
-                <Button variant="contained" onClick={findPeers}>
-                  find peers
-                </Button>
-              </>
-            )}
-            {isLookingForPeers && (
-              <>
-                <Typography>Looking for peers</Typography>
-                <Box textAlign="center">
-                  <CircularProgress size={24} />
-                  <div>{peers} peers </div>
-                </Box>
-                <Button
-                  disabled={peers === 0}
-                  variant="contained"
-                  onClick={nextStep}
-                >
-                  Next
-                </Button>
-              </>
-            )}
+            <LoadSuccess loading={isLookingForPeers} />
+            <Button
+              className={classes.button}
+              disabled={peers === 0}
+              variant="contained"
+              onClick={nextStep}
+            >
+              Next
+            </Button>
           </Box>
         </div>
       )}
@@ -176,7 +178,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "relative"
     },
     button: {
-      padding: theme.spacing(3, 0)
+      marginRight: theme.spacing(1)
     },
     statusIcons: {
       padding: theme.spacing(1, 0),
@@ -187,7 +189,9 @@ const useStyles = makeStyles((theme: Theme) =>
       background: "#212121",
       color: "white",
       padding: theme.spacing(1),
-      fontSize: "0.8em"
+      margin: "auto",
+      fontSize: "0.8em",
+      width: "50%"
     },
     confirmation: {
       padding: theme.spacing(2, 0)
@@ -206,6 +210,18 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "absolute",
       bottom: 0,
       right: 0
+    },
+    loader: {
+      position: "absolute",
+      bottom: 0,
+      right: 0
+    },
+    textBox: {
+      width: 400,
+      margin: "auto"
+    },
+    contentSection: {
+      padding: theme.spacing(1)
     }
   })
 );

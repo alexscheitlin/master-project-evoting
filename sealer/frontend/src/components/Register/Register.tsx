@@ -1,25 +1,17 @@
 import {
   Button,
-  CircularProgress,
   createStyles,
   makeStyles,
   Theme,
   Typography
 } from "@material-ui/core";
-import { green } from "@material-ui/core/colors";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 
 import { config } from "../../config";
-import { SealerBackend } from "../../services";
+import { AuthBackend, SealerBackend } from "../../services";
 import { delay } from "../../utils/helper";
-
-interface StateResponse {
-  state: any;
-  registeredSealers: number;
-  requiredSealers: number;
-}
+import { LoadSuccess } from "../shared/LoadSuccess";
+import { StepTitle } from "../shared/StepTitle";
 
 interface Props {
   nextStep: () => void;
@@ -29,17 +21,17 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
   const [wallet, setWallet] = useState("");
 
   const [state, setState] = useState();
+  // TODO replace dynamically with a backend call
   const [requiredSealers, setRequiredSealers] = useState<number>(3);
   const [sealers, setSealers] = useState<string[]>([]);
   const [listening, setListening] = useState<boolean>(false);
 
   const [readyForNextStep, setReadyForNextStep] = useState<boolean>(false);
 
+  // set a flag in the parent component that transition into next step is possible
   useEffect(() => {
     setReadyForNextStep(requiredSealers === sealers.length);
   }, [sealers, requiredSealers]);
@@ -47,25 +39,18 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
   useEffect(() => {
     const getRequiredValidators = async () => {
       try {
-        const response: AxiosResponse<StateResponse> = await axios.get(
-          config.authBackend.devUrl + "/state"
-        );
-        if (response.status === 201) {
-          setRequiredSealers(response.data.requiredSealers);
-          setState(response.data.state);
-        } else {
-          throw new Error(
-            `GET /state -> status code not 200. Status code is: ${response.status}`
-          );
-        }
+        // FIXME: something does not work in the auth backend when connecting to the blockchain
+        const response = await AuthBackend.getState();
+        setRequiredSealers(response.requiredSealers);
+        setState(response.state);
       } catch (error) {
-        console.log("ERROR");
+        console.log(error.message);
       }
     };
-
     getRequiredValidators();
   }, []);
 
+  // Subscribe to newly registered sealers
   useEffect(() => {
     if (!listening) {
       const events = new EventSource(config.authBackend.devUrl + "/registered");
@@ -78,6 +63,7 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
     }
   }, [listening, sealers]);
 
+  // Get Wallet information from sealer backend
   useEffect(() => {
     async function init() {
       const address = await SealerBackend.getWalletAddress();
@@ -87,28 +73,25 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
     return () => {};
   }, []);
 
+  // Tell the backend to register this sealer's wallet
   const register = async () => {
     try {
       setLoading(true);
       setSuccess(false);
-      await delay(1000);
+      await delay(500);
       await SealerBackend.registerWallet(wallet);
       setSuccess(true);
       setLoading(false);
     } catch (error) {
       setLoading(false);
       setSuccess(true);
-      setError(true);
-      console.log(error);
-      setErrorMsg(
-        "Could not register Address. You are probably already registered."
-      );
+      console.log(error.message);
     }
   };
 
   return (
     <div className={classes.root}>
-      <Typography variant="h3">REGISTRATION</Typography>
+      <StepTitle title="Registration" />
       <Typography>
         <strong>Sealer Wallet: </strong> {wallet}
       </Typography>
@@ -136,15 +119,9 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
           Next
         </Button>
       </div>
-      <div className={classes.successIcon}>
-        <div className={classes.statusButtonWrapper}>
-          {loading && <CircularProgress size={24} />}
-        </div>
-        {success && (
-          <CheckCircleIcon style={{ fontSize: 24, color: green[500] }} />
-        )}
+      <div className={classes.loader}>
+        <LoadSuccess loading={loading} success={success} />
       </div>
-      <Typography variant="caption">{error && errorMsg}</Typography>
     </div>
   );
 };
@@ -161,13 +138,11 @@ const useStyles = makeStyles((theme: Theme) =>
     button: {
       marginRight: theme.spacing(1)
     },
-    statusButtonWrapper: {
-      marginLeft: 10
-    },
+    statusButtonWrapper: {},
     sealerInfo: {
       padding: theme.spacing(3, 0)
     },
-    successIcon: {
+    loader: {
       position: "absolute",
       bottom: 0,
       right: 0
