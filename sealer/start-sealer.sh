@@ -1,80 +1,91 @@
 #!/bin/bash
 
+########################################
+# relative directories
+########################################
 readonly name=$(basename $0)
 readonly dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly parentDir="$(dirname "$dir")"
-readonly parentParentDir="$(dirname "$parentDir")"
 
-# Starts a sealer
-# Specify the number of the sealer
+###########################################
+# Mode
+###########################################
+mode=production
+echo "The mode is: $mode"
 
-# Sealer 0
-# ---------------------
-# Backend     port 4010
-# Frontend    port 3010
-# Parity-node port 7010*
+###########################################
+# Config
+# - the config file with all IPs and ports
+###########################################
+globalConfig=$parentDir/system.json
 
-# Sealer 1
-# ---------------------
-# Backend     port 4011
-# Frontend    port 3011
-# Parity-node port 7011*
+###########################################
+# Cleanup
+###########################################
+rm -f $dir/.env
 
-# Sealer 2
-# ---------------------
-# Backend     port 4012
-# Frontend    port 3012
-# Parity-node port 7012*
+###########################################
+# Unlink mp-crypto as we don't want the 
+# symbolic link inside the container
+# the build will fail otherwise
+###########################################
+npm unlink --no-save mp-crypto
+rm -rf $dir/backend/node_modules
 
-# * (the actual node needs to be started separately via CLI during registration)
-
+###########################################
+# Set Sealer Number
+###########################################
 sealerNr=$1
-internal=10
 
-# get crypto library into the mix
-
-# copy mp-crypto into the backend project
+########################################
+# mp-crypto library
+#######################################
 cryptoPath=$parentDir/crypto
 cp -r $cryptoPath $dir/backend/mp-crypto
-
-# make sure we don't copy over node_modules and the dist
-# folder into the docker containers
-# we will install the dependencies inside the container
 rm -rf $dir/backend/mp-crypto/node_modules
 rm -rf $dir/backend/mp-crypto/dist
 
-# copy keys
+########################################
+# copy keys (key store file)
+#######################################
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.json $dir/backend/wallet/sealer.json
 cp $parentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/backend/wallet/sealer.pwd
 
-# ports
-echo SEALER_BE_PORT=401$sealerNr >> $dir/.env
-echo FRONTEND_PORT=301$sealerNr >> $dir/.env
+###########################################
+# ENV variables
+###########################################
+# - Voting Authority Backend PORT (the port stays the same, in dev and prod mode) 
+VOTING_AUTH_BACKEND_PORT=$(cat $globalConfig | jq .services.voting_authority_backend.port)
+# - Voting Authority Backend IP (either 172.1.1.XXX or localhost)
+VOTING_AUTH_BACKEND_IP=$(cat $globalConfig | jq .services.voting_authority_backend.ip.$mode | tr -d \")
+# - Sealer Backend Port (the port stays the same, in dev and prod mode)
+SEALER_BACKEND_PORT=$(cat $globalConfig | jq .services.sealer_backend_$sealerNr.port)
+# - Sealer Backend IP (either 172.1.1.XXX or localhost)
+SEALER_BACKEND_IP=$(cat $globalConfig | jq .services.sealer_backend_$sealerNr.ip.$mode | tr -d \")
+# - Sealer Frontend Port (the port stays the same, in dev and prod mode) 
+SEALER_FRONTEND_PORT=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.port)
+# - Sealer Frontend IP (either 172.1.1.XXX or localhost)
+SEALER_FRONTEND_IP=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.ip.$mode | tr -d \")
+# - POA Blockchain Main RPC PORT (the port stays the same, in dev and prod mode)
+PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.port)
+# - POA Blockchain Main RPC IP (either 172.1.1.XXX or localhost)
+PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.ip.$mode | tr -d \")
+# - Specify NODE_ENV
+NODE_ENV=$mode
 
-# internal IP's for BE <-> FE
-echo SEALER_BE_IP=172.1.$internal$sealerNr.20 >> $dir/.env
-echo FRONTEND_IP=172.1.$internal$sealerNr.10 >> $dir/.env
-echo INTERNAL_IP_RANGE=172.1.$internal$sealerNr.0/24 >> $dir/.env
+###########################################
+# write ENV variables into .env
+###########################################
+echo VOTING_AUTH_BACKEND_PORT=$VOTING_AUTH_BACKEND_PORT >> $dir/.env
+echo VOTING_AUTH_BACKEND_IP=$VOTING_AUTH_BACKEND_IP >> $dir/.env
+echo SEALER_BACKEND_PORT=$SEALER_BACKEND_PORT >> $dir/.env
+echo SEALER_BACKEND_IP=$SEALER_BACKEND_IP >> $dir/.env
+echo SEALER_FRONTEND_PORT=$SEALER_FRONTEND_PORT >> $dir/.env
+echo SEALER_FRONTEND_IP=$SEALER_FRONTEND_IP >> $dir/.env
+echo PARITY_NODE_PORT=$PARITY_NODE_PORT >> $dir/.env
+echo PARITY_NODE_IP=$PARITY_NODE_IP >> $dir/.env
+echo NODE_ENV=$NODE_ENV >> $dir/.env
 
-# ip and port of Vote Authority Backend (vote-auth network)
-echo VOTING_AUTH_BE_IP=172.1.10.5 >> $dir/.env
-echo VOTING_AUTH_BE_PORT=4001 >> $dir/.env
-
-# ip of Sealer Backend in vot-auth network
-echo VOTE_AUTH_NETWORK_IP=172.1.10.$sealerNr$internal >> $dir/.env
-
-# ip of Sealer's Parity Node (parity-node network)
-echo PARITY_NODE_IP=172.1.1.1$sealerNr >> $dir/.env
-
-# ip of Sealer Backend in parity-node network
-echo PARITY_NETWORK_IP=172.1.1.10$sealerNr >> $dir/.env
-
-# copy file to backend
-cp $dir/.env $dir/backend/.env
-
-# create env file for backend where to find chain etc.
-echo NODE_ENV=development >> $dir/backend/.env
-echo SEALER_NODE_PORT=701$sealerNr >> $dir/backend/.env
 
 # go into correct directory to start docker compose with the .env file
 cd $dir
@@ -85,6 +96,5 @@ docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
 # remove all temp files
 rm -f $dir/backend/wallet/sealer.json
 rm -f $dir/backend/wallet/sealer.pwd
-rm -f $dir/backend/.env
 rm -rf $dir/backend/mp-crypto
 rm -f $dir/.env
