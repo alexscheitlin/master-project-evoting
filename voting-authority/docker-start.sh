@@ -7,19 +7,33 @@ readonly name=$(basename $0)
 readonly dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly parentDir="$(dirname "$dir")"
 
-# For now, the mode is automatically "production", as this script uses docker
-# maybe take user input later once local dev works
+###########################################
+# Mode
+###########################################
 mode=production
 echo "The mode is: $mode"
 
-# the config file with all IPs and ports
+###########################################
+# Config
+# - the config file with all IPs and ports
+###########################################
 globalConfig=$parentDir/system.json
 
 ###########################################
 # Cleanup
 ###########################################
 rm -rf $dir/backend/mp-crypto
+rm -f $dir/backend/.env
+rm -f $dir/frontend/.env
 rm -f $dir/.env
+
+###########################################
+# Unlink mp-crypto as we don't want the 
+# symbolic link inside the container
+# the build will fail otherwise
+###########################################
+npm unlink --no-save mp-crypto
+rm -rf $dir/backend/node_modules
 
 ########################################
 # mp-crypto library
@@ -67,9 +81,8 @@ network_name=$(cat $globalConfig | jq .network.name)
 $parentDir/docker-network.sh $network_name
 
 ###########################################
-# >> decide here somehow if docker-compose 
-# >> or just simple npm run serve:dev
+# start containers
 ###########################################
-# - start docker containers
+cd $dir
 docker-compose -p vote-auth -f docker-compose.yml up --build --detach
 rm -f $dir/.env
