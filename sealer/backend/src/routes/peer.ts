@@ -20,7 +20,7 @@ router.post('/peer', async (req, res) => {
     bootNodeUrl = await AuthBackend.getBootNodeUrl(myUrl)
   } catch (error) {
     console.log(error)
-    res.status(400).json({ msg: 'Unable to contact the authority backend to get the bootnode.' })
+    res.status(400).json({ msg: 'Unable to contact the authority backend to get the bootnode.', bootnode: false })
     return
   }
 
@@ -34,21 +34,21 @@ router.post('/peer', async (req, res) => {
       enode = await RPC.getEnodeAtPort(process.env.PARITY_NODE_PORT as string)
     } catch (error) {
       console.log(error)
-      res.status(400).json({ msg: 'Unable to get the enode at port ${process.env.SEALER_NODE_PORT}' })
+      res.status(400).json({ msg: 'Unable to get the enode at port ${process.env.SEALER_NODE_PORT}', bootnode: false })
       return
     }
 
     try {
       // send the enode to the bootNode url
       await RPC.registerEnodeWithAuthority(enode, bootNodeUrl)
-      res.status(200).json({ msg: PEER_SUCCESS_MSG })
+      res.status(200).json({ msg: PEER_SUCCESS_MSG, bootnode: false })
       return
     } catch (error) {
-      res.status(400).json({ msg: `Unable to send enode to bootnode on port ${process.env.PARITY_NODE_PORT}.` })
+      res.status(400).json({ msg: `Unable to send enode to bootnode on port ${process.env.SEALER_NODE_PORT}.`, bootnode: false })
       return
     }
   }
-  res.status(200).json({ msg: PEER_BOOTNODE_MSG })
+  res.status(200).json({ msg: PEER_BOOTNODE_MSG, bootnode: true })
 })
 
 router.get('/peer', async (req, res) => {
