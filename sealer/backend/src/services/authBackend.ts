@@ -1,7 +1,7 @@
 import axios from 'axios'
 import fs from 'fs'
 
-const authBackendUrl = () => `http://${process.env.VOTING_AUTH_BE_IP}:${process.env.VOTING_AUTH_BE_PORT}`
+const authBackendUrl = () => `http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
 
 export const fetchAndStoreChainspec = async () => {
   let result

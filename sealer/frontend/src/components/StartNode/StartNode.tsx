@@ -23,7 +23,9 @@ interface Props {
 
 export const StartNode: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
-  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_PORT);
+  const [frontendPort, setFrontendPort] = useState(
+    process.env.REACT_APP_SEALER_FRONTEND_PORT
+  );
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 

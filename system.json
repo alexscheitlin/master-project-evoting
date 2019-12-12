@@ -38,63 +38,63 @@
       },
       "port": 4003
     },
-    "sealer_1_backend": {
+    "sealer_backend_1": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.141"
       },
       "port": 4011
     },
-    "sealer_1_frontend": {
+    "sealer_frontend_1": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.131"
       },
       "port": 3011
     },
-    "sealer_1_parity": {
+    "sealer_parity_1": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.171"
       },
       "port": 7011
     },
-    "sealer_2_backend": {
+    "sealer_backend_2": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.142"
       },
       "port": 4012
     },
-    "sealer_2_frontend": {
+    "sealer_frontend_2": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.132"
       },
       "port": 3012
     },
-    "sealer_2_parity": {
+    "sealer_parity_2": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.172"
       },
       "port": 7012
     },
-    "sealer_3_backend": {
+    "sealer_backend_3": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.143"
       },
       "port": 4013
     },
-    "sealer_3_frontend": {
+    "sealer_frontend_3": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.133"
       },
       "port": 3013
     },
-    "sealer_3_parity": {
+    "sealer_parity_3": {
       "ip": {
         "development": "localhost",
         "production": "172.1.1.173"
