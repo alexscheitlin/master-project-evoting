@@ -19,10 +19,6 @@ COPY . .
 # Copy over source files of crypto library
 COPY ./mp-crypto ./mp-crypto
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 CMD [ "curl localhost:4000/state" ]
-
-EXPOSE 4004
-
 # This script will install dependencies inside /mp-crypto
 # and add the custom weier curve to the elliptic package
 RUN chmod +x crypto.sh

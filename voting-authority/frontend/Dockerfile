@@ -15,5 +15,3 @@ RUN npm install --force
 
 # Bundle app source
 COPY . .
-
-EXPOSE 40004
