@@ -19,9 +19,9 @@ services:
     ports:
       - ${RPC_PORT}:${RPC_PORT}
     networks:
-      parity-nodes:
-        ipv4_address: ${IP}
+      e-voting:
+        ipv4_address: ${PARITY_NODE_IP}
 
 networks:
-  parity-nodes:
+  e-voting:
     external: true

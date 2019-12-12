@@ -57,7 +57,10 @@
         "development": "localhost",
         "production": "172.1.1.171"
       },
-      "port": 7011
+      "port": 7011,
+      "rpc_port": 7011,
+      "node_port": 30301,
+      "ws_port": 5011
     },
     "sealer_backend_2": {
       "ip": {
@@ -78,7 +81,10 @@
         "development": "localhost",
         "production": "172.1.1.172"
       },
-      "port": 7012
+      "port": 7012,
+      "rpc_port": 7012,
+      "node_port": 30302,
+      "ws_port": 5012
     },
     "sealer_backend_3": {
       "ip": {
@@ -99,7 +105,10 @@
         "development": "localhost",
         "production": "172.1.1.173"
       },
-      "port": 7013
+      "port": 7013,
+      "rpc_port": 7013,
+      "node_port": 30303,
+      "ws_port": 5013
     }
   }
 }
