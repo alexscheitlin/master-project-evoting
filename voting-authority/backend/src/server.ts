@@ -31,7 +31,11 @@ server.use(
       'http://localhost:3010',
       'http://localhost:3011',
       'http://localhost:3012',
+      'http://localhost:3013',
       'http://localhost:4002',
+      'http://172.1.1.131:3011', // sealer 1 frontend,
+      'http://172.1.1.132:3012', // sealer 2 frontend,
+      'http://172.1.1.133:3013', // sealer 3 frontend
       `http://${process.env.VOTING_AUTH_FRONTEND_IP}:${process.env.VOTING_AUTH_FRONTEND_PORT}`,
     ],
   })
