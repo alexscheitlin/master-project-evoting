@@ -18,6 +18,8 @@ services:
     networks:
       internal:
         ipv4_address: ${BACKEND_IP}
+      parity-nodes:
+        ipv4_address: ${PARITY_NETWORK_IP}
       vote-auth:
         ipv4_address: ${VOTE_AUTH_BACKEND_IP}
     command: npm run serve:dev:clean
@@ -45,6 +47,8 @@ services:
 
 networks:
   vote-auth:
+    external: true
+  parity-nodes:
     external: true
   internal:
     driver: bridge
