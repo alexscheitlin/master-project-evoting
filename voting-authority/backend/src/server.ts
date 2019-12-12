@@ -15,10 +15,7 @@ import deploy from './endpoints/deploy'
 import publicKey from './endpoints/publicKey'
 import state from './endpoints/state'
 
-// load environment variables based on NODE_ENV
-const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
-const DOTENV_FILE: string = isProduction ? '.production' : '.development'
-config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
+config()
 
 // setup express server with request body parsing and logging
 const server = express()
@@ -35,13 +32,10 @@ server.use(
       'http://localhost:3011',
       'http://localhost:3012',
       'http://localhost:4002',
-      `http://${process.env.FRONTEND_IP}:3000`,
-      `http://${process.env.FRONTEND_IP}:3001`,
-      `http://172.1.10.5:4001`,
+      `http://${process.env.VOTING_AUTH_FRONTEND_IP}:${process.env.VOTING_AUTH_FRONTEND_PORT}`,
     ],
   })
 )
-
 // add all routes
 server.use('/', chainspec)
 server.use('/', connection)
@@ -52,6 +46,7 @@ server.use('/', state)
 // setup the database
 setupDB()
 
+const isProduction = false
 if (isProduction) {
   // adds the "Strict-Transport-Security" header.
   server.use(
@@ -82,8 +77,8 @@ if (isProduction) {
   })
 } else {
   // start the Express server
-  server.listen({ port: process.env.BACKEND_PORT }, () => {
-    console.log(`HTTP server started at http://${process.env.BACKEND_IP}:${process.env.BACKEND_PORT}`)
-    console.log('FRONTEND RUNS ON:', `http://${process.env.FRONTEND_IP}:3000`)
+  server.listen({ port: process.env.VOTING_AUTH_BACKEND_PORT }, () => {
+    console.log(`HTTP server started at http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`)
+    console.log('FRONTEND RUNS ON:', `http://${process.env.VOTING_AUTH_FRONTEND_IP}:${process.env.VOTING_AUTH_FRONTEND_PORT}`)
   })
 }

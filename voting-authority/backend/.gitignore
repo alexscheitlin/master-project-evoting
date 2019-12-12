@@ -70,3 +70,6 @@ dist/
 # vscode launch command
 .vscode/*
 !.vscode/launch.json
+
+# mp-crypto
+mp-crypto
