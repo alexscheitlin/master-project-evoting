@@ -31,7 +31,7 @@ router.post('/peer', async (req, res) => {
     let enode
     try {
       // get this nodes enode on it's parity-node port
-      enode = await RPC.getEnodeAtPort(process.env.SEALER_NODE_PORT as string)
+      enode = await RPC.getEnodeAtPort(process.env.PARITY_NODE_PORT as string)
     } catch (error) {
       console.log(error)
       res.status(400).json({ msg: 'Unable to get the enode at port ${process.env.SEALER_NODE_PORT}' })
@@ -44,7 +44,7 @@ router.post('/peer', async (req, res) => {
       res.status(200).json({ msg: PEER_SUCCESS_MSG })
       return
     } catch (error) {
-      res.status(400).json({ msg: `Unable to send enode to bootnode on port ${process.env.SEALER_NODE_PORT}.` })
+      res.status(400).json({ msg: `Unable to send enode to bootnode on port ${process.env.PARITY_NODE_PORT}.` })
       return
     }
   }
