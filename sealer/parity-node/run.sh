@@ -4,7 +4,6 @@ readonly name=$(basename $0)
 readonly dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly parentDir="$(dirname "$dir")"
 readonly parentParentDir="$(dirname "$parentDir")"
-readonly network_name="parity-nodes"
 
 # check a number is provided to start a specific sealer
 if [ -z "$1" ]; then
@@ -12,7 +11,6 @@ if [ -z "$1" ]; then
     echo '[1, 2, 3]'
     echo
     echo 'If you want to start a chain with multiple sealers, please consider using the scripts in project "poa-blockchain"'
-
     exit
 fi
 
@@ -22,41 +20,73 @@ if [[ $1 != 1 && $1 != 2 && $1 != 3 ]]; then
     exit
 fi
 
-echo 'Removing old files for you...'
-# delete old .env file
+###########################################
+# Mode
+###########################################
+mode=production
+echo "The mode is: $mode"
+
+###########################################
+# Config
+# - the config file with all IPs and ports
+###########################################
+globalConfig=$parentParentDir/system.json
+
+###########################################
+# Cleanup
+###########################################
 rm -f $dir/.env
 
-node=$1
+###########################################
+# Set Sealer Number
+###########################################
+sealerNr=$1
 
-# get keys
-cp $parentParentDir/poa-blockchain/keys/sealer$node.json $dir/keys/sealer$node.json
-cp $parentParentDir/poa-blockchain/keys/sealer$node.pwd $dir/keys/sealer$node.pwd
+########################################
+# copy keys (key store files)
+#######################################
+cp $parentParentDir/poa-blockchain/keys/sealer$sealerNr.json $dir/keys/sealer$sealerNr.json
+cp $parentParentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/keys/sealer$sealerNr.pwd
 
-# get chainspec from backend
+########################################
+# get chainspec from sealer backend
+#######################################
 cp $parentDir/backend/src/chainspec/chain.json $dir/config
 
-# create env variable for docker-compose
-echo ID=$node >> $dir/.env
+###########################################
+# ENV variables
+###########################################
+nodeJSON=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr)
+
+# - POA Blockchain Main RPC PORT (the port stays the same, in dev and prod mode)
+PARITY_NODE_PORT=$(echo $nodeJSON | jq .port)
+# - POA Blockchain Main RPC IP (either 172.1.1.XXX or localhost)
+PARITY_NODE_IP=$(echo $nodeJSON | jq .ip.$mode | tr -d \")
+PORT=$(echo $nodeJSON | jq .node_port) 
+WS_PORT=$(echo $nodeJSON | jq .ws_port)
+SIGNER_ADDRESS=0x$(cat $dir/keys/sealer$sealerNr.json | jq --raw-output .address)
+
+###########################################
+# write ENV variables into .env
+###########################################
+echo ID=$sealerNr >> $dir/.env
 echo NETWORK_NAME=VotingPoA >> $dir/.env
-echo PORT=3030$node >> $dir/.env
-echo WS_PORT=501$node >> $dir/.env
-echo RPC_PORT=701$node >> $dir/.env
-echo IP=172.1.1.1$node >> $dir/.env
-echo SIGNER_ADDRESS=0x$(cat $dir/keys/sealer$node.json | jq --raw-output .address)  >> $dir/.env
+echo RPC_PORT=$PARITY_NODE_PORT >> $dir/.env
+echo SIGNER_ADDRESS=$SIGNER_ADDRESS  >> $dir/.env
+echo PARITY_NODE_IP=$PARITY_NODE_IP >> $dir/.env
+echo PORT=$PORT >> $dir/.env
+echo WS_PORT=$WS_PORT >> $dir/.env
 
 # go into correct dir to use docker-compose with the .env in this directory
 cd $dir
 
-# check if parity-nodes docker network exists, otherwise create it
-if [[ $(docker network ls | xargs | grep -q $network_name) == 0 ]]; then
-    echo "network: $network_name exists!"
-else
-    echo "creating network: $network_name"
-    docker network create $network_name \
-    --driver=bridge \
-    --subnet=172.1.1.0/24 \
-    --gateway=172.1.1.1 > /dev/null 2>&1
-fi
+###########################################
+# docker network
+# - make sure the network exists
+# - the script will create it if it does not
+###########################################
+network_name=$(cat $globalConfig | jq .network.name | tr -d \")
+$parentParentDir/docker-network.sh $network_name
 
 # start docker compose for parity-node
-docker-compose -p sealer$node up --build --detach
+docker-compose -p sealer$sealerNr up --build --detach
