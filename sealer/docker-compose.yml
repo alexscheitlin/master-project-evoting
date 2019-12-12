@@ -4,56 +4,47 @@ services:
   backend:
     build: ./backend
     environment:
-      BACKEND_IP: ${SEALER_BE_IP}
-      API_HOST: ${SEALER_BE_PORT}
-      APP_SERVER_PORT: ${SEALER_BE_PORT}
-    expose:
-      - ${SEALER_BE_PORT}
+      - VOTING_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT}
+      - VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP}
+      - SEALER_BACKEND_PORT=${SEALER_BACKEND_PORT}
+      - SEALER_BACKEND_IP=${SEALER_BACKEND_IP}
+      - SEALER_FRONTEND_PORT=${SEALER_FRONTEND_PORT}
+      - SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP}
+      - PARITY_NODE_PORT=${PARITY_NODE_PORT}
+      - PARITY_NODE_IP=${PARITY_NODE_IP}
+      - NODE_ENV=${NODE_ENV}
     ports:
-      - ${SEALER_BE_PORT}:${SEALER_BE_PORT} # map the internal express port to ${SEALER_BE_PORT}
+      - ${SEALER_BACKEND_PORT}:${SEALER_BACKEND_PORT}
     volumes:
       - ./backend/src:/usr/src/backend/src
       - ./backend/src/chainspec:/usr/src/backend/chainspec
     networks:
-      internal:
-        ipv4_address: ${SEALER_BE_IP}
-      parity-nodes:
-        ipv4_address: ${PARITY_NETWORK_IP}
-      vote-auth:
-        ipv4_address: ${VOTE_AUTH_NETWORK_IP}
+      e-voting:
+        ipv4_address: ${SEALER_BACKEND_IP}
     command: npm run serve:dev
 
   frontend:
     build: ./frontend
     environment:
-      - REACT_APP_IP=${FRONTEND_IP}
-      - REACT_APP_PORT=${FRONTEND_PORT}
-      - REACT_APP_SEALER_BE_IP=${SEALER_BE_IP}
-      - REACT_APP_SEALER_BE_PORT=${SEALER_BE_PORT}
-      - REACT_APP_VOTE_AUTH_BE_IP=${VOTING_AUTH_BE_IP}
-      - REACT_APP_VOTE_AUTH_BE_PORT=${VOTING_AUTH_BE_PORT}
-    expose:
-      - ${FRONTEND_PORT}
+      - REACT_APP_SEALER_FRONTEND_PORT=${SEALER_FRONTEND_PORT}
+      - REACT_APP_SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP}
+      - REACT_APP_SEALER_BACKEND_PORT=${SEALER_BACKEND_PORT}
+      - REACT_APP_SEALER_BACKEND_IP=${SEALER_BACKEND_IP}
+      - REACT_APP_VOTING_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT}
+      - REACT_APP_VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP}
+      - PORT=${SEALER_FRONTEND_PORT}
     ports:
-      - ${FRONTEND_PORT}:3000 # map the internal react port to ${FRONTEND_PORT}
+      - ${SEALER_FRONTEND_PORT}:${SEALER_FRONTEND_PORT}
     volumes:
       - ./frontend/src:/usr/src/frontend/src
       - ./frontend/public:/usr/src/frontend/public
     networks:
-      internal:
-        ipv4_address: ${FRONTEND_IP}
+      e-voting:
+        ipv4_address: ${SEALER_FRONTEND_IP}
     depends_on:
       - backend
     command: npm run start
 
 networks:
-  internal:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet: ${INTERNAL_IP_RANGE}
-  parity-nodes:
-    external: true
-  vote-auth:
+  e-voting:
     external: true
