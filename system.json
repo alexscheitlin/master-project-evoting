@@ -1,63 +1,102 @@
 {
   "services": {
-    "voter-frontend": {
-      "development": "http://localhost:3000",
-      "production": "http://172.1.1.30:3000"
+    "voter_frontend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.30"
+      },
+      "port": 3000
     },
-    "voting-authority-backend": {
-      "development": "http://localhost:4001",
-      "production": "http://172.1.1.41:4001"
+    "voting_authority_backend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.41"
+      },
+      "port": 4001
     },
-    "voting-authority-frontend": {
-      "development": "http://localhost:3001",
-      "production": "http://172.1.1.31:3001"
+    "voting_authority_frontend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.31"
+      },
+      "port": 3001
     },
-    "access-provider-backend": {
-      "development": "http://localhost:4002",
-      "production": "http://172.1.1.42:4002"
+    "access_provider_backend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.42"
+      },
+      "port": 4002
     },
-    "identity-provider-backend": {
-      "development": "http://localhost:4003",
-      "production": "http://172.1.1.43:4003"
+    "identity_provider_backend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.43"
+      },
+      "port": 4003
     },
-    "sealer-1-backend": {
-      "development": "http://localhost:4011",
-      "production": "http://172.1.1.141:4011"
+    "sealer_1_backend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.141"
+      },
+      "port": 4011
     },
-    "sealer-1-frontend": {
-      "development": "http://localhost:3011",
-      "production": "http://172.1.1.131:3011"
+    "sealer_1_frontend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.131"
+      },
+      "port": 3011
     },
-    "sealer-1-parity": {
-      "development": "http://localhost:7011",
-      "production": "http://172.1.1.171:7011",
-      "rpc-port": "7011"
+    "sealer_1_parity": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.171"
+      },
+      "port": 7011
     },
-    "sealer-2-backend": {
-      "development": "http://localhost:4012",
-      "production": "http://172.1.1.142:4012"
+    "sealer_2_backend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.142"
+      },
+      "port": 4012
     },
-    "sealer-2-frontend": {
-      "development": "http://localhost:3012",
-      "production": "http://172.1.1.132:3012"
+    "sealer_2_frontend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.132"
+      },
+      "port": 3012
     },
-    "sealer-2-parity": {
-      "development": "http://localhost:7012",
-      "production": "http://172.1.1.172:7012",
-      "rpc-port": "7012"
+    "sealer_2_parity": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.172"
+      },
+      "port": 7012
     },
-    "sealer-3-backend": {
-      "development": "http://localhost:4013",
-      "production": "http://172.1.1.143:4013"
+    "sealer_3_backend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.143"
+      },
+      "port": 4013
     },
-    "sealer-3-frontend": {
-      "development": "http://localhost:3013",
-      "production": "http://172.1.1.133:3013"
+    "sealer_3_frontend": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.133"
+      },
+      "port": 3013
     },
-    "sealer-3-parity": {
-      "development": "http://localhost:7013",
-      "production": "http://172.1.1.173:7013",
-      "rpc-port": "7013"
+    "sealer_3_parity": {
+      "ip": {
+        "development": "localhost",
+        "production": "172.1.1.173"
+      },
+      "port": 7013
     }
   }
 }
