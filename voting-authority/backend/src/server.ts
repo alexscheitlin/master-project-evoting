@@ -8,7 +8,7 @@ import { config } from 'dotenv'
 import { resolve } from 'path'
 
 import { setupDB } from './database/database'
-import logger from './utils/logger'
+import { requestLogger, responseLogger } from './utils/logger'
 import chainspec from './endpoints/chainspec'
 import connection from './endpoints/connection'
 import deploy from './endpoints/deploy'
@@ -24,7 +24,8 @@ config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
 const server = express()
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
-server.use(logger)
+server.use(requestLogger)
+server.use(responseLogger)
 server.use(
   cors({
     origin: [
