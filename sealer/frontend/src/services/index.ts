@@ -1,3 +1,4 @@
 import * as SealerBackend from "./sealerBackend";
+import * as AuthBackend from "./authBackend";
 
-export { SealerBackend };
+export { SealerBackend, AuthBackend };

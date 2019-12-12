@@ -1,5 +1,4 @@
 import {
-  Divider,
   Grid,
   makeStyles,
   Paper,
@@ -16,6 +15,7 @@ import { StartNode } from "./components/StartNode";
 import { TallyVotes } from "./components/TallyVotes";
 import { Store } from "./store";
 
+// Title of the progress tracker on left
 const phases = [
   {
     title: "Address Registration"
@@ -52,17 +52,14 @@ const App: React.FC = () => {
 
   return (
     <Grid container direction={"row"} className={classes.root}>
-      <Grid item xs={2}>
+      <Grid item xs={3}>
         <Stepper activeStep={activeStep} orientation="vertical">
-          {phases.map((label: any, i) => (
+          {phases.map((phase: any, i) => (
             <Step key={i}>
-              <StepLabel>{label.title}</StepLabel>
+              <StepLabel>{phase.title}</StepLabel>
             </Step>
           ))}
         </Stepper>
-      </Grid>
-      <Grid item>
-        <Divider orientation="vertical" />
       </Grid>
       <Grid item className={classes.mainContainer}>
         <Paper className={classes.contentWrapper}>{getStep(activeStep)}</Paper>
@@ -78,19 +75,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexGrow: 1
   },
   mainContainer: {
-    display: "flex",
-    flexGrow: 1,
     padding: theme.spacing(1)
   },
   contentWrapper: {
+    width: 550,
     margin: "auto",
     padding: theme.spacing(3, 2)
-  },
-  button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  resetContainer: {
-    padding: theme.spacing(3)
   }
 }));
