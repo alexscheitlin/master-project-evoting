@@ -57,14 +57,14 @@ echo FRONTEND_IP=172.1.$internal$sealerNr.10 >> $dir/.env
 echo INTERNAL_IP_RANGE=172.1.$internal$sealerNr.0/24 >> $dir/.env
 
 # ip and port of Vote Authority Backend (vote-auth network)
-echo VOTH_AUTH_BE_IP=172.1.10.5 >> $dir/.env
-echo VOTH_AUTH_BE_PORT=4001 >> $dir/.env
+echo VOTING_AUTH_BE_IP=172.1.10.5 >> $dir/.env
+echo VOTING_AUTH_BE_PORT=4001 >> $dir/.env
 
 # ip of Sealer Backend in vot-auth network
 echo VOTE_AUTH_NETWORK_IP=172.1.10.$sealerNr$internal >> $dir/.env
 
 # ip of Sealer's Parity Node (parity-node network)
-echo PARITY_NODE_IP=172.1.1.$sealerNr >> $dir/.env
+echo PARITY_NODE_IP=172.1.1.1$sealerNr >> $dir/.env
 
 # ip of Sealer Backend in parity-node network
 echo PARITY_NETWORK_IP=172.1.1.10$sealerNr >> $dir/.env

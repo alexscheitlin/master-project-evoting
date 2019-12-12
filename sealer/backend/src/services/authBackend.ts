@@ -1,13 +1,13 @@
 import axios from 'axios'
 import fs from 'fs'
 
-import { config } from '../config'
+const authBackendUrl = () => `http://${process.env.VOTING_AUTH_BE_IP}:${process.env.VOTING_AUTH_BE_PORT}`
 
 export const fetchAndStoreChainspec = async () => {
   let result
   let chainspec
   try {
-    result = await axios.get(config.authBackend.devUrl + '/chainspec')
+    result = await axios.get(authBackendUrl() + '/chainspec')
   } catch (error) {
     console.log(error)
     throw new Error('Unable to fetch the chainspec from the auth backend. Check if the system is in the correct state.')
@@ -26,7 +26,7 @@ export const getBootNodeUrl = async (myUrl: string) => {
   let bootnode
   try {
     // get bootnode from auth backend
-    const response = await axios.post(config.authBackend.devUrl + '/connectionNode', {
+    const response = await axios.post(authBackendUrl() + '/connectionNode', {
       url: myUrl,
     })
     bootnode = response.data.connectTo
@@ -39,23 +39,24 @@ export const getBootNodeUrl = async (myUrl: string) => {
 
 export const registerWallet = async (addressToRegister: string) => {
   try {
-    await axios.post(config.authBackend.devUrl + '/chainspec', {
+    await axios.post(authBackendUrl() + '/chainspec', {
       address: addressToRegister,
     })
   } catch (error) {
-    console.log(error)
-    throw new Error(`Could not register ${addressToRegister} with the authority backend.`)
+    console.log(error.response.data.msg)
+    throw new Error(`Could not register ${addressToRegister} with the authority backend. ${error.response.data.msg}`)
   }
 }
 
 export const getBallotAddress = async () => {
   let ballotAddress
   try {
-    const response = await axios.get(config.authBackend.devUrl + '/deploy')
+    const response = await axios.get(authBackendUrl() + '/deploy')
     ballotAddress = response.data.address
   } catch (error) {
     console.log(error)
-    throw new Error('Unable to get the address of the ballot from the authority backend.')
+    console.log(error.response.data.msg)
+    throw new Error(`Unable to get the address of the ballot from the authority backend. ${error.response.data.msg}`)
   }
 
   return ballotAddress

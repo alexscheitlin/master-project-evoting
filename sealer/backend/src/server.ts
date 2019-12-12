@@ -33,7 +33,7 @@ server.listen({ port: process.env.SEALER_BE_PORT }, () => {
   console.log(`HTTP server started at http://${process.env.SEALER_BE_IP}:${process.env.SEALER_BE_PORT}.`)
   console.log(`The sealer frontend runs here: ${process.env.FRONTEND_IP}:${process.env.FRONTEND_PORT}`)
   console.log(
-    `This sealer's backend has IP: ${process.env.VOTE_AUTH_NETWORK_IP} in vote-auth network. Such that it can connect to the voting-authority backend ${process.env.VOTH_AUTH_BE_IP}:${process.env.VOTH_AUTH_BE_PORT}`
+    `This sealer's backend has IP: ${process.env.VOTE_AUTH_NETWORK_IP} in vote-auth network. Such that it can connect to the voting-authority backend ${process.env.VOTING_AUTH_BE_IP}:${process.env.VOTING_AUTH_BE_PORT}`
   )
   console.log(
     `This sealer's parity node will be running on ${process.env.PARITY_NODE_IP}:${process.env.SEALER_NODE_PORT}. Sealer's IP in parity-nodes network: ${process.env.PARITY_NETWORK_IP}`

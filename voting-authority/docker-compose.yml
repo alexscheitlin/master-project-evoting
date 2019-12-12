@@ -20,7 +20,7 @@ services:
         ipv4_address: ${BACKEND_IP}
       vote-auth:
         ipv4_address: ${VOTE_AUTH_BACKEND_IP}
-    command: npm run serve:dev
+    command: npm run serve:dev:clean
 
   frontend:
     build: ./frontend
@@ -51,4 +51,4 @@ networks:
     ipam:
       driver: default
       config:
-      - subnet: 172.1.11.0/24
+        - subnet: 172.1.11.0/24
