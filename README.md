@@ -34,6 +34,14 @@ sudo dnf install jq
 
 Each subproject is configured to set and wire the PORTS automatically for every service that this subproject needs. For example: with `sealer/docker-start.sh`, the needed environment variables are fetched from `system.json` and written to `.env` files. These `.env` files are then used in `docker-compose.yml`.
 
+Use `./docker-up.sh` and `./docker-down.sh` to start/stop all docker containers. This includes:
+
+- one voting authority backend
+- one voting authority frontend
+- one identity provider backend
+- one access provider backend
+- three sealer/parity nodes
+
 ### Voting Authority
 
 **Mode=Development (`localhost`)**
