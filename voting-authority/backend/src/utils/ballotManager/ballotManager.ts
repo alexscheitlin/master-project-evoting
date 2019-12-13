@@ -3,6 +3,7 @@ import { FFelGamal } from 'mp-crypto'
 
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database'
 import { getWeb3, unlockAuthAccount } from '../web3'
+import { VotingState } from '../../endpoints/state'
 
 const ballotContract = require('../../../solidity/toDeploy/Ballot.json')
 const web3 = getWeb3()
@@ -104,7 +105,8 @@ export const closeBallot = async () => {
 export const isBallotOpen = async (): Promise<boolean> => {
   const contract = getContract()
   try {
-    return await contract.methods.getBallotStatus().call()
+    const status = await contract.methods.getBallotStatus().call()
+    return status === VotingState.VOTING
   } catch (error) {
     throw new Error('The status of the Ballot could no be fetched.')
   }
