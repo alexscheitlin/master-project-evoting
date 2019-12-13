@@ -1,21 +1,16 @@
+import cors from 'cors'
+import { config } from 'dotenv'
 import express from 'express'
-import https from 'https'
 import fs from 'fs'
 import helmet from 'helmet'
-import cors from 'cors'
+import https from 'https'
 
-import { config } from 'dotenv'
-import { resolve } from 'path'
-
-import { requestLogger, responseLogger } from './utils/logger'
-import register from './registration/register'
-import sendTokens from './registration/sendTokens'
 import { setupDB } from './database/database'
+import register from './endpoints/register'
+import sendTokens from './endpoints/sendTokens'
+import { requestLogger, responseLogger } from './utils/logger'
 
-// load environment variables based on NODE_ENV
-const isProduction: boolean = process.env.NODE_ENV === 'production' ? true : false
-const DOTENV_FILE: string = isProduction ? '.production' : '.development'
-config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
+config()
 
 // setup express server with request body parsing and logging
 const server = express()
@@ -32,6 +27,7 @@ server.use('/', sendTokens)
 // setup the database
 setupDB()
 
+const isProduction = false
 if (isProduction) {
   // adds the "Strict-Transport-Security" header.
   server.use(
@@ -57,12 +53,12 @@ if (isProduction) {
   }
 
   // we will pass our 'server' to 'https'
-  https.createServer(options, server).listen(process.env.PORT, () => {
-    console.log(`HTTPS server started at https://localhost:${process.env.PORT}`)
+  https.createServer(options, server).listen(process.env.ACCESS_PROVIDER_BACKEND_PORT, () => {
+    console.log(`HTTPS server started at https://${process.env.ACCESS_PROVIDER_BACKEND_IP}:${process.env.ACCESS_PROVIDER_BACKEND_PORT}`)
   })
 } else {
   // start the Express server
-  server.listen(process.env.PORT, () => {
-    console.log(`HTTP server started at http://localhost:${process.env.PORT}`)
+  server.listen(process.env.ACCESS_PROVIDER_BACKEND_PORT, () => {
+    console.log(`HTTP server started at http://${process.env.ACCESS_PROVIDER_BACKEND_IP}:${process.env.ACCESS_PROVIDER_BACKEND_PORT}`)
   })
 }
