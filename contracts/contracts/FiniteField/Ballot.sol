@@ -163,7 +163,7 @@ contract Ballot {
     function createVerifiers() private {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
-        require(IS_PARAMETERS_SET = true);
+        require(IS_PARAMETERS_SET == true);
         voteVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
         sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
     }
@@ -172,7 +172,7 @@ contract Ballot {
     function openBallot() public {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
-        require(IS_PARAMETERS_SET = true);
+        require(IS_PARAMETERS_SET == true);
         require(votingState == VotingState.CONFIG);
         
         votingState = VotingState.VOTING;
@@ -181,7 +181,7 @@ contract Ballot {
     function closeBallot() public {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
-        require(IS_PARAMETERS_SET = true);
+        require(IS_PARAMETERS_SET == true);
         require(votingState == VotingState.VOTING);
 
         votingState = VotingState.TALLY;
@@ -258,11 +258,6 @@ contract Ballot {
         returns (bool, string memory)
     {
         require(votingState == VotingState.TALLY);
-
-        if (votingState == VotingState.VOTING) {
-            emit VoteStatusEvent(msg.sender, false, 'Vote is still ongoing');
-            return (false, 'Vote is still ongoing');
-        }
 
         uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender].share;
         if (!sumVerifier.verifyProof(a, b, a1, b1, d, f, msg.sender, publicKeyShare)) {
