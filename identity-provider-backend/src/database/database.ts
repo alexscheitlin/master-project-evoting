@@ -8,6 +8,10 @@ import { Identity } from '../models'
 // TODO: replace with correct type
 let db: any
 
+// database tables
+export const IDENTITIES_TABLE: string = 'identities'
+export const TOKENS_TABLE: string = 'tokens'
+
 export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)

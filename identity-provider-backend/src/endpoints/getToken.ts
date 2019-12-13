@@ -1,12 +1,8 @@
 import express from 'express'
-import { getListFromDB } from '../database/database'
+import { getListFromDB, IDENTITIES_TABLE, TOKENS_TABLE } from '../database/database'
 import { Identity, IdentityToken } from '../models'
 
 const router: express.Router = express.Router()
-
-// database table names
-const IDENTITIES: string = 'identities'
-const TOKENS: string = 'tokens'
 
 // http response messages
 const SUCCESS_MSG: string = 'Successfully stored tokens!'
@@ -50,8 +46,8 @@ export const getToken = (tokens: IdentityToken[], uuid: string): string => {
 router.post('/getToken', (req, res) => {
   const username: string = req.body.username
   const password: string = req.body.password
-  const identities = <Identity[]>getListFromDB(IDENTITIES)
-  const tokens = <IdentityToken[]>getListFromDB(TOKENS)
+  const identities = <Identity[]>getListFromDB(IDENTITIES_TABLE)
+  const tokens = <IdentityToken[]>getListFromDB(TOKENS_TABLE)
 
   if (!doesUserExist(identities, username)) {
     res.status(400).json({ success: false, msg: INVALID + `username ${username}` })
