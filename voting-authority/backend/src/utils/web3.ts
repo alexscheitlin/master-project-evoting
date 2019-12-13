@@ -8,11 +8,9 @@ export const getWeb3 = (): Web3 => {
 }
 
 // unlock the authority account and return its address
-// TODO: create voting-auth-account with axios/RPC (see _old, create account)
 export const unlockAuthAccount = async () => {
   try {
-    // ignore the unlockAccount call as it expects a number but parity
-    // does only work with hex numbers
+    // ignore the unlockAccount call as it expects a number but parity does only work with hex numbers
     // null => 300 seconds (default)
     // @ts-ignore
     await getWeb3().eth.personal.unlockAccount(parityConfig.accountAddress, parityConfig.accountPassword, null)
