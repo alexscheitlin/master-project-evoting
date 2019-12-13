@@ -4,6 +4,7 @@ import { FFelGamal } from 'mp-crypto'
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../database/database'
 import { Account } from '../utils'
 import { getWeb3 } from '../utils/web3'
+import { VotingState } from '../models/states'
 
 const ballotContract = require('../contract-abis/Ballot.json')
 
@@ -62,7 +63,8 @@ export const getSystemParameters = async () => {
 export const isBallotOpen = async (): Promise<boolean> => {
   const contract = getContract()
   try {
-    return await contract.methods.getBallotStatus().call()
+    const status = await contract.methods.getBallotStatus().call()
+    return status === VotingState.VOTING
   } catch (error) {
     console.log(error)
     throw new Error('The status of the Ballot could no be fetched.')
