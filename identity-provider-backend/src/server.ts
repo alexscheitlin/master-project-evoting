@@ -9,8 +9,8 @@ import { resolve } from 'path'
 
 import logger from './utils/logger'
 import { setupDB } from './database/database'
-import register from './registration/register'
-import getToken from './login/getToken'
+import register from './endpoints/register'
+import getToken from './endpoints/getToken'
 
 // get NODE_ENV "param"
 const NODE_ENV = process.env.NODE_ENV
