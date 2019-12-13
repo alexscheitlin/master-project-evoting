@@ -66,6 +66,7 @@ router.post('/register', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ success: false, msg: NO_BALLOT_ADDRESS })
+    return
   }
 
   // create access provider account and unlock it if this not already happened
