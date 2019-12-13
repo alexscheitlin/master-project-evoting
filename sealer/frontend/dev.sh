@@ -59,6 +59,15 @@ echo REACT_APP_SEALER_FRONTEND_IP=$SEALER_FRONTEND_IP >> $dir/.env
 echo PORT=$SEALER_FRONTEND_PORT >> $dir/.env
 
 ###########################################
+# installing packages
+###########################################
+echo "##########################################################################"
+echo "# Installing NPM Packages for you                                         "
+echo "##########################################################################"
+echo
+npm i
+
+###########################################
 # start frontend
 ###########################################
 cd $dir

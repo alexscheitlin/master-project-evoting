@@ -32,7 +32,7 @@ rm -f $dir/.env
 # symbolic link inside the container
 # the build will fail otherwise
 ###########################################
-npm unlink --no-save mp-crypto
+sudo npm unlink --no-save mp-crypto
 rm -rf $dir/backend/node_modules
 
 ########################################
