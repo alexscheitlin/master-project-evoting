@@ -28,7 +28,13 @@ export const responseLogger = (request: express.Request, response: express.Respo
       chunks.push(chunk)
     }
 
-    const body = Buffer.concat(chunks).toString('utf8')
+    let body = ''
+    if (typeof chunk === 'string') {
+      body = chunk
+    } else {
+      body = Buffer.concat(chunks).toString('utf8')
+    }
+
     console.log('res', request.method, request.path, response.statusCode, body)
 
     // @ts-ignore
