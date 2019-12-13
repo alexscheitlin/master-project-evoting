@@ -7,6 +7,7 @@ import chainspec from './routes/chainspec'
 import generateKeys from './routes/generateKeys'
 import peer from './routes/peer'
 import register from './routes/register'
+import state from './routes/state'
 import logger from './utils/logger'
 
 config()
@@ -27,6 +28,7 @@ server.use('/', register)
 server.use('/', generateKeys)
 server.use('/', chainspec)
 server.use('/', peer)
+server.use('/', state)
 
 // setup the database
 setupDB()

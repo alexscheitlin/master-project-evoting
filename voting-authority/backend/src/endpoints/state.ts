@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { parityConfig } from '../config'
-import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
+import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, NODES_TABLE, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 
@@ -34,8 +34,14 @@ router.get('/state', async (req, res) => {
     // ... how many sealers are required and already connected
     case VotingState.STARTUP:
       let connectedAuthorities: number = 0
+      let signedUpSealers: number = 0
       try {
+        // check the number of ethereum network peers
         connectedAuthorities = await getNumberOfConnectedAuthorities()
+
+        // check the number of signed up sealers
+        const nodes: string[] = getValueFromDB(NODES_TABLE)
+        signedUpSealers = nodes.length
       } catch (error) {
         res.status(500).json({ msg: error.message })
         return
@@ -43,6 +49,7 @@ router.get('/state', async (req, res) => {
       res.status(200).json({
         state: currentState,
         connectedSealers: connectedAuthorities,
+        signedUpSealers: signedUpSealers,
         requiredSealers: requiredAuthorities,
       })
       break

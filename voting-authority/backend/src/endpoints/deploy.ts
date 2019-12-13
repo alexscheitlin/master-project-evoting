@@ -32,7 +32,7 @@ router.post('/deploy', async (req, res) => {
     return
   }
 
-  // verify that all sealers are connected
+  // verify that all sealers are connected (i.e. that that the peer count is sufficient)
   let connectedAuthorities: number = 0
   try {
     connectedAuthorities = await getNumberOfConnectedAuthorities()

@@ -1,5 +1,5 @@
 import { Button, makeStyles, Theme, Paper, TextField, CircularProgress } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useVoteStateStore, VotingState, useVoteQuestionStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import https from 'https';
@@ -15,6 +15,7 @@ interface StartupProps {
 interface StartupStateResponse {
   state: VotingState;
   connectedSealers: number;
+  signedUpSealers: number;
   requiredSealers: number;
 }
 
@@ -36,21 +37,19 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const [connectedSealers, setConnectedSealers] = useState<number>(0);
+  const [signedUpSealers, setSignedUpSealers] = useState<number>(0);
+
+  const [canVoteBeDeployed, setCanVoteBeDeployed] = useState<boolean>(false);
   const [voteQuestionDeployed, setVoteQuestionDeployed] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
 
   const checkNumberOfAuthoritiesOnline = async () => {
     try {
-      // avoids ssl error with certificate
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-
-      const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`, {
-        httpsAgent: agent
-      });
+      const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`);
+      console.log(response);
 
       if (response.status === 200) {
+        setSignedUpSealers(response.data.signedUpSealers);
         setConnectedSealers(response.data.connectedSealers);
       } else {
         throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
@@ -96,6 +95,15 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
+  useEffect(() => {
+    const canVoteBeDeployed: boolean = !(
+      signedUpSealers === requiredSealers &&
+      connectedSealers === requiredSealers &&
+      question.length > 5
+    );
+    setCanVoteBeDeployed(canVoteBeDeployed);
+  }, [signedUpSealers, requiredSealers, connectedSealers, question]);
+
   const nextStep = async () => {
     try {
       await nextState();
@@ -106,14 +114,14 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
+  // call request initially once before starting to poll with useInterval
   checkNumberOfAuthoritiesOnline();
 
-  // call request initially once before starting to poll with useInterval
   useInterval(
     () => {
       checkNumberOfAuthoritiesOnline();
     },
-    connectedSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 0
+    connectedSealers !== requiredSealers || signedUpSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 0
   );
 
   return (
@@ -121,8 +129,10 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       <div>
         <h1>{`Vote Startup Phase: Create and Deploy the Voting Question`}</h1>
         <h4>
-          {`${connectedSealers}/${requiredSealers}: Authorities are online!`}
-          {requiredSealers === connectedSealers && ` You can deploy the vote question now!`}
+          {`${signedUpSealers}/${requiredSealers}: Authorities have signed up!`}
+          {requiredSealers === connectedSealers &&
+            signedUpSealers === requiredSealers &&
+            ` You can deploy the vote question now!`}
         </h4>
         <Paper className={classes.questionContainer}>
           {isLoading ? (
@@ -140,7 +150,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
                   color="primary"
                   onClick={createVote}
                   className={classes.button}
-                  disabled={connectedSealers !== requiredSealers || question.length < 5}
+                  disabled={canVoteBeDeployed}
                 >
                   Create Votequestion
                 </Button>
@@ -157,7 +167,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
           )}
         </Paper>
       </div>
-      {voteQuestionDeployed && requiredSealers === connectedSealers && (
+      {voteQuestionDeployed && (
         <div className={classes.actionsContainer}>
           <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
             Next Step

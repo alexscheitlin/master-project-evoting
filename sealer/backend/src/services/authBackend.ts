@@ -61,3 +61,16 @@ export const getBallotAddress = async () => {
 
   return ballotAddress
 }
+
+export const fetchState = async (): Promise<string> => {
+  try {
+    const response = await axios.get(authBackendUrl() + '/state')
+    if (response.status === 200) {
+      return response.data.state
+    } else {
+      throw new Error(`Unable to get state. ${response.status}`)
+    }
+  } catch (error) {
+    throw new Error(`Unable to get state from authority backend. ${error.message}`)
+  }
+}
