@@ -4,40 +4,23 @@
 
 ## Prerequisites
 
-- NodeJS 13+
+- see root project
 
-## Required ENV Variables (.env)
+## How to run
 
-Create the following files in the folder `/envs`:
+**Mode=Development (`localhost`)**
 
-```bash
-# envs/.env.development
-
-NODE_ENV=development
-PORT=4001
-```
+In development mode, the backend will run on `localhost` for a better DX.
 
 ```bash
-# envs/.env.production
+npm run serve:localhost
 
-NODE_ENV=production
-PORT=4001
-passphrase=<replace with passphrase> # replace me
+# backend will run on localhost:4001
 ```
 
-The production file additionally requires: `passphrase` (the passphrase to the certificate created beforehand).
+**Mode=Production (`docker`)**
 
-## Development
-
-Run `npm install` to install all required dependencies.
-
-`npm run serve:dev` to start in http mode
-
-`npm run serve:prod` to start in https mode
-
-Start the POA-chain within the `poa-chain` sub-project using `./all-in-one.sh`.
-
-Interact with the backend using the requests within the postman collection `eVoting` (only shared with the collaborators und currently not included here).
+Please see instructions in root folder on how to run the dockerized version. This will always also include the frontend.
 
 ## Testing
 
@@ -47,18 +30,15 @@ Run `npm run test` to run all test of the project or `npm run test:watch` to con
 
 **Important**: Contracts should be compiled inside `/contracts`. After that, copy `Ballot.json` and `ModuloMathLib.json` into `/toDeploy`.
 
-### Deployment of contract
+### Endpoint
 
-**POST** -> `/deploy` will deploy the Ballot contract onto the running chain and return the `address` of the `contract`
+TODO
 
-**GET** -> `/deploy` will return the `address` of the `contract` if it has already been deployed
+### Contracts
 
-### Handling of Contracts
+See README in root folder
 
-To keep it consistent, this sub-project will not have any `.sol` files. All contracts are developed and tested in `voter-frontend`.
-
-The contracts (in `JSON` format) in `voting-authority-backend/solidity/toDeploy` are ready for deployment. If something changed in the contracts, then they have to be compiled in `contracts` and copied into `voting-authority-backend/solidity/toDeploy`.
-
+<!--
 ### Server Certificate
 
 For the server to run in a realisitc setup (i.e. using HTTPS and TLS) a certificate is required.
@@ -75,4 +55,4 @@ openssl ecparam -name {name_of_the_curve} -genkey -out key.pem
 openssl req -x509 -new -key key.pem -out cert.pem -days 365 -nodes -SHA384
 ```
 
-Place the certificate and key in the folder: `./keys/cert` and add the passphrase to the `.env.production` file.
+Place the certificate and key in the folder: `./keys/cert` and add the passphrase to the `.env.production` file. -->

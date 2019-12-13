@@ -2,9 +2,7 @@
 
 This projects handles all Soldity Smart Contract related thing such as testing and compiling the contracts.
 
-This project also offers a **ganache-cli** dev chain, which is currently used in other projects.
-
-`npm run ganache:dev` will run the chain on PORT **8545**
+This project also offers a **ganache-cli** dev chain. `npm run ganache:dev` will run the chain on PORT **8545**
 
 ## Set Up
 
@@ -25,12 +23,6 @@ If something changed in `/crypto`, run `npm run build` inside `/crypto`
 Run `npm run compile` to compile all contracts inside `/contracts` into `/compiled`.
 
 The compiled contracts are `JSON` files which can be used to deploy or to interface with the contract. The `npm run compile` command automatically distributes the `JSON` files. Adjust the `distribute-contracts.sh` to change this.
-
-## Migrate
-
-run `npm run migrate:dev` to push all compiled contract onto a running ganache blockchain
-
-run `npm run migrate:parity` to push all compiled contract onto a running parity blockchain
 
 ## How to run Tests
 

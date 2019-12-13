@@ -1,12 +1,21 @@
 # Voting-Authority Frontend
-## How to run Voting-Authority Frontend
 
-1. run `npm install`
-2. run `npm run start` **runs on PORT 3001**
+## Prerequisites
 
-## What else should be running
+- see root project
 
-- a ganache chain (go to `/contracts` for more information)
-- voting authority backend
+## How to run
 
-**See `README`** in root project folder.
+**Mode=Development (`localhost`)**
+
+In development mode, the frontend will run on `localhost` for a better DX.
+
+```bash
+npm run start:localhost
+
+# frontend will run on localhost:3001
+```
+
+**Mode=Production (`docker`)**
+
+Please see instructions in root folder on how to run the dockerized version. This will always also include the backend.

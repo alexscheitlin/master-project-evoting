@@ -6,78 +6,160 @@
 
 see https://github.com/alexscheitlin/master-project-sink/pull/30 for more details
 
+## Prerequisites
+
+The following must be installed on your machine in order to run the whole setup.
+
+- Node 12+
+- npm
+- jq (see below)
+- docker
+- docker-compose
+
+Install JQ (https://stedolan.github.io/jq/download/) to process JSON in the command-line:
+
+```bash
+# ubuntu
+sudo apt-get install jq
+
+# fedora
+sudo dnf install jq
+```
+
 ## Modules
 
 ![modules](./assets/eVoting.svg)
 
-## How to run everything
+## How to run
 
-### Authority Backend
+Each subproject is configured to set and wire the PORTS automatically for every service that this subproject needs. For example: with `sealer/docker-start.sh`, the needed environment variables are fetched from `system.json` and written to `.env` files. These `.env` files are then used in `docker-compose.yml`.
 
-`cd voting-authority-backend`
+### Voting Authority
 
-Setup `.env` files (see `README` of project for more details)
+**Mode=Development (`localhost`)**
 
-`npm install`
+In development mode, the frontend and backend will run on `localhost` for a better DX.
 
-`npm run serve:dev` to run Authority Backend on PORT **4001**
+```bash
+cd voting-authority/backend
+npm run serve:localhost
+
+# backend will run on localhost:4001
+```
+
+```bash
+cd voting-authority/frontend
+npm run start:localhost
+
+# frontend will run on localhost:3001
+```
+
+**Mode=Production (`docker`)**
+
+In production mode, the frontend and backend will run in docker-containers in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run scripts if it does not exist yet.
+
+```bash
+docker network ls
+
+NETWORK ID    NAME      DRIVER   SCOPE
+019cded65b2a  e-voting  bridge   local
+```
+
+```bash
+cd voting-authority
+./docker-start.sh
+
+# backend will run on 172.1.1.41:4001
+# frontend will run on 172.1.1.31:4001
+```
+
+### Sealer
+
+**Mode=Development (`localhost`)**
+
+In development mode, the frontend and backend will run on `localhost` for a better DX.
+
+```bash
+cd sealer/backend
+npm run serve:localhost
+
+# backend will run on localhost:4011
+```
+
+```bash
+cd sealer/frontend
+npm run start:localhost
+
+# frontend will run on localhost:3011
+```
+
+**Mode=Production (`docker`)**
+
+In production mode, the frontend and backend will run in docker-containers in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run scripts if it does not exist yet.
+
+```bash
+docker network ls
+
+NETWORK ID    NAME      DRIVER   SCOPE
+019cded65b2a  e-voting  bridge   local
+```
+
+```bash
+cd sealer
+./docker-start.sh <sealerNr>
+
+# example
+./docker-start.sh 1 # will create backend and frontend for sealer 1
+
+# backend will run on 172.1.1.14[1-3]:401[1-3]
+# frontend will run on 172.1.1.13[1-3]:301[1-3]
+```
+
+### Proof of Authority Blockchain
+
+_Always runs dockerized_ ... so there is no distinction between development and production mode.
+
+**Start 3 sealer nodes directly**
+
+```bash
+cd poa-blockchain/scripts
+./dev-chain-parity-nodes.sh
+```
+
+all this script does, is call the following 3 times:
+
+```bash
+sealer/docker-start.sh <sealerNr>
+```
+
+the only thing that is different to starting all sealers on their own, is that `./dev-chain-parity-nodes.sh` will also connect the nodes for you directly
 
 ### Access Provider Backend
 
-`cd access-provider-backend`
-
-Setup `.env` files (see `README` of project for more details)
-
-`npm install`
-
-`npm run serve:dev` to run Access Provider on PORT **4002**
+TODO
 
 ### Identity Provider Backend
 
-`cd identity-provider-backend`
-
-Setup `.env` files (see `README` of project for more details)
-
-`npm install`
-
-`npm run serve:dev` to run Identity Provider on PORT **4003**
-
-### Local Dev Chain with Ganache
-
-`cd contracts`
-
-`npm install`
-
-run `npm run ganache:dev` inside `/contracts`
-
-this blockchain will run on PORT **8545**
+TODO
 
 ### Voter Frontend
 
-`cd voter-frontend`
+TODO
 
-`npm install`
+### Solidity Contracts
 
-run `npm run start` inside `/voter-frontend`
+```bash
+npm run compile # compile contracts
 
-the frontend will run on PORT **3000**
-
-### Voting Authority Frontend
-
-`cd voting-authority-frontend`
-
-`npm install`
-
-run `npm run start` inside `/voting-authority-frontend`
-
-the frontend will run on PORT **3001**
-
-### What happens with the Solidity contracts?
+npm run test # run tests in /test
+```
 
 The contracts live inside `/contracts`. There, we can test them isolated with the truffle framework. With `npm run compile` all contracts will be compiled and a JSON representation of the contract will be put inside `/contracts/compiled` (e.g., `Ballot.json`).
 
-These `JSON` objects contain important information to interface with the contract once it is deployed on a chain. Therefore we need these `JSON` objects in a few other projects.
+These `JSON` objects contain important information to interface with the contract once it is deployed on a chain.
 
-1. Authority Backend needs 2 `JSON` files. This backend will deploy the `Ballot.sol` contract onto the chain. To do this, it needs the `JSON` files. If you recompile contracts within `/contracts` then you will have to replace `Ballot.json` and `ModuloMathLib.json` inside `voting-authority-backend/solidity/toDeploy` with the newer version.
+The compiled contract `JSON` files will be automatically put into the folders that need them. Currently these are the follwing:
 
-2. Voter Frontend needs `Ballot.json`, replace `voter-frontend/src/contract-abis/Ballot.json` if you update any contracts
+- `voting-authority-backend/solidity/toDeploy/`
+- `voter-frontend/src/contract-abis/`
+- `sealer/backend/src/contract-abis/`
