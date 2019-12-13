@@ -20,6 +20,7 @@
     "zustand": "^2.2.1"
   },
   "scripts": {
+    "start:localhost": "./dev.sh 1",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
