@@ -11,6 +11,8 @@ const router: express.Router = express.Router()
 const NO_VOTERS: string = 'No voters specified!'
 const INVALID_VOTER = (uuid: string) => `UUID does not exist: ${uuid}`
 const SUCCESS_MSG: string = 'Successfully registered voters!'
+const ALREADY_REGISTERED: string = 'The provided voters are already registered!'
+const ACCESS_PROVIDER_NOT_REACHABLE = 'Sorry, the tokens could not be sent to the access provider!'
 
 export const areVotersValid = (identities: Identity[], voters: string[]): boolean | Error => {
   // check if some voters are specified
@@ -63,24 +65,31 @@ router.post('/registerVoters', async (req, res) => {
   addToList(TOKENS_TABLE, identityTokens)
 
   // send tokens to access provider
-  await axios
-    .post(`${process.env.access_provider}/sendTokens`, {
-      tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
+  if (identityTokens.length === 0) {
+    res.status(200).json({
+      success: true,
+      msg: ALREADY_REGISTERED,
     })
-    .then((response: any) => {
-      console.log('Response:', response.data.msg)
-      res.status(201).json({
-        success: true,
-        msg: SUCCESS_MSG,
-        alreadyRegistered: voters.length - identityTokens.length,
-        newlyRegistered: identityTokens.length,
+  } else {
+    await axios
+      .post(`${process.env.access_provider}/sendTokens`, {
+        tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
       })
-    })
-    .catch((error: any) => {
-      console.log('Error:', error)
-      res.status(400).json({ success: false, msg: error.message })
-      return
-    })
+      .then((response: any) => {
+        console.log('Response:', response.data.msg)
+        res.status(201).json({
+          success: true,
+          msg: SUCCESS_MSG,
+          alreadyRegistered: voters.length - identityTokens.length,
+          newlyRegistered: identityTokens.length,
+        })
+      })
+      .catch((error: any) => {
+        console.log('Error:', error)
+        res.status(400).json({ success: false, msg: ACCESS_PROVIDER_NOT_REACHABLE, error: error.message })
+        return
+      })
+  }
 })
 
 export default router
