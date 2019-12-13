@@ -48,6 +48,15 @@ echo REACT_APP_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT} >> $dir/.env
 echo PORT=${VOTING_AUTH_FRONTEND_PORT} >> $dir/.env
 
 ###########################################
+# installing packages
+###########################################
+echo "##########################################################################"
+echo "# Installing NPM Packages for you                          "
+echo "##########################################################################"
+echo
+npm i
+
+###########################################
 # start frontend
 ###########################################
 cd $dir
