@@ -108,7 +108,7 @@ router.post('/register', async (req, res) => {
   addToList(USED_TOKENS_TABLE, [voterToken])
   addToList(REGISTERED_VOTERS_TABLE, [voterAddress])
 
-  res.status(201).json({ success: true, msg: SUCCESS_MSG, ballot: ballotAddress, node: serverConfig.nodeUrl })
+  res.status(201).json({ success: true, msg: SUCCESS_MSG, ballot: ballotAddress })
 })
 
 export default router

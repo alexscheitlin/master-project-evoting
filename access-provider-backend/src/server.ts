@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import https from 'https'
 
 import { setupDB } from './database/database'
+import nodeUrl from './endpoints/nodeUrl'
 import register from './endpoints/register'
 import sendTokens from './endpoints/sendTokens'
 import { requestLogger, responseLogger } from './utils/logger'
@@ -21,6 +22,7 @@ server.use(responseLogger)
 server.use(cors({ origin: 'http://localhost:3000' }))
 
 // add all routes
+server.use('/', nodeUrl)
 server.use('/', register)
 server.use('/', sendTokens)
 
