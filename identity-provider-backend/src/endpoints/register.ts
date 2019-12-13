@@ -61,9 +61,6 @@ router.post('/registerVoters', async (req, res) => {
       })
     )
 
-  // store generated token/uuid pairs
-  addToList(TOKENS_TABLE, identityTokens)
-
   // send tokens to access provider
   if (identityTokens.length === 0) {
     res.status(200).json({
@@ -71,24 +68,24 @@ router.post('/registerVoters', async (req, res) => {
       msg: ALREADY_REGISTERED,
     })
   } else {
-    await axios
-      .post(`${process.env.access_provider}/sendTokens`, {
+    try {
+      await axios.post(`${process.env.access_provider}/sendTokens`, {
         tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
       })
-      .then((response: any) => {
-        console.log('Response:', response.data.msg)
-        res.status(201).json({
-          success: true,
-          msg: SUCCESS_MSG,
-          alreadyRegistered: voters.length - identityTokens.length,
-          newlyRegistered: identityTokens.length,
-        })
-      })
-      .catch((error: any) => {
-        console.log('Error:', error)
-        res.status(400).json({ success: false, msg: ACCESS_PROVIDER_NOT_REACHABLE, error: error.message })
-        return
-      })
+    } catch (error) {
+      res.status(400).json({ success: false, msg: ACCESS_PROVIDER_NOT_REACHABLE, error: error.message })
+      return
+    }
+
+    // store generated token/uuid pairs
+    addToList(TOKENS_TABLE, identityTokens)
+
+    res.status(201).json({
+      success: true,
+      msg: SUCCESS_MSG,
+      alreadyRegistered: voters.length - identityTokens.length,
+      newlyRegistered: identityTokens.length,
+    })
   }
 })
 
