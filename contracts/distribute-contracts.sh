@@ -6,7 +6,7 @@ readonly PROJECT_DIR="$(dirname "$DIR")"
 COMPILED_DIR=$DIR'/compiled'
 
 # distribute to voting authority backend
-DESTINATION_DIR="voting-authority-backend/solidity/toDeploy/"
+DESTINATION_DIR="voting-authority/backend/solidity/toDeploy/"
 CONTRACTS=("Ballot.json" "ModuloMathLib.json")
 
 echo
