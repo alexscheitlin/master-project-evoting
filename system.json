@@ -54,7 +54,7 @@
     },
     "sealer_parity_1": {
       "ip": {
-        "development": "localhost",
+        "development": "172.1.1.171",
         "production": "172.1.1.171"
       },
       "port": 7011,
@@ -78,7 +78,7 @@
     },
     "sealer_parity_2": {
       "ip": {
-        "development": "localhost",
+        "development": "172.1.1.172",
         "production": "172.1.1.172"
       },
       "port": 7012,
@@ -102,7 +102,7 @@
     },
     "sealer_parity_3": {
       "ip": {
-        "development": "localhost",
+        "development": "172.1.1.173",
         "production": "172.1.1.173"
       },
       "port": 7013,
