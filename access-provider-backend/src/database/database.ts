@@ -6,6 +6,11 @@ import FileSync from 'lowdb/adapters/FileSync'
 // TODO: replace with correct type
 let db: any
 
+// database tables
+export const USED_TOKENS_TABLE: string = 'usedSignupTokens'
+export const REGISTERED_VOTERS_TABLE: string = 'voters'
+export const VALID_TOKENS_TABLE: string = 'validSignupTokens'
+
 export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
