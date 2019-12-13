@@ -13,7 +13,6 @@ readonly parentParentDir="$(dirname "$parentDir")"
 # Cleanup
 ###########################################
 rm -f $dir/.env
-rm -f $dir/wallet/sealer*
 
 ###########################################
 # Mode
@@ -32,12 +31,6 @@ globalConfig=$parentParentDir/system.json
 ###########################################
 sealerNr=$1
 
-########################################
-# copy keys (key store file)
-#######################################
-cp $parentParentDir/poa-blockchain/keys/sealer$sealerNr.json $dir/wallet/sealer.json
-cp $parentParentDir/poa-blockchain/keys/sealer$sealerNr.pwd $dir/wallet/sealer.pwd
-
 ###########################################
 # ENV variables
 ###########################################
@@ -53,45 +46,20 @@ SEALER_BACKEND_IP=$(cat $globalConfig | jq .services.sealer_backend_$sealerNr.ip
 SEALER_FRONTEND_PORT=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.port)
 # - Sealer Frontend IP (either 172.1.1.XXX or localhost)
 SEALER_FRONTEND_IP=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.ip.$mode | tr -d \")
-# - POA Blockchain Main RPC PORT (the port stays the same, in dev and prod mode)
-PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_1.port)
-# - POA Blockchain Main RPC IP (either 172.1.1.XXX or localhost)
-PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_1.ip.$mode | tr -d \")
-# - Specify NODE_ENV
-NODE_ENV=$mode
 
 ###########################################
 # write ENV variables into .env
 ###########################################
-echo VOTING_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT} >> $dir/.env
-echo VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP} >> $dir/.env
-echo SEALER_BACKEND_PORT=${SEALER_BACKEND_PORT} >> $dir/.env
-echo SEALER_BACKEND_IP=${SEALER_BACKEND_IP} >> $dir/.env
-echo SEALER_FRONTEND_PORT=${SEALER_FRONTEND_PORT} >> $dir/.env
-echo SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP} >> $dir/.env
-echo PARITY_NODE_PORT=${PARITY_NODE_PORT} >> $dir/.env
-echo PARITY_NODE_IP=${PARITY_NODE_IP} >> $dir/.env
-echo NODE_ENV=${NODE_ENV} >> $dir/.env
-
+echo REACT_APP_VOTING_AUTH_BACKEND_PORT=$VOTING_AUTH_BACKEND_PORT >> $dir/.env
+echo REACT_APP_VOTING_AUTH_BACKEND_IP=$VOTING_AUTH_BACKEND_IP >> $dir/.env
+echo REACT_APP_SEALER_BACKEND_PORT=$SEALER_BACKEND_PORT >> $dir/.env
+echo REACT_APP_SEALER_BACKEND_IP=$SEALER_BACKEND_IP >> $dir/.env
+echo REACT_APP_SEALER_FRONTEND_PORT=$SEALER_FRONTEND_PORT >> $dir/.env
+echo REACT_APP_SEALER_FRONTEND_IP=$SEALER_FRONTEND_IP >> $dir/.env
+echo PORT=$SEALER_FRONTEND_PORT >> $dir/.env
 
 ###########################################
-# making sure mp-crypto is linked
-###########################################
-echo "##########################################################################"
-echo "# Linking mp-crypto, running the commands below                          "
-echo "##########################################################################"
-echo "# > cd $parentParentDir/crypto                                             "
-echo "# > npm link                                                               "
-echo "# > cd $dir                                                                "
-echo "# > npm link mp-crypto                                                     "
-echo "##########################################################################"
-cd $parentParentDir/crypto
-npm link
-cd $dir
-npm link mp-crypto
-
-###########################################
-# start dev server
+# start frontend
 ###########################################
 cd $dir
-npm run serve:dev:clean
+npm run start
