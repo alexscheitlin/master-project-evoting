@@ -55,9 +55,9 @@ VOTING_AUTH_FRONTEND_PORT=$(cat $globalConfig | jq .services.voting_authority_fr
 # - Voting Authority Frontend IP (either 172.1.1.XXX or localhost)
 VOTING_AUTH_FRONTEND_IP=$(cat $globalConfig | jq .services.voting_authority_frontend.ip.$mode | tr -d \")
 # - POA Blockchain Main RPC PORT (the port stays the same, in dev and prod mode)
-PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_1_parity.port)
+PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_1.port)
 # - POA Blockchain Main RPC IP (either 172.1.1.XXX or localhost)
-PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_1_parity.ip.$mode | tr -d \")
+PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_1.ip.$mode | tr -d \")
 # - Specify NODE_ENV
 NODE_ENV=$mode
 
