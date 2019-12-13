@@ -60,9 +60,10 @@ contract('Ballot.sol', () => {
 
     /**
      * 3. BUND triggers public key generation & verifiers in contract
+     *
+     * generatePublicKey() will also trigger verififier creation
      */
     await ballotContract.generatePublicKey();
-    await ballotContract.createVerifiers();
 
     // assert the combined public key in contract is the same as if combined locally on one machine
     const test_localPubKey = FFelGamal.SystemSetup.combinePublicKeys(auth1_sysParams, [
@@ -145,11 +146,11 @@ contract('Ballot.sol', () => {
     /**
      * 5. BUND CLOSES THE BALLOT
      */
-    let isOpen = await ballotContract.getBallotStatus();
-    assert(isOpen === true, 'Ballot should still be open');
+    let status = await ballotContract.getBallotStatus();
+    assert(status === 'VOTING', 'Ballot should still be open');
     await ballotContract.closeBallot();
-    isOpen = await ballotContract.getBallotStatus();
-    assert(isOpen === false, 'Ballot was not closed');
+    status = await ballotContract.getBallotStatus();
+    assert(status === 'TALLY', 'Ballot was not closed');
 
     /**
      * 6.1 COUNTING OF THE VOTES BY AUTHORITY 1
