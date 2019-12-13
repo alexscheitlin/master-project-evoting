@@ -4,9 +4,6 @@ const sealerBackendUrl = () =>
   `http://${process.env.REACT_APP_SEALER_BACKEND_IP}:${process.env.REACT_APP_SEALER_BACKEND_PORT}`;
 
 export const getWalletAddress = async (): Promise<string> => {
-  const response = await axios.get(sealerBackendUrl() + "/register");
-
-export const getWalletAddress = async (): Promise<string> => {
   try {
     const response = await axios.get(sealerBackendUrl() + "/register");
     return response.data.result;
@@ -60,6 +57,18 @@ export const getNrPeers = async (): Promise<number> => {
     console.log(error);
     throw new Error(
       `The sealer backend was unable to return the number of peers. ${error.message}`
+    );
+  }
+};
+
+export const generateKeys = async () => {
+  try {
+    const response = await axios.post(sealerBackendUrl() + "/generateKeys");
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
+    throw new Error(
+      `Something went wrong with key generation. ${error.message}`
     );
   }
 };

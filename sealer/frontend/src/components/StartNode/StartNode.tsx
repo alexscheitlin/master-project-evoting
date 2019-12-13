@@ -26,8 +26,6 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   );
   const [loading, setLoading] = useState(false);
 
-  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_PORT);
-
   const [chainSpecLoaded, setChainSpecLoaded] = useState(false);
 
   const [isNodeRunning, setIsNodeRunning] = useState(false);

@@ -42,7 +42,7 @@ const App: React.FC = () => {
       case 1:
         return <StartNode nextStep={nextStep} />;
       case 2:
-        return <KeyGeneration />;
+        return <KeyGeneration nextStep={nextStep} />;
       case 3:
         return <TallyVotes />;
       default:
