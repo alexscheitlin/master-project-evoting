@@ -13,6 +13,7 @@ echo
 ./poa-blockchain/scripts/stop-containers.sh identity-provider
 ./poa-blockchain/scripts/stop-containers.sh access-provider
 ./poa-blockchain/scripts/stop-containers.sh vote-auth
+./poa-blockchain/scripts/stop-containers.sh controller
 ./poa-blockchain/scripts/stop-containers.sh sealer
 
 docker ps
