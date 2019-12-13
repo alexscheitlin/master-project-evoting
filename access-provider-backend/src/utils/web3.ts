@@ -14,7 +14,7 @@ export const unlockAuthAccount = async () => {
     // ignore the unlockAccount call as it expects a number but parity does only work with hex numbers
     // null => 300 seconds (default)
     // @ts-ignore
-    await getWeb3().eth.personal.unlockAccount(parityConfig.accountAddress, parityConfig.accountPassword, null)
+    await getWeb3().eth.personal.unlockAccount(serverConfig.accountAddress, serverConfig.accountPassword, null)
   } catch (error) {
     throw new Error('Could not unlock the access provider account (web3.eth.personal.unlockAccount).')
   }
@@ -25,10 +25,10 @@ export const unlockAuthAccount = async () => {
 export const fundWallet = async (wallet: string) => {
   let transaction = {}
   try {
-    transaction = { from: serverConfig.accountAddress, to: wallet, value: getWeb3().utils.toWei('1', 'ether') }
     // TODO: change amount of ether to send
+    transaction = { from: serverConfig.accountAddress, to: wallet, value: getWeb3().utils.toWei('0.0000001', 'ether') }
     await getWeb3().eth.sendTransaction(transaction)
   } catch (error) {
-    throw new Error(`Could not fund the voter wallet (web3.eth.sendTransaction(${transaction})).`)
+    throw new Error(`Could not fund the voter wallet (web3.eth.sendTransaction(${transaction})). ERROR: ${error.message}`)
   }
 }
