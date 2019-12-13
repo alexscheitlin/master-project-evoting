@@ -73,6 +73,15 @@ echo PARITY_NODE_PORT=${PARITY_NODE_PORT} >> $dir/.env
 echo PARITY_NODE_IP=${PARITY_NODE_IP} >> $dir/.env
 echo NODE_ENV=${NODE_ENV} >> $dir/.env
 
+###########################################
+# installing packages
+###########################################
+echo "##########################################################################"
+echo "# Installing NPM Packages for you                                         "
+echo "##########################################################################"
+echo
+npm i
+
 
 ###########################################
 # making sure mp-crypto is linked
@@ -81,12 +90,12 @@ echo "##########################################################################
 echo "# Linking mp-crypto, running the commands below                          "
 echo "##########################################################################"
 echo "# > cd $parentParentDir/crypto                                             "
-echo "# > npm link                                                               "
+echo "# > sudo npm link                                                               "
 echo "# > cd $dir                                                                "
 echo "# > npm link mp-crypto                                                     "
 echo "##########################################################################"
 cd $parentParentDir/crypto
-npm link
+sudo npm link
 cd $dir
 npm link mp-crypto
 
