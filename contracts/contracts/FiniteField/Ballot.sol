@@ -14,7 +14,7 @@ contract Ballot {
     // /////////////////////////////////
     // structs
     // /////////////////////////////////
-    enum VoteStatus {REGISTER, STARTUP, CONFIG, VOTING, TALLY}
+    enum VotingState {CONFIG, VOTING, TALLY, RESULT}
 
     struct SystemParameters {
         uint256 p; // prime
@@ -88,7 +88,7 @@ contract Ballot {
     // /////////////////////////////////
     // variables
     // /////////////////////////////////
-    VoteStatus constant voteStatus = VoteStatus.REGISTER;
+    VotingState private votingState = VotingState.CONFIG;
 
     VoteProofVerifier private voteVerifier;
     SumProofVerifier private sumVerifier;
@@ -98,7 +98,6 @@ contract Ballot {
     PublicKey private publicKey;
     Election private election;
     bool private IS_PARAMETERS_SET;
-    bool private IS_VOTING_OPEN;
     bool private IS_PUBKEY_SET;
     address private _owner;
 
@@ -114,7 +113,6 @@ contract Ballot {
         keyGenProofVerifier = new KeyGenProofVerifier();
 
         IS_PARAMETERS_SET = false;
-        IS_VOTING_OPEN = false;
         IS_PUBKEY_SET = false;
 
         _owner = msg.sender;
@@ -123,7 +121,6 @@ contract Ballot {
         election.nrOfVoters = 0;
         election.voters.length = 0;
         election.votingQuestion = votingQuestion;
-        election.publicKeyShareWallet.length = 0;
         election.yesVotes = 0;
 
         NR_OF_AUTHORITY_NODES = numberOfAuthNodes;
@@ -142,7 +139,10 @@ contract Ballot {
 
     function generatePublicKey() external {
         require(msg.sender == _owner);
+        // public key can only be generated once
         require(!IS_PUBKEY_SET);
+        // every sealer needs to have published it's public key share
+        require(election.publicKeyShareWallet.length == NR_OF_AUTHORITY_NODES);
 
         address firstSealerAddress = election.publicKeyShareWallet[0];
         uint256 key = election.pubKeyShareMapping[firstSealerAddress].share;
@@ -156,9 +156,11 @@ contract Ballot {
         publicKey = PublicKey(key);
 
         IS_PUBKEY_SET = true;
+
+        createVerifiers();
     }
 
-    function createVerifiers() public {
+    function createVerifiers() private {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
         require(IS_PARAMETERS_SET = true);
@@ -166,26 +168,28 @@ contract Ballot {
         sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
     }
 
+    // Change into state VOTING
     function openBallot() public {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
         require(IS_PARAMETERS_SET = true);
-
-        IS_VOTING_OPEN = true;
+        require(votingState == VotingState.CONFIG);
+        
+        votingState = VotingState.VOTING;
     }
 
     function closeBallot() public {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
         require(IS_PARAMETERS_SET = true);
+        require(votingState == VotingState.VOTING);
 
-        IS_VOTING_OPEN = false;
+        votingState = VotingState.TALLY;
     }
 
     // Combine all submitted decrypted shares to find the final tally
-    // decryptedShareMapping;
-    // decryptedShareWallet;
     function combineDecryptedShares() public {
+        require(votingState == VotingState.TALLY);
         require(election.decryptedShareWallet.length == NR_OF_AUTHORITY_NODES);
 
         address firstSealerAddress = election.decryptedShareWallet[0];
@@ -207,6 +211,8 @@ contract Ballot {
         }
 
         election.yesVotes = m;
+
+        votingState = VotingState.RESULT;
     }
 
     // /////////////////////////////////
@@ -218,7 +224,7 @@ contract Ballot {
         external
         returns (bool, string memory)
     {
-        require(IS_VOTING_OPEN == false);
+        require(votingState == VotingState.CONFIG);
         require(IS_PUBKEY_SET == false);
 
         bool proofValid = keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender);
@@ -251,7 +257,9 @@ contract Ballot {
         external
         returns (bool, string memory)
     {
-        if (IS_VOTING_OPEN) {
+        require(votingState == VotingState.TALLY);
+
+        if (votingState == VotingState.VOTING) {
             emit VoteStatusEvent(msg.sender, false, 'Vote is still ongoing');
             return (false, 'Vote is still ongoing');
         }
@@ -297,7 +305,7 @@ contract Ballot {
         uint256[2] calldata c,
         uint256[2] calldata f
     ) external returns (bool, string memory) {
-        if (!IS_VOTING_OPEN) {
+        if (votingState != VotingState.VOTING) {
             emit VoteStatusEvent(msg.sender, false, 'Vote not open');
             return (false, 'Vote not open');
         }
@@ -360,9 +368,23 @@ contract Ballot {
         return election.voters.length;
     }
 
-    // get the status of the ballot {open | closed}
-    function getBallotStatus() public view returns (bool) {
-        return IS_VOTING_OPEN;
+    // get the status of the vote
+    function getBallotStatus() public view returns (string memory) {
+        if(votingState == VotingState.CONFIG) {
+            return "CONFIG";
+        }
+
+        if(votingState == VotingState.VOTING) {
+            return "VOTING";
+        }
+
+        if(votingState == VotingState.TALLY) {
+            return "TALLY";
+        }
+
+        if(votingState == VotingState.RESULT) {
+            return "RESULT";
+        }
     }
 
     // get the total number of decrypted shares
@@ -378,8 +400,7 @@ contract Ballot {
 
     // get vote result
     function getVoteResult() public view returns (uint256) {
-        require(!IS_VOTING_OPEN);
-
+        require(votingState == VotingState.RESULT);
         return election.yesVotes;
     }
 }
