@@ -1,14 +1,10 @@
 import express from 'express'
 import crypto = require('crypto')
-import { getListFromDB, addToList } from '../database/database'
+import { getListFromDB, addToList, IDENTITIES_TABLE, TOKENS_TABLE } from '../database/database'
 import { Identity, IdentityToken } from '../models'
 
 const axios = require('axios')
 const router: express.Router = express.Router()
-
-// database table names
-const IDENTITIES: string = 'identities'
-const TOKENS: string = 'tokens'
 
 // http response messages
 const NO_VOTERS: string = 'No voters specified!'
@@ -41,7 +37,7 @@ export const getRandomToken = (): string => {
 
 router.post('/registerVoters', async (req, res) => {
   const voters: string[] = req.body.voters || []
-  const identities = <Identity[]>getListFromDB(IDENTITIES)
+  const identities = <Identity[]>getListFromDB(IDENTITIES_TABLE)
 
   // validate given voters (=uuids)
   try {
@@ -64,7 +60,7 @@ router.post('/registerVoters', async (req, res) => {
   // simply add all token/uuid pairs
   // TODO: how to handle deletion of old tokens?
   // TODO: check if a voter already has a token
-  addToList(TOKENS, identityTokens)
+  addToList(TOKENS_TABLE, identityTokens)
 
   // send tokens to access provider
   await axios
