@@ -1,9 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 
 import { config } from '../config';
+import { VotingState } from '../models/states';
 
+// TODO: Think about improving the StateResponse since it's not always the same!
 interface StateResponse {
-  state: any;
+  state: VotingState;
   registeredSealers: number;
   requiredSealers: number;
 }
@@ -17,7 +19,7 @@ export const subscribeToChainspec = async () => {
   }
 };
 
-export const getState = async () => {
+export const getState = async (): Promise<StateResponse> => {
   try {
     const response: AxiosResponse<StateResponse> = await axios.get(config.authBackend.devUrl + '/state');
     return response.data;

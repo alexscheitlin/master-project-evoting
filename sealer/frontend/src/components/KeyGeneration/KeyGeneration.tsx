@@ -1,15 +1,8 @@
-import React, { useState } from "react";
-import {
-  Theme,
-  createStyles,
-  makeStyles,
-  Button,
-  Box,
-  Typography
-} from "@material-ui/core";
-import { SealerBackend } from "../../services";
-import { LoadSuccess } from "../shared/LoadSuccess";
-import { StepTitle } from "../shared/StepTitle";
+import React, { useState } from 'react';
+import { Theme, createStyles, makeStyles, Button, Box, Typography } from '@material-ui/core';
+import { SealerBackend } from '../../services';
+import { LoadSuccess } from '../shared/LoadSuccess';
+import { StepTitle } from '../shared/StepTitle';
 
 interface Props {
   nextStep: () => void;
@@ -25,6 +18,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
     try {
       setLoading(true);
       await SealerBackend.generateKeys();
+
       setLoading(false);
       setKeysSubmitted(true);
     } catch (error) {
@@ -37,12 +31,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
       <Box textAlign="center">
         <StepTitle title="Key generation" />
         <div className={classes.contentSection}>
-          <Button
-            variant="contained"
-            color="default"
-            onClick={generateKeys}
-            disabled={keysSubmitted}
-          >
+          <Button variant="contained" color="default" onClick={generateKeys} disabled={keysSubmitted}>
             Generate and Submit Keyshare
           </Button>
           <div className={classes.statusIcons}>
@@ -56,12 +45,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
         </div>
 
         <div className={classes.contentSection}>
-          <Button
-            variant="contained"
-            color="default"
-            disabled={!keysSubmitted}
-            onClick={nextStep}
-          >
+          <Button variant="contained" color="default" disabled={!keysSubmitted} onClick={nextStep}>
             Next
           </Button>
         </div>
@@ -73,18 +57,18 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      position: "relative"
+      position: 'relative',
     },
     contentSection: {
-      padding: theme.spacing(1)
+      padding: theme.spacing(1),
     },
     statusIcons: {
       padding: theme.spacing(1, 0),
-      height: 30
+      height: 30,
     },
     textBox: {
       width: 400,
-      margin: "auto"
-    }
+      margin: 'auto',
+    },
   })
 );
