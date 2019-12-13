@@ -2,7 +2,8 @@ import Web3 from 'web3'
 import { parityConfig } from '../config'
 
 export const getWeb3 = (): Web3 => {
-  const provider = new Web3.providers.HttpProvider(parityConfig.nodeUrl)
+  const url = parityConfig.nodeUrl
+  const provider = new Web3.providers.HttpProvider(url)
   return new Web3(provider)
 }
 
