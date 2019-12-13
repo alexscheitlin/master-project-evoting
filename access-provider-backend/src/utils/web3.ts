@@ -3,9 +3,9 @@ import Web3 from 'web3'
 import { serverConfig } from '../config'
 
 export const getWeb3 = (): Web3 => {
-  const provider = new Web3.providers.HttpProvider(process.env.CHAIN_URL as string)
-  const web3: Web3 = new Web3(provider)
-  return web3
+  const url = serverConfig.nodeUrl
+  const provider = new Web3.providers.HttpProvider(url)
+  return new Web3(provider)
 }
 
 // unlock the access provider account and return its address
