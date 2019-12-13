@@ -2,44 +2,33 @@
 
 ## Prerequisites
 
-- NodeJS 13+
-- NodeJS 13+
+- see root project
 
-## Required ENV Variables (.env)
+## How to run
 
-Create the following files in the folder `/envs`:
+**Mode=Development (`localhost`)**
 
-```bash
-# envs/.env.development
-
-NODE_ENV=development
-PORT=4003
-access_provider=http://localhost:4002
-```
+In development mode, the backend will run on `localhost` for a better DX.
 
 ```bash
-# envs/.env.production
+npm run serve:localhost
 
-NODE_ENV=production
-PORT=4003
-access_provider=https://localhost:4002
-passphrase=<replace with passphrase> # replace me
+# backend will run on localhost:4003
 ```
 
-The production file additionally requires: `passphrase` (the passphrase to the certificate created beforehand).
+**Mode=Production (`docker`)**
 
-## Development
-
-Run `npm install` to install all required dependencies.
-
-`npm run serve:dev` to start in http mode
-
-`npm run serve:prod` to start in https mode
+Please see instructions in root folder on how to run the dockerized version.
 
 ## Testing
 
 Run `npm run test` to run all test of the project or `npm run test:watch` to continuously re-run the tests while developing.
 
+### Endpoint
+
+TODO
+
+<!--
 ### Server Certificate
 
 For the server to run in a realisitc setup (i.e. using HTTPS and TLS) a certificate is required.
@@ -57,3 +46,4 @@ openssl req -x509 -new -key key.pem -out cert.pem -days 365 -nodes -SHA384
 ```
 
 Place the certificate and key in the folder: `./keys/cert` and add the passphrase to the `.env.production` file.
+-->

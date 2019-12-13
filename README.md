@@ -73,6 +73,68 @@ cd voting-authority
 # frontend will run on 172.1.1.31:4001
 ```
 
+### Access Provider
+
+**Mode=Development (`localhost`)**
+
+In development mode, the backend will run on `localhost` for a better DX.
+
+```bash
+cd access-provider-backend/
+npm run serve:localhost
+
+# backend will run on localhost:4002
+```
+
+**Mode=Production (`docker`)**
+
+In production mode, the backend will run in a docker-container in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run script if it does not exist yet.
+
+```bash
+docker network ls
+
+NETWORK ID    NAME      DRIVER   SCOPE
+019cded65b2a  e-voting  bridge   local
+```
+
+```bash
+cd access-provider-backend/
+./docker-start.sh
+
+# backend will run on 172.1.1.42:4002
+```
+
+### Identity Provider
+
+**Mode=Development (`localhost`)**
+
+In development mode, the backend will run on `localhost` for a better DX.
+
+```bash
+cd identity-provider-backend/
+npm run serve:localhost
+
+# backend will run on localhost:4003
+```
+
+**Mode=Production (`docker`)**
+
+In production mode, the backend will run in a docker-container in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run script if it does not exist yet.
+
+```bash
+docker network ls
+
+NETWORK ID    NAME      DRIVER   SCOPE
+019cded65b2a  e-voting  bridge   local
+```
+
+```bash
+cd identity-provider-backend/
+./docker-start.sh
+
+# backend will run on 172.1.1.43:4003
+```
+
 ### Sealer
 
 **Mode=Development (`localhost`)**
