@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  backend:
+    build: ./
+    environment:
+      - ACCESS_PROVIDER_BACKEND_PORT=${ACCESS_PROVIDER_BACKEND_PORT}
+      - ACCESS_PROVIDER_BACKEND_IP=${ACCESS_PROVIDER_BACKEND_IP}
+      - PARITY_NODE_PORT=${PARITY_NODE_PORT}
+      - PARITY_NODE_IP=${PARITY_NODE_IP}
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - ${ACCESS_PROVIDER_BACKEND_PORT}:${ACCESS_PROVIDER_BACKEND_PORT}
+    volumes:
+      - ./src:/usr/src/backend/src
+    networks:
+      e-voting:
+        ipv4_address: ${ACCESS_PROVIDER_BACKEND_IP}
+    command: npm run serve:dev:clean
+
+networks:
+  e-voting:
+    external: true
