@@ -202,6 +202,7 @@ contract Ballot {
         external
         returns (bool, string memory)
     {
+        // TODO: make sure that public key shares are not accepted once the vote is open
         bool proofValid = keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender);
 
         if (!proofValid) {
@@ -210,6 +211,9 @@ contract Ballot {
         }
 
         election.pubKeyShareMapping[msg.sender] = key;
+        // FIXME: if a sealer submits multiple times, then the mapping gets updated but the key
+        // is still pushed onto election.publicKeyShares ...
+        // find a good solution to this
         election.publicKeyShares.push(PublicKeyShare(key, KeyShareProof(proof_c, proof_d)));
         return (true, 'Key Generation Proof is valid.');
     }
