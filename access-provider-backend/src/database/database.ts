@@ -7,9 +7,10 @@ import FileSync from 'lowdb/adapters/FileSync'
 let db: any
 
 // database tables
-export const USED_TOKENS_TABLE: string = 'usedSignupTokens'
+export const DOES_ACCOUNT_EXIST: string = 'doesAccountExist'
 export const REGISTERED_VOTERS_TABLE: string = 'voters'
 export const VALID_TOKENS_TABLE: string = 'validSignupTokens'
+export const USED_TOKENS_TABLE: string = 'usedSignupTokens'
 
 export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
@@ -17,9 +18,10 @@ export const setupDB = () => {
 
   // set defaults (if JSON is empty)
   db.defaults({
+    doesAccountExist: false,
     voters: [],
-    usedSignupTokens: [],
     validSignupTokens: [],
+    usedSignupTokens: [],
   }).write()
 }
 
