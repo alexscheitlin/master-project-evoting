@@ -1,15 +1,11 @@
 import express from 'express'
+
+import { addToList, getListFromDB, REGISTERED_VOTERS_TABLE, USED_TOKENS_TABLE, VALID_TOKENS_TABLE } from '../database/database'
 import { verifyAddress } from '../utils/addressVerification'
-import { getListFromDB, addToList } from '../database/database'
 import { fundWallet } from '../utils/fundWallet'
 import { getBallotAddress } from '../utils/getBallotAddress'
 
 const router: express.Router = express.Router()
-
-// database table names
-const USED_TOKENS: string = 'usedSignupTokens'
-const REGISTERED_VOTERS: string = 'voters'
-const VALID_TOKENS: string = 'validSignupTokens'
 
 // http response messages
 const ADDRESS_INVALID: string = 'Address registration failed. Address is not valid or has already been registered.'
@@ -23,13 +19,13 @@ export const verifyVoterToken = (token: string): boolean => {
 
 export const isTokenValid = (token: string): boolean => {
   // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
-  const validTokens = getListFromDB(VALID_TOKENS)
+  const validTokens = getListFromDB(VALID_TOKENS_TABLE)
   return validTokens.includes(token)
 }
 
 export const hasTokenAlreadyBeenUsed = (token: string): boolean => {
   // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
-  const usedTokens = getListFromDB(USED_TOKENS)
+  const usedTokens = getListFromDB(USED_TOKENS_TABLE)
   return !usedTokens.includes(token)
 }
 
@@ -38,14 +34,14 @@ router.post('/register', async (req, res) => {
   const voterAddress: string = req.body.address
 
   const isTokenValid: boolean = verifyVoterToken(voterToken)
-  const isAddressValid: boolean = verifyAddress(REGISTERED_VOTERS, voterAddress)
+  const isAddressValid: boolean = verifyAddress(REGISTERED_VOTERS_TABLE, voterAddress)
   const success: boolean = isTokenValid && isAddressValid
 
   // FIXME: replace with `success` once ready, currently we don't have the tokens from the Identity Provider yet.
   // So any token right now is valid, as long as as there is also a valid eth address
   if (isAddressValid) {
-    addToList(USED_TOKENS, [voterToken])
-    addToList(REGISTERED_VOTERS, [voterAddress])
+    addToList(USED_TOKENS_TABLE, [voterToken])
+    addToList(REGISTERED_VOTERS_TABLE, [voterAddress])
 
     // at this point, the address and token are correct
     // now we need to fund the wallet and reply with the address of the ballot contract
