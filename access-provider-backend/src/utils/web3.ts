@@ -16,7 +16,19 @@ export const unlockAuthAccount = async () => {
     // @ts-ignore
     await getWeb3().eth.personal.unlockAccount(parityConfig.accountAddress, parityConfig.accountPassword, null)
   } catch (error) {
-    throw new Error('Could not unlock the authority account (web3.eth.personal.unlockAccount).')
+    throw new Error('Could not unlock the access provider account (web3.eth.personal.unlockAccount).')
   }
   return serverConfig.accountAddress
+}
+
+// fund voter wallet from access provider wallet
+export const fundWallet = async (wallet: string) => {
+  let transaction = {}
+  try {
+    transaction = { from: serverConfig.accountAddress, to: wallet, value: getWeb3().utils.toWei('1', 'ether') }
+    // TODO: change amount of ether to send
+    await getWeb3().eth.sendTransaction(transaction)
+  } catch (error) {
+    throw new Error(`Could not fund the voter wallet (web3.eth.sendTransaction(${transaction})).`)
+  }
 }
