@@ -32,6 +32,10 @@ globalConfig=$parentDir/system.json
 ACCESS_PROVIDER_BACKEND_PORT=$(cat $globalConfig | jq .services.access_provider_backend.port)
 # - Access Provider Backend IP (either 172.1.1.XXX or localhost)
 ACCESS_PROVIDER_BACKEND_IP=$(cat $globalConfig | jq .services.access_provider_backend.ip.$mode | tr -d \")
+# - Voting Authority Backend PORT (the port stays the same, in dev and prod mode) 
+VOTING_AUTH_BACKEND_PORT=$(cat $globalConfig | jq .services.voting_authority_backend.port)
+# - Voting Authority Backend IP (either 172.1.1.XXX or localhost)
+VOTING_AUTH_BACKEND_IP=$(cat $globalConfig | jq .services.voting_authority_backend.ip.$mode | tr -d \")
 # - POA Blockchain Main RPC PORT (the port stays the same, in dev and prod mode)
 PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_1.port)
 # - POA Blockchain Main RPC IP (either 172.1.1.XXX or localhost)
@@ -44,6 +48,8 @@ NODE_ENV=$mode
 ###########################################
 echo ACCESS_PROVIDER_BACKEND_PORT=$ACCESS_PROVIDER_BACKEND_PORT >> $dir/.env
 echo ACCESS_PROVIDER_BACKEND_IP=$ACCESS_PROVIDER_BACKEND_IP >> $dir/.env
+echo VOTING_AUTH_BACKEND_PORT=$VOTING_AUTH_BACKEND_PORT >> $dir/.env
+echo VOTING_AUTH_BACKEND_IP=$VOTING_AUTH_BACKEND_IP >> $dir/.env
 echo PARITY_NODE_PORT=${PARITY_NODE_PORT} >> $dir/.env
 echo PARITY_NODE_IP=${PARITY_NODE_IP} >> $dir/.env
 echo NODE_ENV=${NODE_ENV} >> $dir/.env
