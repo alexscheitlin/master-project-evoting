@@ -1,19 +1,17 @@
+import cors from 'cors'
+import { config } from 'dotenv'
 import express from 'express'
-import https from 'https'
 import fs from 'fs'
 import helmet from 'helmet'
-import cors from 'cors'
-
-import { config } from 'dotenv'
-import { resolve } from 'path'
+import https from 'https'
 
 import { setupDB } from './database/database'
-import { requestLogger, responseLogger } from './utils/logger'
 import chainspec from './endpoints/chainspec'
 import connection from './endpoints/connection'
 import deploy from './endpoints/deploy'
 import publicKey from './endpoints/publicKey'
 import state from './endpoints/state'
+import { requestLogger, responseLogger } from './utils/logger'
 
 config()
 
@@ -76,8 +74,8 @@ if (isProduction) {
   }
 
   // we will pass our 'server' to 'https'
-  https.createServer(options, server).listen(process.env.BACKEND_PORT, () => {
-    console.log(`HTTPS server started at https://${process.env.BACKEND_IP}:${process.env.BACKEND_PORT}`)
+  https.createServer(options, server).listen(process.env.VOTING_AUTH_BACKEND_PORT, () => {
+    console.log(`HTTPS server started at https://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`)
   })
 } else {
   // start the Express server
