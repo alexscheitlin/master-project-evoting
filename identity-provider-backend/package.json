@@ -12,7 +12,9 @@
     "ts-mocha": "./node_modules/.bin/ts-mocha",
     "tsc": "./node_modules/.bin/tsc",
     "serve": "NODE_ENV=production ts-node-dev --respawn --transpileOnly ./src/server.ts",
+    "serve:localhost": "./dev.sh",
     "serve:dev": "NODE_ENV=development ts-node-dev --respawn --transpileOnly ./src/server.ts",
+    "serve:dev:clean": "npm run clean:db && NODE_ENV=development ts-node-dev --respawn --transpileOnly ./src/server.ts",
     "debug": "node --nolazy --inspect-brk=9229 ./dist/server.js"
   },
   "license": "MIT",

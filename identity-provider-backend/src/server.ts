@@ -1,24 +1,16 @@
-import express from 'express'
-import https from 'https'
-import fs from 'fs'
-import helmet from 'helmet'
-import cors from 'cors'
+import cors from 'cors';
+import { config } from 'dotenv';
+import express from 'express';
+import fs from 'fs';
+import helmet from 'helmet';
+import https from 'https';
 
-import { config } from 'dotenv'
-import { resolve } from 'path'
+import { setupDB } from './database/database';
+import getToken from './endpoints/getToken';
+import register from './endpoints/register';
+import { requestLogger, responseLogger } from './utils/logger';
 
-import { requestLogger, responseLogger} from './utils/logger'
-import { setupDB } from './database/database'
-import register from './endpoints/register'
-import getToken from './endpoints/getToken'
-
-// get NODE_ENV "param"
-const NODE_ENV = process.env.NODE_ENV
-
-// load environment variables based on NODE_ENV
-const isProduction: boolean = NODE_ENV === 'production' ? true : false
-const DOTENV_FILE: string = isProduction ? '.production' : '.development'
-config({ path: resolve(__dirname, `../envs/.env${DOTENV_FILE}`) })
+config()
 
 // setup express server with request body parsing and logging
 const server = express()
@@ -35,6 +27,7 @@ server.use('/', getToken)
 // setup the database
 setupDB()
 
+const isProduction = false
 if (isProduction) {
   // adds the "Strict-Transport-Security" header.
   server.use(
@@ -60,12 +53,12 @@ if (isProduction) {
   }
 
   // we will pass our 'server' to 'https'
-  https.createServer(options, server).listen(process.env.PORT, () => {
-    console.log(`HTTPS server started at https://localhost:${process.env.PORT}`)
+  https.createServer(options, server).listen(process.env.IDENTITY_PROVIDER_BACKEND_PORT, () => {
+    console.log(`HTTPS server started at https://${process.env.IDENTITY_PROVIDER_BACKEND_IP}:${process.env.IDENTITY_PROVIDER_BACKEND_PORT}`)
   })
 } else {
   // start the Express server
-  server.listen(process.env.PORT, () => {
-    console.log(`HTTP server started at http://localhost:${process.env.PORT}`)
+  server.listen(process.env.IDENTITY_PROVIDER_BACKEND_PORT, () => {
+    console.log(`HTTP server started at http://${process.env.IDENTITY_PROVIDER_BACKEND_IP}:${process.env.IDENTITY_PROVIDER_BACKEND_PORT}`)
   })
 }

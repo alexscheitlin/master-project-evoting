@@ -69,7 +69,7 @@ router.post('/registerVoters', async (req, res) => {
     })
   } else {
     try {
-      await axios.post(`${process.env.access_provider}/sendTokens`, {
+      await axios.post(`http://${process.env.ACCESS_PROVIDER_BACKEND_IP}:${process.env.ACCESS_PROVIDER_BACKEND_PORT}/sendTokens`, {
         tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
       })
     } catch (error) {
