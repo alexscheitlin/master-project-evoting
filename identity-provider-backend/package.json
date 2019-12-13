@@ -4,6 +4,7 @@
   "main": "server.ts",
   "scripts": {
     "build": "rm -rf dist && tsc",
+    "clean:db": "rm -f src/database/db.json",
     "pre-commit": "lint-staged",
     "test": "nyc --reporter=text ts-mocha ./**/*.spec.ts",
     "test:watch": "ts-mocha ./**/*.spec.ts -w --watch-extensions ts ",
