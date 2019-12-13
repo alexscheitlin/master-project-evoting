@@ -16,6 +16,7 @@ globalConfig=$parentParentDir/system.json
 ###########################################
 mode=production
 echo "The mode is: $mode"
+echo
 
 # We need to provide a chain.json to the parity nodes
 # in order for them to boot up. And as we are not manually want to fetch the chain.json from
@@ -49,7 +50,11 @@ cd $parentParentDir/poa-blockchain/scripts
 ###########################################
 # ENODE registration
 ###########################################
-printf  "Register nodes "
+echo "##########################################################################"
+echo "# Registering Nodes                       "
+echo "##########################################################################"
+echo
+printf  "...waiting for sealer to be ready."
 # wait until containers are ready to answer rpc calls
 sleep 1; printf "."
 sleep 1; printf "."
