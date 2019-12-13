@@ -21,9 +21,9 @@ contract('Ballot.sol', () => {
     const votingQuestion = await ballotContract.getVotingQuestion();
     assert(votingQuestion === 'Is the dress blue or gold?', 'voting question not correct');
 
-    const p_: number = 23;
+    const p_ = 23;
     const q_: number = (p_ - 1) / 2;
-    const g_: number = 2;
+    const g_ = 2;
 
     const bund_systemParams: FFelGamal.SystemParameters = FFelGamal.SystemSetup.generateSystemParameters(p_, g_);
     await ballotContract.setParameters([bund_systemParams.p, bund_systemParams.q, bund_systemParams.g], {
