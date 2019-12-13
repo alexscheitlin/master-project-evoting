@@ -1,6 +1,7 @@
-import express from 'express'
 import crypto = require('crypto')
-import { getListFromDB, addToList, IDENTITIES_TABLE, TOKENS_TABLE } from '../database/database'
+import express from 'express'
+
+import { addToList, getListFromDB, IDENTITIES_TABLE, TOKENS_TABLE } from '../database/database'
 import { Identity, IdentityToken } from '../models'
 
 const axios = require('axios')
@@ -8,23 +9,19 @@ const router: express.Router = express.Router()
 
 // http response messages
 const NO_VOTERS: string = 'No voters specified!'
-const INVALID_VOTER = (uuid: string) => `No uuid found for: ${uuid}`
+const INVALID_VOTER = (uuid: string) => `UUID does not exist: ${uuid}`
 const SUCCESS_MSG: string = 'Successfully registered voters!'
 
-// check if there is an identity with the given uuid
-export const isUuidValid = (identities: Identity[], uuid: string): boolean => {
-  // needs to be done in two steps -> includes cannot be chained, otherwise getListFromDB won't work any more
-  return identities.map(i => i.uuid).includes(uuid)
-}
-
 export const areVotersValid = (identities: Identity[], voters: string[]): boolean | Error => {
+  // check if some voters are specified
   if (voters.length === 0) {
     throw new Error(NO_VOTERS)
   }
 
-  for (const voter of voters) {
-    if (!isUuidValid(identities, voter)) {
-      throw new Error(INVALID_VOTER(voter))
+  for (const voterUUID of voters) {
+    // check if there is an identity with the given uuid
+    if (!identities.map(i => i.uuid).includes(voterUUID)) {
+      throw new Error(INVALID_VOTER(voterUUID))
     }
   }
 
@@ -38,8 +35,9 @@ export const getRandomToken = (): string => {
 router.post('/registerVoters', async (req, res) => {
   const voters: string[] = req.body.voters || []
   const identities = <Identity[]>getListFromDB(IDENTITIES_TABLE)
+  const tokens = <IdentityToken[]>getListFromDB(TOKENS_TABLE)
 
-  // validate given voters (=uuids)
+  // validate given voters (= uuids)
   try {
     areVotersValid(identities, voters)
   } catch (error) {
@@ -47,19 +45,21 @@ router.post('/registerVoters', async (req, res) => {
     return
   }
 
-  // generate random tokens
-  const voterIdentities: Identity[] = identities.filter(i => voters.includes(i.uuid))
+  // generate random tokens for all voters that not already have one
   const identityTokens: IdentityToken[] = []
-  for (const voterIdentity of voterIdentities) {
-    identityTokens.push({
-      uuid: voterIdentity.uuid,
-      token: getRandomToken(),
-    })
-  }
+  identities
+    .filter(identity => voters.includes(identity.uuid))
+    .map(identity => identity.uuid)
+    .filter(uuid => !tokens.map(identityToken => identityToken.uuid).includes(uuid))
+    .filter(uuid => uuid !== null)
+    .map(uuid =>
+      identityTokens.push({
+        uuid: uuid,
+        token: getRandomToken(),
+      })
+    )
 
-  // simply add all token/uuid pairs
-  // TODO: how to handle deletion of old tokens?
-  // TODO: check if a voter already has a token
+  // store generated token/uuid pairs
   addToList(TOKENS_TABLE, identityTokens)
 
   // send tokens to access provider
@@ -69,7 +69,12 @@ router.post('/registerVoters', async (req, res) => {
     })
     .then((response: any) => {
       console.log('Response:', response.data.msg)
-      res.status(201).json({ success: true, msg: SUCCESS_MSG })
+      res.status(201).json({
+        success: true,
+        msg: SUCCESS_MSG,
+        alreadyRegistered: voters.length - identityTokens.length,
+        newlyRegistered: identityTokens.length,
+      })
     })
     .catch((error: any) => {
       console.log('Error:', error)
