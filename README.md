@@ -204,14 +204,6 @@ sealer/docker-start.sh <sealerNr>
 
 the only thing that is different to starting all sealers on their own, is that `./dev-chain-parity-nodes.sh` will also connect the nodes for you directly
 
-### Access Provider Backend
-
-TODO
-
-### Identity Provider Backend
-
-TODO
-
 ### Voter Frontend
 
 TODO
