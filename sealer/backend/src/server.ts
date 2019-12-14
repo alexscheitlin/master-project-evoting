@@ -19,7 +19,10 @@ server.use(express.urlencoded({ extended: true }))
 server.use(logger)
 server.use(
   cors({
-    origin: [`http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`],
+    origin: [
+      `http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`, 
+      `http://localhost:${process.env.SEALER_FRONTEND_PORT}`
+    ],
   })
 )
 
