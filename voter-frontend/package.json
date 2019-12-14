@@ -41,6 +41,7 @@
     "web3-typescript-typings": "^0.10.2"
   },
   "scripts": {
+    "start:localhost": "./dev.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "pre-commit": "lint-staged",
