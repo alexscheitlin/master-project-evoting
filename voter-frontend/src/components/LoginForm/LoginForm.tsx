@@ -1,4 +1,4 @@
-import { Paper } from '@material-ui/core';
+import { Paper, CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,9 +9,12 @@ import React, { useState } from 'react';
 
 interface Props {
   onLogin: (username: string, password: string) => void;
+  loading: boolean;
+  error: boolean;
+  msg: string;
 }
 
-const LoginForm: React.FC<Props> = ({ onLogin }) => {
+const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const classes = useStyles();
@@ -54,10 +57,13 @@ const LoginForm: React.FC<Props> = ({ onLogin }) => {
             color="primary"
             className={classes.submit}
             onClick={(): void => onLogin(username, password)}
+            disabled={loading}
           >
-            Login
+            {!loading && <div>Login</div>}
+            {loading && <CircularProgress size={24} />}
           </Button>
         </form>
+        {error && <Typography>{msg}</Typography>}
       </Paper>
     </Container>
   );

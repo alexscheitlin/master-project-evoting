@@ -29,7 +29,7 @@ const AppManager: React.FC = () => {
     if (state.isBallotContractAddressSet()) {
       state.setBallotContractAddress(state.getBallotContractAddress());
     }
-  }, [state]);
+  }, []);
 
   const getPage = () => {
     if (!state.authenticated) {
