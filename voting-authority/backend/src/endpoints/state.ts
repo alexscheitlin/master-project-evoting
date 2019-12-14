@@ -104,7 +104,7 @@ router.get('/state', async (req, res) => {
     case VotingState.VOTING:
       let numberOfVotes: number = 0
       try {
-        await BallotManager.getNumberOfVotes()
+        numberOfVotes = await BallotManager.getNumberOfVotes()
       } catch (error) {
         res.status(500).json({ msg: error.message })
         return
