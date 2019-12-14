@@ -268,9 +268,30 @@ router.post('/state', async (req, res) => {
     // TALLY
     // --------------------------------------------------
     case VotingState.TALLY:
-      // TODO: check that enough decrypted shares are available
-      // TODO: combine shares => result
+      // check that all decrypted shares are submitted
+      const requiredDecryptedShares: number = requiredAuthorities
+      let submittedDecryptedShares: number = 0
+      try {
+        submittedDecryptedShares = await BallotManager.getNumberOfDecryptedShares()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+      if (submittedDecryptedShares !== requiredDecryptedShares) {
+        res.status(400).json({
+          state: currentState,
+          msg: `There are only ${submittedDecryptedShares} decrypted shares submitted, but ${requiredDecryptedShares} are needed.`,
+        })
+        return
+      }
+
+      res.status(200).json({
+        state: currentState,
+        decryptedSharesSubmitted: submittedDecryptedShares,
+      })
       break
+
+    // TODO: combine shares => result
 
     default:
       res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
