@@ -1,4 +1,4 @@
-import { Container, Paper, Button } from '@material-ui/core';
+import { Button, Container, Paper } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
@@ -6,10 +6,9 @@ import Web3 from 'web3';
 import ChainInfo from '../components/ChainInfo/ChainInfo';
 import Question from '../components/Question/Question';
 import VotingPanel from '../components/VotingPanel/VotingPanel';
-import { AccessProviderService } from '../services';
+import BallotContract from '../contract-abis/Ballot.json';
 import { useVoterStore } from '../store';
 import getWeb3 from '../util/getWeb3';
-import BallotContract from '../contract-abis/Ballot.json';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -31,7 +30,7 @@ const VotingPage: React.FC = () => {
   const [votingQuestion, setVotingQuestion] = useState('');
   const state = useVoterStore();
 
-  const initalizePage = async () => {
+  const initializePage = async () => {
     // get web3 context and the ballot contract
     const web3: Web3 = await getWeb3(state.getConnectionNodeUrl());
     //@ts-ignore
@@ -47,8 +46,8 @@ const VotingPage: React.FC = () => {
   };
 
   useEffect(() => {
-    initalizePage();
-  }, [initalizePage]);
+    initializePage();
+  }, []);
 
   return (
     <Container maxWidth="md" className={classes.wrapper}>

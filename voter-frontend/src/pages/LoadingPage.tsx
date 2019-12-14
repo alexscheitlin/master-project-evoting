@@ -15,21 +15,19 @@ import { useVoterStore } from '../store';
 import getWeb3 from '../util/getWeb3';
 import { delay } from '../util/helper';
 
-// The 4 things that are checked inside this component
+// The 3 things that are checked inside this component
 function getSteps(): string[] {
-  return ['Checking your Login', 'Creating Voter Account', 'Setting up Wallet', 'Connect to Blockchain'];
+  return ['Creating Voter Account', 'Setting up Wallet', 'Connect to Blockchain'];
 }
 
 // The descriptions for each step of this component
 function getStepContent(step: number): string {
   switch (step) {
     case 0:
-      return `Making sure you are logged in correctly`;
-    case 1:
       return 'Generating your Wallet';
-    case 2:
+    case 1:
       return 'Adding Funds to your Wallet';
-    case 3:
+    case 2:
       return 'Connecting you to the blockchain where you can cast your votes';
     default:
       return 'Unknown step';
@@ -44,11 +42,6 @@ export const LoadingPage: React.FC = () => {
 
   const LOADING_DELAY = 500;
 
-  const checkLogin = async (): Promise<any> => {
-    await delay(LOADING_DELAY);
-    return true;
-  };
-
   const createAccount = async (web3: Web3): Promise<string> => {
     await delay(LOADING_DELAY);
     try {
@@ -58,7 +51,6 @@ export const LoadingPage: React.FC = () => {
       voterState.setWallet(account);
       return account;
     } catch (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   };
@@ -70,7 +62,6 @@ export const LoadingPage: React.FC = () => {
       voterState.setBallotContractAddress(ballotAddress);
       return ballotAddress;
     } catch (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   };
@@ -82,7 +73,6 @@ export const LoadingPage: React.FC = () => {
       const contract = new web3.eth.Contract(BallotContract.abi, ballot);
       voterState.setContract(contract);
     } catch (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   };
@@ -102,7 +92,6 @@ export const LoadingPage: React.FC = () => {
       const connectionURL = await AccessProviderService.getConnectionNodeUrl();
       voterState.setConnectionNodeUrl(connectionURL);
       const web3: Web3 = await getWeb3(connectionURL);
-      await checkLogin();
       nextStep();
       const account = await createAccount(web3);
       nextStep();
