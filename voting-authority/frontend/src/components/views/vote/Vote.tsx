@@ -1,7 +1,15 @@
 import { Button, makeStyles, Theme } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import { useVoteStateStore, useVoteQuestionStore, VotingState } from '../../../models/voting';
+import { useInterval } from '../helper/UseInterval';
+import { fetchState } from '../../../services/authBackend';
+
+interface VotingStateResponse {
+  state: VotingState;
+  votesSubmitted: number;
+  question: string;
+}
 
 interface VotingProps {
   handleNext: () => void;
@@ -17,6 +25,22 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
+
+  const getState = async () => {
+    try {
+      const data: VotingStateResponse = (await fetchState()) as VotingStateResponse;
+      setQuestion(data.question);
+      setVotesSubmitted(data.votesSubmitted);
+    } catch (error) {
+      setErrorMessage(error.msg);
+      setHasError(true);
+      console.error(error);
+    }
+  };
+
+  useInterval(() => {
+    getState();
+  }, 4000);
 
   const nextStep = async () => {
     try {
