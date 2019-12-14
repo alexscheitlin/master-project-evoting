@@ -1,3 +1,4 @@
+import BN from 'bn.js'
 import express from 'express'
 
 import { parityConfig } from '../config'
@@ -75,6 +76,7 @@ router.get('/state', async (req, res) => {
 
     // ... how many votes have been casted
     case VotingState.VOTING:
+      // TODO: question / how many votes
       break
 
     // ... how many decrypted shares have been submitted
@@ -140,8 +142,32 @@ router.post('/state', async (req, res) => {
       setValue(STATE_TABLE, VotingState.CONFIG)
       break
     case VotingState.CONFIG:
-      // TODO: check that all public key shares are submitted
-      // TODO: check that the public key is generated
+      // check that all public key shares are submitted
+      const requiredKeyShares: number = requiredAuthorities
+      let submittedKeyShares: number = 0
+      try {
+        submittedKeyShares = await BallotManager.getNrOfPublicKeyShares()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+      if (submittedKeyShares !== requiredKeyShares) {
+        res.status(400).json({
+          state: currentState,
+          msg: `There are only ${submittedKeyShares} public key shares submitted, but ${requiredKeyShares} are needed.`,
+        })
+        return
+      }
+
+      // check that the public key is generated
+      try {
+        await BallotManager.getPublicKey()
+      } catch (error) {
+        res.status(400).json({ msg: error.message })
+        return
+      }
+
+      // open voting via ballot contract
       try {
         await BallotManager.openBallot()
         isBallotOpen = await BallotManager.isBallotOpen()
