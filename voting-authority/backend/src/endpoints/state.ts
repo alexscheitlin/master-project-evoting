@@ -120,9 +120,10 @@ router.get('/state', async (req, res) => {
     // --------------------------------------------------
     // TALLY
     // --------------------------------------------------
-    // ... how many decrypted shares have been submitted
+    // ... how many decrypted shares are required and have been submitted
     case VotingState.TALLY:
       let submittedDecryptedShares: number = 0
+      const requiredDecryptedShares: number = requiredAuthorities
       try {
         submittedKeyShares = await BallotManager.getNumberOfDecryptedShares()
       } catch (error) {
@@ -132,7 +133,8 @@ router.get('/state', async (req, res) => {
 
       res.status(200).json({
         state: currentState,
-        decryptedSharesSubmitted: submittedDecryptedShares,
+        submittedDecryptedShares: submittedDecryptedShares,
+        requiredDecryptedShares: requiredDecryptedShares,
       })
       break
 
