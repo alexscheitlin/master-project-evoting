@@ -84,5 +84,5 @@ $parentDir/docker-network.sh $network_name
 # start containers
 ###########################################
 cd $dir
-docker-compose -p vote-auth -f docker-compose.yml up --build --detach
+docker-compose -p vote-auth -f docker-compose.yml up  --detach
 rm -f $dir/.env

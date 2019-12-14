@@ -89,4 +89,4 @@ network_name=$(cat $globalConfig | jq .network.name | tr -d \")
 $parentParentDir/docker-network.sh $network_name
 
 # start docker compose for parity-node
-docker-compose -p sealer$sealerNr up --build --detach
+docker-compose -p sealer$sealerNr up  --detach

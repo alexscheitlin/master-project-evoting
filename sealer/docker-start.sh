@@ -98,7 +98,7 @@ $parentDir/docker-network.sh $network_name
 cd $dir
 
 # start docker containers
-docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
+docker-compose -p controller_$sealerNr -f docker-compose.yml up  --detach
 
 # remove all temp files
 rm -f $dir/backend/wallet/sealer.json
