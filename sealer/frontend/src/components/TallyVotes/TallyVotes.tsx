@@ -6,9 +6,11 @@ import { StepTitle } from '../shared/StepTitle';
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 import { SealerBackend } from '../../services';
 
-interface Props {}
+interface Props {
+  nextStep: () => void;
+}
 
-export const TallyVotes: React.FC<Props> = () => {
+export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
 
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -20,11 +22,12 @@ export const TallyVotes: React.FC<Props> = () => {
   const submitDecryptedShare = async () => {
     try {
       setLoading(true);
+
       const response = await SealerBackend.decryptShare();
+      console.log(response);
+
       setLoading(false);
       setSuccess(true);
-
-      console.log(response);
     } catch (error) {
       setHasError(true);
       setErrorMessage(error.msg);
@@ -35,9 +38,16 @@ export const TallyVotes: React.FC<Props> = () => {
     <div className={classes.root}>
       <StepTitle title="Tally Votes" />
       <div className={classes.wrapper}>
-        <Button className={classes.button} variant="contained" onClick={submitDecryptedShare}>
-          Submit Decrypted Share
-        </Button>
+        {!success ? (
+          <Button className={classes.button} variant="contained" onClick={submitDecryptedShare}>
+            Submit Decrypted Share
+          </Button>
+        ) : (
+          // TODO: disable button until not all decrypted shares have been submitted
+          <Button className={classes.button} variant="contained" onClick={nextStep}>
+            Next Step
+          </Button>
+        )}
       </div>
       <div className={classes.loader}>
         <LoadSuccess loading={loading} success={success} />

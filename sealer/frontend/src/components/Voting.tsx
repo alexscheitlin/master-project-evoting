@@ -46,12 +46,13 @@ export const Voting: React.FC = () => {
           </div>
         );
       case 4:
-        return <TallyVotes />;
+        return <TallyVotes nextStep={nextStep} />;
       case 5:
         return (
           <div>
             <h1>Result State</h1>
-            <Button onClick={nextStep}>MoveNext</Button>
+            <h3>You are at the fucking end!!</h3>
+            <h4>The vote is done! You won! Congrats Bro!</h4>
           </div>
         );
       default:

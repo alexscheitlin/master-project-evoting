@@ -64,7 +64,7 @@ interface DecryptShareResponse {}
 
 export const decryptShare = async (): Promise<DecryptShareResponse> => {
   try {
-    return await axios.post(sealerBackendUrl() + '/decrypt');
+    return await axios.post(sealerBackendUrl() + '/decrypt', {});
   } catch (error) {
     console.log(error);
     throw new Error(`Something went wrong with decrypting the share. ${error.message}`);
