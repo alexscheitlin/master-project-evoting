@@ -38,7 +38,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
       });
 
       const response: AxiosResponse<ConfigStateReponse> = await axios.post(
-        `${DEV_URL}/keyshare`,
+        `${DEV_URL}/publickey`,
         {},
         {
           httpsAgent: agent
