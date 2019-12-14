@@ -141,7 +141,7 @@ router.get('/state', async (req, res) => {
       let submittedDecryptedShares: number = 0
       const requiredDecryptedShares: number = requiredAuthorities
       try {
-        submittedKeyShares = await BallotManager.getNumberOfDecryptedShares()
+        submittedDecryptedShares = await BallotManager.getNumberOfDecryptedShares()
       } catch (error) {
         res.status(500).json({
           state: currentState,
