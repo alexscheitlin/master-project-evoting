@@ -40,7 +40,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
     try {
       const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {});
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         setPublicKeyGenerated(true);
         setPublicKey(response.data.publicKey);
       } else {
