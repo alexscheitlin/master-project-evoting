@@ -2,7 +2,15 @@ import BN from 'bn.js'
 import express from 'express'
 
 import { parityConfig } from '../config'
-import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, NODES_TABLE, setValue, STATE_TABLE } from '../database/database'
+import {
+  AUTHORITIES_TABLE,
+  BALLOT_DEPLOYED_TABLE,
+  getValueFromDB,
+  NODES_TABLE,
+  setValue,
+  STATE_TABLE,
+  VOTING_QUESTION_TABLE,
+} from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 
@@ -74,9 +82,23 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // ... what the voting question is and ...
     // ... how many votes have been casted
     case VotingState.VOTING:
-      // TODO: question / how many votes
+      const votingQuestion: string = getValueFromDB(VOTING_QUESTION_TABLE)
+      let numberOfVotes: number = 0
+      try {
+        await BallotManager.getNumberOfVotes()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+
+      res.status(200).json({
+        state: currentState,
+        question: votingQuestion,
+        votesSubmitted: numberOfVotes,
+      })
       break
 
     // ... how many decrypted shares have been submitted
