@@ -281,9 +281,7 @@ contract Ballot {
 
         election.decryptedShareMapping[msg.sender] = decryptedShare;
 
-        // TODO: figure out how to do this properly, this is needed in
-        // combineDecryptedShares, but it's not elegant if it's overwritten
-        // each time some authority submits a decrypted share
+        // store the cipher for later decryption
         election.sumCipher = Cipher(a, b);
 
         emit VoteStatusEvent(msg.sender, true, 'DecryptedShareProof accepted');
