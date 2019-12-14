@@ -285,13 +285,24 @@ router.post('/state', async (req, res) => {
         return
       }
 
-      res.status(200).json({
-        state: currentState,
-        decryptedSharesSubmitted: submittedDecryptedShares,
-      })
-      break
+      // combine decrypted shares
+      try {
+        await BallotManager.combineDecryptedShares()
+      } catch (error) {
+        res.status(400).json({ msg: error.message })
+        return
+      }
 
-    // TODO: combine shares => result
+      // check that the voting result is available
+      try {
+        await BallotManager.getVoteResult()
+      } catch (error) {
+        res.status(400).json({ msg: error.message })
+        return
+      }
+
+      setValue(STATE_TABLE, VotingState.RESULT)
+      break
 
     default:
       res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
