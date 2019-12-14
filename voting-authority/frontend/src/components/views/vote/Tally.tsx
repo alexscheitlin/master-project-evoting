@@ -1,59 +1,92 @@
 import { Button, makeStyles, Theme } from '@material-ui/core';
-import axios, { AxiosResponse } from 'axios';
-import https from 'https';
-import React from 'react';
-import { DEV_URL } from '../../../constants';
-import { useVoteStateStore } from '../../../models/voting';
+import React, { useState } from 'react';
+import { useVoteStateStore, VotingState } from '../../../models/voting';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { useInterval } from '../helper/UseInterval';
+import { fetchState } from '../../../services/authBackend';
 
-interface Props {
+interface TallyProps {
   handleNext: () => void;
 }
 
-export const Tally: React.FC<Props> = ({ handleNext }) => {
+interface TallyStateResponse {
+  state: VotingState;
+  submittedDecryptedShares: number;
+  requiredDecryptedShares: number;
+}
+
+export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
   const classes = useStyles();
-  const { state, nextState } = useVoteStateStore();
+  const { nextState } = useVoteStateStore();
 
-  const endVote = async () => {
-    // avoids ssl error with certificate
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
+  const [submittedDecryptedShares, setSubmittedDecryptedShares] = useState<number>(0);
+  const [requiredDecryptedShares, setRequiredDecryptedShares] = useState<number>(1);
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  const getState = async () => {
     try {
-      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
-
-      if (response.status === 201) {
-        const res = response.data;
-        console.log(res);
-
-        // trigger a global voteState update if request was successful
-        nextState();
-        handleNext();
-      } else {
-        console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
-        throw new Error('Status Code not 201');
-      }
+      const data: TallyStateResponse = (await fetchState()) as TallyStateResponse;
+      setSubmittedDecryptedShares(data.submittedDecryptedShares);
+      setRequiredDecryptedShares(data.requiredDecryptedShares);
     } catch (error) {
+      setErrorMessage(error.msg);
+      setHasError(true);
       console.error(error);
+    }
+  };
+
+  useInterval(() => {
+    getState();
+  }, 4000);
+
+  const generateSummary = () => {};
+
+  const nextStep = async () => {
+    try {
+      await nextState();
+      handleNext();
+    } catch (error) {
+      setErrorMessage(error.msg);
+      setHasError(true);
     }
   };
 
   return (
     <div className={classes.container}>
-      <h1>{`The state of the vote is: ${state}`}</h1>
-      <p>{state}</p>
+      <div>
+        <h1>{`Tally Phase`}</h1>
+        <h4>
+          {`The vote has ended.` && submittedDecryptedShares !== requiredDecryptedShares
+            ? `Please wait until all decrypted shares have been submitted.`
+            : `All decrypted shares have been submitted. Summary can be generated!`}
+        </h4>
+        <h4>{`Nr. of decrypted shares: ${submittedDecryptedShares}/${requiredDecryptedShares}`}</h4>
+      </div>
       <div className={classes.actionsContainer}>
-        <Button variant="contained" color="primary" onClick={endVote} className={classes.button}>
-          End Vote
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={generateSummary}
+          className={classes.button}
+          disabled={submittedDecryptedShares !== requiredDecryptedShares}
+        >
+          Generate Summary
         </Button>
       </div>
+
+      {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    padding: '1em'
+    padding: '1em',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   button: {
     marginTop: theme.spacing(1),
