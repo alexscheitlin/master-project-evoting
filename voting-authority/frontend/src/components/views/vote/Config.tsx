@@ -1,6 +1,5 @@
 import { Button, makeStyles, Theme } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
-import https from 'https';
 import React, { useState } from 'react';
 import { DEV_URL } from '../../../constants';
 import { useVoteStateStore, VotingState } from '../../../models/voting';
@@ -17,6 +16,11 @@ interface ConfigStateReponse {
   requiredKeyShares: number;
 }
 
+interface PublicKeyPostResponse {
+  msg: string;
+  publicKey: string;
+}
+
 export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   const classes = useStyles();
   const REFRESH_INTERVAL_MS: number = 4000;
@@ -28,44 +32,30 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
   const [requiredKeyShares, setRequiredKeyShares] = useState<number>(1000);
   const [submittedKeyShares, setSubmittedKeyShares] = useState<number>(0);
+
+  const [publicKey, setPublicKey] = useState<string>('');
   const [publicKeyGenerated, setPublicKeyGenerated] = useState<boolean>(false);
 
   const generatePublicKey = async () => {
     try {
-      // avoids ssl error with certificate
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-
-      const response: AxiosResponse<ConfigStateReponse> = await axios.post(
-        `${DEV_URL}/publickey`,
-        {},
-        {
-          httpsAgent: agent
-        }
-      );
+      const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {});
 
       if (response.status === 201) {
         setPublicKeyGenerated(true);
+        setPublicKey(response.data.publicKey);
       } else {
-        throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
+        throw new Error(`GET /state. Status Code: ${response.status} -> not what was expected.`);
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      console.error(error);
+      setErrorMessage(error.msg);
       setHasError(true);
     }
   };
 
   const checkNumberOfSubmittedPublicKeyShares = async () => {
     try {
-      // avoids ssl error with certificate
-      const agent = new https.Agent({
-        rejectUnauthorized: false
-      });
-
-      const response: AxiosResponse<ConfigStateReponse> = await axios.get(`${DEV_URL}/state`, {
-        httpsAgent: agent
-      });
+      const response: AxiosResponse<ConfigStateReponse> = await axios.get(`${DEV_URL}/state`);
 
       if (response.status === 200) {
         setRequiredKeyShares(response.data.requiredKeyShares);
@@ -74,7 +64,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
         throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error.msg);
       setHasError(true);
     }
   };
@@ -84,7 +74,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
       await nextState();
       handleNext();
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error.msg);
       setHasError(true);
     }
   };
@@ -111,6 +101,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
               : ` You can create the public key now!`
             : ``}
         </h4>
+        {publicKeyGenerated && <h3>{`The public key is: ${publicKey}`}</h3>}
       </div>
       <div className={classes.actionsContainer}>
         {!publicKeyGenerated ? (
@@ -136,7 +127,10 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    padding: '1em'
+    padding: '1em',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   button: {
     marginTop: theme.spacing(1),
