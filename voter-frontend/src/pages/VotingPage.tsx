@@ -1,4 +1,4 @@
-import { Container, Paper } from '@material-ui/core';
+import { Container, Paper, Button } from '@material-ui/core';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
@@ -9,14 +9,16 @@ import VotingPanel from '../components/VotingPanel/VotingPanel';
 import { AccessProviderService } from '../services';
 import { useVoterStore } from '../store';
 import getWeb3 from '../util/getWeb3';
+import BallotContract from '../contract-abis/Ballot.json';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
-    paddingTop: theme.spacing(16),
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
   },
   paper: {
+    position: 'relative',
     padding: theme.spacing(2, 4, 0, 4),
     display: 'flex',
     flexDirection: 'column',
@@ -27,27 +29,26 @@ const VotingPage: React.FC = () => {
   const classes = useStyles();
   const [balance, setBalance] = useState('');
   const [votingQuestion, setVotingQuestion] = useState('');
-  const voterState = useVoterStore();
+  const state = useVoterStore();
 
-  /**
-   * Is called on page load
-   *
-   * Connects to the contract, get the balanace of the voters wallet,
-   * the voting question etc.
-   */
-  const getChainInfo = async (): Promise<void> => {
-    const connectionURL = await AccessProviderService.getConnectionNodeUrl();
-    const web3: Web3 = await getWeb3(connectionURL);
-    const balance = await web3.eth.getBalance(voterState.wallet);
+  const initalizePage = async () => {
+    // get web3 context and the ballot contract
+    const web3: Web3 = await getWeb3(state.getConnectionNodeUrl());
+    //@ts-ignore
+    const contract = new web3.eth.Contract(BallotContract.abi, state.getBallotContractAddress());
+
+    // query the balance of the voter wallet
+    const balance = await web3.eth.getBalance(state.getWallet());
     setBalance(balance);
-    const question = await voterState.contract.methods.getVotingQuestion().call({ from: voterState.contractAddress });
+
+    // get the voting question to display
+    const question = await contract.methods.getVotingQuestion().call({ from: state.getBallotContractAddress() });
     setVotingQuestion(question);
   };
 
   useEffect(() => {
-    getChainInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    initalizePage();
+  }, [initalizePage]);
 
   return (
     <Container maxWidth="md" className={classes.wrapper}>
@@ -56,8 +57,9 @@ const VotingPage: React.FC = () => {
           <Question votingQuestion={votingQuestion} />
           <VotingPanel votingQuestion={votingQuestion} />
         </div>
-        <ChainInfo contractAddress={voterState.contractAddress} walletAddress={voterState.wallet} balance={balance} />
+        <ChainInfo contractAddress={state.contractAddress} walletAddress={state.wallet} balance={balance} />
       </Paper>
+      <Button onClick={state.logout}>Logout</Button>
     </Container>
   );
 };

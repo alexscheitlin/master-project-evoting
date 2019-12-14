@@ -36,17 +36,13 @@ function getStepContent(step: number): string {
   }
 }
 
-interface Props {
-  onSetupComplete: () => void;
-}
-
-export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
+export const LoadingPage: React.FC = () => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
   const voterState = useVoterStore();
 
-  const LOADING_DELAY = 1000;
+  const LOADING_DELAY = 500;
 
   const checkLogin = async (): Promise<any> => {
     await delay(LOADING_DELAY);
@@ -115,7 +111,7 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
       await connectToContract(web3, ballot);
     }
 
-    setup().then(() => onSetupComplete());
+    setup();
     return (): void => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
