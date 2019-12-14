@@ -1,6 +1,6 @@
 # Voting Authority Backend
 
-![stages](./assets/stages.svg)
+![stages](./assets/stages.png)
 
 ## Prerequisites
 
