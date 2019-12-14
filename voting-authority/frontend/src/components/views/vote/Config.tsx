@@ -5,6 +5,7 @@ import { DEV_URL } from '../../../constants';
 import { useVoteStateStore, VotingState } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import { useInterval } from '../helper/UseInterval';
+import { fetchState } from '../../../services/authBackend';
 
 interface ConfigProps {
   handleNext: () => void;
@@ -14,11 +15,12 @@ interface ConfigStateReponse {
   state: VotingState;
   submittedKeyShares: number;
   requiredKeyShares: number;
+  publicKey: number;
 }
 
 interface PublicKeyPostResponse {
   msg: string;
-  publicKey: string;
+  publicKey: number;
 }
 
 export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
@@ -33,16 +35,16 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   const [requiredKeyShares, setRequiredKeyShares] = useState<number>(1000);
   const [submittedKeyShares, setSubmittedKeyShares] = useState<number>(0);
 
-  const [publicKey, setPublicKey] = useState<string>('');
+  const [publicKey, setPublicKey] = useState<number>(-2);
   const [publicKeyGenerated, setPublicKeyGenerated] = useState<boolean>(false);
 
   const generatePublicKey = async () => {
     try {
       const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {});
 
-      if (response.status === 200) {
-        setPublicKeyGenerated(true);
+      if (response.status === 201) {
         setPublicKey(response.data.publicKey);
+        setPublicKeyGenerated(true);
       } else {
         throw new Error(`GET /state. Status Code: ${response.status} -> not what was expected.`);
       }
@@ -55,13 +57,13 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
   const checkNumberOfSubmittedPublicKeyShares = async () => {
     try {
-      const response: AxiosResponse<ConfigStateReponse> = await axios.get(`${DEV_URL}/state`);
+      const data: ConfigStateReponse = (await fetchState()) as ConfigStateReponse;
+      setRequiredKeyShares(data.requiredKeyShares);
+      setSubmittedKeyShares(data.submittedKeyShares);
 
-      if (response.status === 200) {
-        setRequiredKeyShares(response.data.requiredKeyShares);
-        setSubmittedKeyShares(response.data.submittedKeyShares);
-      } else {
-        throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
+      if (data.publicKey > 0) {
+        setPublicKey(data.publicKey);
+        setPublicKeyGenerated(true);
       }
     } catch (error) {
       setErrorMessage(error.msg);
