@@ -13,6 +13,7 @@ export const AUTHORITIES_TABLE: string = 'authorities'
 export const NODES_TABLE: string = 'nodes'
 export const BALLOT_ADDRESS_TABLE: string = 'ballotAddress'
 export const BALLOT_DEPLOYED_TABLE: string = 'ballotDeployed'
+export const VOTING_QUESTION_TABLE: string = 'votingQuestion'
 export const CHAINSPEC_TABLE: string = 'chainspec'
 
 export const setupDB = () => {
@@ -28,6 +29,7 @@ export const setupDB = () => {
     nodes: [],
     ballotAddress: '',
     ballotDeployed: false,
+    votingQuestion: '',
     chainspec: defaultConfig,
   }).write()
 }
