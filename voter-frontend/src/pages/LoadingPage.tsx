@@ -7,12 +7,13 @@ import Stepper from '@material-ui/core/Stepper';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
+import Web3 from 'web3';
 
 import BallotContract from '../contract-abis/Ballot.json';
-import { useVote } from '../hooks/useVote';
+import { AccessProviderService } from '../services';
+import { useVoterStore } from '../store';
 import getWeb3 from '../util/getWeb3';
 import { delay } from '../util/helper';
-import { PERSONAL_ACCOUNT_ERROR_MESSAGE } from '../constants';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,43 +51,48 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const steps = getSteps();
-  const ctx = useVote();
+  const voterState = useVoterStore();
 
   const checkLogin = async (): Promise<any> => {
     await delay(2000);
     return true;
   };
 
-  const createAccount = async (): Promise<any> => {
+  const createAccount = async (web3: Web3): Promise<string> => {
     await delay(2000);
-    const web3 = await getWeb3();
     try {
       const account = await web3.eth.personal.newAccount('securePassword');
-      await web3.eth.personal.unlockAccount(account, 'securePassword', 1);
-      web3.eth.defaultAccount = account;
+      //@ts-ignore
+      await web3.eth.personal.unlockAccount(account, 'securePassword', null);
+      voterState.setWallet(account);
+      return account;
     } catch (error) {
-      throw new Error(PERSONAL_ACCOUNT_ERROR_MESSAGE);
+      console.log(error);
+      throw new Error(error.message);
     }
   };
 
-  const fundWallet = async (): Promise<any> => {
-    const web3 = await getWeb3();
-    const wallet = web3.eth.defaultAccount;
-    if (ctx !== null && wallet !== null) {
-      const token = ctx.user.token;
-      await ctx.fundWallet(token, wallet);
-    }
+  const fundWallet = async (account: string): Promise<string> => {
     await delay(2000);
+    try {
+      const ballotAddress = await AccessProviderService.fundWallet(voterState.token, account);
+      voterState.setBallotContractAddress(ballotAddress);
+      return ballotAddress;
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
+    }
   };
 
-  const connectToContract = async (): Promise<any> => {
+  const connectToContract = async (web3: Web3, ballot: string): Promise<any> => {
     await delay(2000);
-    if (ctx !== null) {
-      const address = ctx.contractAddress;
-      const web3 = await getWeb3();
-      // @ts-ignore
-      const contract = new web3.eth.Contract(BallotContract.abi, address);
-      ctx.setBallotContract(contract);
+    try {
+      //@ts-ignore
+      const contract = new web3.eth.Contract(BallotContract.abi, ballot);
+      voterState.setContract(contract);
+    } catch (error) {
+      console.log(error);
+      throw new Error(error.message);
     }
   };
 
@@ -96,13 +102,16 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
 
   useEffect(() => {
     async function setup(): Promise<any> {
+      const connectionURL = await AccessProviderService.getConnectionNodeUrl();
+      voterState.setConnectionNodeUrl(connectionURL);
+      const web3: Web3 = await getWeb3(connectionURL);
       await checkLogin();
       nextStep();
-      await createAccount();
+      const account = await createAccount(web3);
       nextStep();
-      await fundWallet();
+      const ballot = await fundWallet(account);
       nextStep();
-      await connectToContract();
+      await connectToContract(web3, ballot);
     }
 
     setup().then(() => onSetupComplete());

@@ -1,0 +1,1 @@
+export { useVoterStore } from './store';

@@ -1,10 +1,8 @@
 /* eslint-disable no-undef */
 import axios from 'axios';
 
-import { config } from '../config';
-
-const IDENTITY_PROVIDER_URL =
-  process.env.NODE_ENV === 'development' ? config.identityProviderUrl.dev : config.identityProviderUrl.prod;
+const getIdentityProviderUrl = () =>
+  `http://${process.env.REACT_APP_IDENTITY_PROVIDER_IP}:${process.env.REACT_APP_IDENTITY_PROVIDER_PORT}`;
 
 export const getToken = async (username: string, password: string): Promise<string> => {
   const requestBody = {
@@ -13,9 +11,9 @@ export const getToken = async (username: string, password: string): Promise<stri
   };
 
   try {
-    const res = await axios.post(IDENTITY_PROVIDER_URL + '/getToken', requestBody);
+    const res = await axios.post(getIdentityProviderUrl() + '/getToken', requestBody);
     return res.data.token;
   } catch (error) {
-    throw new Error('Login unsuccessful');
+    throw new Error(`Login unsuccessful: ${error.response.data.msg}`);
   }
 };
