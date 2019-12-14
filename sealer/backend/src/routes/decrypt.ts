@@ -5,7 +5,7 @@ import { VotingState } from '../models/states'
 
 const router: express.Router = express.Router()
 
-router.post('/decrypt', async (req: express.Req, res: express.Res) => {
+router.post('/decrypt', async (req: express.Request, res: express.Response) => {
   try {
     // TODO: fetch state directly from contract instead of vote-auth backend
     const state: VotingState = await AuthBackend.fetchState()

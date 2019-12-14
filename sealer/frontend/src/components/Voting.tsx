@@ -41,12 +41,19 @@ export const Voting: React.FC = () => {
       case 3:
         return (
           <div>
-            <h1>DummyState</h1>
+            <h1>Voting STATE</h1>
             <Button onClick={nextStep}>MoveNext</Button>
           </div>
         );
       case 4:
         return <TallyVotes />;
+      case 5:
+        return (
+          <div>
+            <h1>Result State</h1>
+            <Button onClick={nextStep}>MoveNext</Button>
+          </div>
+        );
       default:
         reset();
     }
