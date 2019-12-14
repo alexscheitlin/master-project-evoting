@@ -2,7 +2,15 @@ import express from 'express'
 
 import * as Deploy from '../../solidity/scripts/deploy'
 import { parityConfig } from '../config'
-import { BALLOT_ADDRESS_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, NODES_TABLE, setValue, STATE_TABLE } from '../database/database'
+import {
+  BALLOT_ADDRESS_TABLE,
+  BALLOT_DEPLOYED_TABLE,
+  getValueFromDB,
+  NODES_TABLE,
+  setValue,
+  STATE_TABLE,
+  VOTING_QUESTION_TABLE,
+} from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { createAccount } from '../utils/rpc'
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
@@ -95,6 +103,7 @@ router.post('/deploy', async (req, res) => {
     .then(address => {
       setValue(BALLOT_ADDRESS_TABLE, address)
       setValue(BALLOT_DEPLOYED_TABLE, true)
+      setValue(VOTING_QUESTION_TABLE, voteQuestion)
 
       // initialize the parameters of the system
       BallotManager.setSystemParameters()
