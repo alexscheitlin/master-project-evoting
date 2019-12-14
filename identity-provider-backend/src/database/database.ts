@@ -5,8 +5,7 @@ import fs from 'fs'
 import FileSync from 'lowdb/adapters/FileSync'
 import { Identity } from '../models'
 
-// TODO: replace with correct type
-let db: any
+let db: low.LowdbSync<any>
 
 // database tables
 export const IDENTITIES_TABLE: string = 'identities'

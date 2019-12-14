@@ -3,8 +3,7 @@ import { AdapterSync } from 'lowdb'
 import low from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
 
-// TODO: replace with correct type
-let db: any
+let db: low.LowdbSync<any>
 
 // database tables
 export const DOES_ACCOUNT_EXIST: string = 'doesAccountExist'

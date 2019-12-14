@@ -7,8 +7,7 @@ export const BALLOT_ADDRESS_TABLE = 'ballotAddress'
 export const PRIVATE_KEY_SHARE_TABLE = 'privateKeyShare'
 export const PUBLIC_KEY_SHARES_TABLE = 'publicKeyShare'
 
-// TODO: replace with correct type
-let db: any
+let db: low.LowdbSync<any>
 
 export const setupDB = () => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
