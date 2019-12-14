@@ -1,8 +1,12 @@
-import { FFelGamal } from 'mp-crypto';
 import BN from 'bn.js';
+import { FFelGamal } from 'mp-crypto';
 import Web3 from 'web3';
 
-// HELPERS
+/**
+ * Create FFelGamal.SystemParameters from the returned numbers array from
+ * the ballot contract
+ * @param params array of BNs
+ */
 export const toSystemParams = (params: BN[]): FFelGamal.SystemParameters => {
   const systemParams: FFelGamal.SystemParameters = {
     p: new BN(params[0]),
@@ -12,6 +16,10 @@ export const toSystemParams = (params: BN[]): FFelGamal.SystemParameters => {
   return systemParams;
 };
 
+/**
+ * Utility function to properly encode numbers for solidity
+ * @param number BN number to convert
+ */
 const toHex = (number: BN) => Web3.utils.toHex(number);
 
 /**
@@ -43,6 +51,11 @@ const submitVote = async (
   }
 };
 
+/**
+ * Fetches the system parameters and the public key from the
+ * ballot contract
+ * @param contract the solidity contract object
+ */
 const getContractParameters = async (contract: any): Promise<[BN, FFelGamal.SystemParameters]> => {
   let systemParameters: FFelGamal.SystemParameters;
   let publicKey: BN;
@@ -64,6 +77,12 @@ const getContractParameters = async (contract: any): Promise<[BN, FFelGamal.Syst
   return [new BN(publicKey), systemParameters];
 };
 
+/**
+ * Creates a yes vote and proof and submits these to the ballot contract,
+ * where both are verified and stored.
+ * @param contract the solidity contract object
+ * @param wallet ETH public key
+ */
 export const castYesVote = async (contract: any, wallet: string): Promise<boolean> => {
   const [publicKey, systemParameters] = await getContractParameters(contract);
   const vote = FFelGamal.Voting.generateYesVote(systemParameters, publicKey);
@@ -77,6 +96,12 @@ export const castYesVote = async (contract: any, wallet: string): Promise<boolea
   }
 };
 
+/**
+ * Creates a no vote and proof and submits these to the ballot contract,
+ * where both are verified and stored.
+ * @param contract the solidity contract object
+ * @param wallet ETH public key
+ */
 export const castNoVote = async (contract: any, wallet: string): Promise<boolean> => {
   const [publicKey, systemParameters] = await getContractParameters(contract);
   // generate and submit noVote

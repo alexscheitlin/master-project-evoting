@@ -1,13 +1,6 @@
 import { Grid, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import React from 'react';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    padding: theme.spacing(1),
-    background: theme.palette.background.default,
-  },
-}));
-
 interface Props {
   contractAddress: string;
   walletAddress: string;
@@ -58,3 +51,10 @@ const ChainInfo: React.FC<Props> = ({ contractAddress, walletAddress, balance })
 };
 
 export default ChainInfo;
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    padding: theme.spacing(1),
+    background: theme.palette.background.default,
+  },
+}));

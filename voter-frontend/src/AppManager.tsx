@@ -10,6 +10,9 @@ const AppManager: React.FC = () => {
     setLoaded(true);
   };
 
+  // LoginPage displays the login form per default
+  // once the user submits her details, the LoginPage shows the LoadingPage
+  // once everything is laoded correctly, the VotingPage is displayed
   return <>{loaded ? <VotingPage /> : <LoginPage onLoadFinished={handleLoadFinished} />} </>;
 };
 
