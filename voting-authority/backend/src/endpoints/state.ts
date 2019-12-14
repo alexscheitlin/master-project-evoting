@@ -25,12 +25,18 @@ export enum VotingState {
 
 const router: express.Router = express.Router()
 
+// ----------------------------------------------------------------------------------------------------
+// GET /state
+// ----------------------------------------------------------------------------------------------------
 router.get('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   // report current state along with information about ...
   switch (currentState) {
+    // --------------------------------------------------
+    // REGISTER
+    // --------------------------------------------------
     // ... how many sealers are required and already registered
     case VotingState.REGISTER:
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
@@ -41,7 +47,11 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // --------------------------------------------------
+    // STARTUP
+    // --------------------------------------------------
     // ... how many sealers are required and already connected
+    // TODO return question ? "...." : ""
     case VotingState.STARTUP:
       let connectedAuthorities: number = 0
       let signedUpSealers: number = 0
@@ -64,6 +74,9 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // --------------------------------------------------
+    // CONFIG
+    // --------------------------------------------------
     // ... how many public key shares are required and already submitted
     case VotingState.CONFIG:
       let submittedKeyShares: number = 0
@@ -82,6 +95,9 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // --------------------------------------------------
+    // VOTING
+    // --------------------------------------------------
     // ... what the voting question is and ...
     // ... how many votes have been casted
     case VotingState.VOTING:
@@ -101,10 +117,28 @@ router.get('/state', async (req, res) => {
       })
       break
 
+    // --------------------------------------------------
+    // TALLY
+    // --------------------------------------------------
     // ... how many decrypted shares have been submitted
     case VotingState.TALLY:
+      let submittedDecryptedShares: number = 0
+      try {
+        submittedKeyShares = await BallotManager.getNumberOfDecryptedShares()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+
+      res.status(200).json({
+        state: currentState,
+        decryptedSharesSubmitted: submittedDecryptedShares,
+      })
       break
 
+    // --------------------------------------------------
+    // RESULT
+    // --------------------------------------------------
     // ... how many yes/no votes have been recorded
     case VotingState.RESULT:
       break
@@ -114,6 +148,9 @@ router.get('/state', async (req, res) => {
   }
 })
 
+// ----------------------------------------------------------------------------------------------------
+// POST /state
+// ----------------------------------------------------------------------------------------------------
 router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
@@ -121,6 +158,9 @@ router.post('/state', async (req, res) => {
   let isBallotOpen = false
 
   switch (currentState) {
+    // --------------------------------------------------
+    // REGISTER
+    // --------------------------------------------------
     case VotingState.REGISTER:
       // verify that all sealers are registered
       const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
@@ -134,6 +174,10 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.STARTUP)
       break
+
+    // --------------------------------------------------
+    // STARTUP
+    // --------------------------------------------------
     case VotingState.STARTUP:
       // verify that all sealers are connected
       let connectedAuthorities: number = 0
@@ -163,6 +207,10 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.CONFIG)
       break
+
+    // --------------------------------------------------
+    // CONFIG
+    // --------------------------------------------------
     case VotingState.CONFIG:
       // check that all public key shares are submitted
       const requiredKeyShares: number = requiredAuthorities
@@ -200,6 +248,10 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.VOTING)
       break
+
+    // --------------------------------------------------
+    // VOTING
+    // --------------------------------------------------
     case VotingState.VOTING:
       try {
         await BallotManager.closeBallot()
@@ -212,6 +264,9 @@ router.post('/state', async (req, res) => {
       setValue(STATE_TABLE, VotingState.TALLY)
       break
 
+    // --------------------------------------------------
+    // TALLY
+    // --------------------------------------------------
     case VotingState.TALLY:
       // TODO: check that enough decrypted shares are available
       // TODO: combine shares => result
