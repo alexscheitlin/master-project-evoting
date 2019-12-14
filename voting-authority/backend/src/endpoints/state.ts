@@ -141,6 +141,27 @@ router.get('/state', async (req, res) => {
     // --------------------------------------------------
     // ... how many yes/no votes have been recorded
     case VotingState.RESULT:
+      let totalVotes: number = 0
+      try {
+        totalVotes = await BallotManager.getNumberOfVotes()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+
+      let yesVotes: number = 0
+      try {
+        yesVotes = await BallotManager.getVoteResult()
+      } catch (error) {
+        res.status(500).json({ msg: error.message })
+        return
+      }
+
+      res.status(200).json({
+        state: currentState,
+        yesVotes: yesVotes,
+        noVotes: totalVotes - yesVotes,
+      })
       break
 
     default:
