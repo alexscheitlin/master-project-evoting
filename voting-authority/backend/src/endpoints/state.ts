@@ -63,7 +63,10 @@ router.get('/state', async (req, res) => {
         const nodes: string[] = getValueFromDB(NODES_TABLE)
         signedUpSealers = nodes.length
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
       res.status(200).json({
@@ -84,7 +87,10 @@ router.get('/state', async (req, res) => {
       try {
         submittedKeyShares = await BallotManager.getNrOfPublicKeyShares()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -113,7 +119,10 @@ router.get('/state', async (req, res) => {
       try {
         numberOfVotes = await BallotManager.getNumberOfVotes()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -134,7 +143,10 @@ router.get('/state', async (req, res) => {
       try {
         submittedKeyShares = await BallotManager.getNumberOfDecryptedShares()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -154,7 +166,10 @@ router.get('/state', async (req, res) => {
       try {
         totalVotes = await BallotManager.getNumberOfVotes()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -162,7 +177,10 @@ router.get('/state', async (req, res) => {
       try {
         yesVotes = await BallotManager.getVoteResult()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -184,8 +202,6 @@ router.get('/state', async (req, res) => {
 router.post('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(STATE_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
-
-  let isBallotOpen = false
 
   switch (currentState) {
     // --------------------------------------------------
@@ -214,7 +230,10 @@ router.post('/state', async (req, res) => {
       try {
         connectedAuthorities = await getNumberOfConnectedAuthorities()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -230,6 +249,7 @@ router.post('/state', async (req, res) => {
       const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
       if (!isDeployed) {
         res.status(400).json({
+          state: currentState,
           msg: `The ballot contract is not deployed yet. Please create a voting question and deploy all contracts!`,
         })
         return
@@ -248,7 +268,10 @@ router.post('/state', async (req, res) => {
       try {
         submittedKeyShares = await BallotManager.getNrOfPublicKeyShares()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
       if (submittedKeyShares !== requiredKeyShares) {
@@ -263,16 +286,22 @@ router.post('/state', async (req, res) => {
       try {
         await BallotManager.getPublicKey()
       } catch (error) {
-        res.status(400).json({ msg: error.message })
+        res.status(400).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
       // open voting via ballot contract
       try {
         await BallotManager.openBallot()
-        isBallotOpen = await BallotManager.isBallotOpen()
+        await BallotManager.isBallotOpen()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -285,9 +314,12 @@ router.post('/state', async (req, res) => {
     case VotingState.VOTING:
       try {
         await BallotManager.closeBallot()
-        isBallotOpen = await BallotManager.isBallotOpen()
+        await BallotManager.isBallotOpen()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -304,7 +336,10 @@ router.post('/state', async (req, res) => {
       try {
         submittedDecryptedShares = await BallotManager.getNumberOfDecryptedShares()
       } catch (error) {
-        res.status(500).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
       if (submittedDecryptedShares !== requiredDecryptedShares) {
@@ -319,7 +354,10 @@ router.post('/state', async (req, res) => {
       try {
         await BallotManager.combineDecryptedShares()
       } catch (error) {
-        res.status(400).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -327,7 +365,10 @@ router.post('/state', async (req, res) => {
       try {
         await BallotManager.getVoteResult()
       } catch (error) {
-        res.status(400).json({ msg: error.message })
+        res.status(500).json({
+          state: currentState,
+          msg: error.message,
+        })
         return
       }
 
@@ -340,7 +381,10 @@ router.post('/state', async (req, res) => {
   }
 
   const newState: string = getValueFromDB(STATE_TABLE)
-  res.status(201).json({ state: newState, msg: `Changed from '${currentState}' to '${newState}'`, isBallotOpen: `${isBallotOpen}` })
+  res.status(201).json({
+    state: newState,
+    msg: `Changed from '${currentState}' to '${newState}'`,
+  })
 })
 
 export default router

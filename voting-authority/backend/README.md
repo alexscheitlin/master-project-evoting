@@ -30,9 +30,239 @@ Run `npm run test` to run all test of the project or `npm run test:watch` to con
 
 **Important**: Contracts should be compiled inside `/contracts`. After that, copy `Ballot.json` and `ModuloMathLib.json` into `/toDeploy`.
 
-### Endpoint
+### Endpoints
 
-TODO
+```http
+GET /state
+```
+
+Responses depending on the state:
+
+**VotingState.REGISTER**:
+
+```javascript
+200: "ok"
+{
+    "state"             : "REGISTER",
+    "registeredSealers" : number,
+    "requiredSealers"   : number
+}
+```
+
+**VotingState.STARTUP**:
+
+```javascript
+200: "ok"
+{
+    "state"            : "STARTUP",
+    "connectedSealers" : number,
+    "signedUpSealers"  : number,
+    "requiredSealers"  : number,
+    "question"         : string
+}
+
+500: "number of connected sealers could not be fetched"
+{
+    "state" : "STARTUP",
+    "msg"   : string
+}
+```
+
+**VotingState.CONFIG**:
+
+```javascript
+200: "ok"
+{
+    "state"              : "CONFIG",
+    "submittedKeyShares" : number,
+    "requiredKeyShares"  : number,
+    "publicKey"          : number
+}
+
+500: "number of submitted public key shares could not be fetched"
+{
+    "state" : "CONFIG",
+    "msg"   : string
+}
+```
+
+**VotingState.VOTING**:
+
+```javascript
+200: "ok"
+{
+    "state"          : "VOTING",
+    "question"       : string,
+    "votesSubmitted" : number
+}
+
+500: "number of votes could not be fetched"
+{
+    "state" : "VOTING",
+    "msg"   : string
+}
+```
+
+**VotingState.TALLY**:
+
+```javascript
+200: "ok"
+{
+    "state"                    : "TALLY",
+    "submittedDecryptedShares" : number,
+    "requiredDecryptedShares"  : number
+}
+
+500: "number of decrypted shares could not be fetched"
+{
+    "state" : "TALLY",
+    "msg"   : string
+}
+```
+
+**VotingState.RESULT**:
+
+```javascript
+200: "ok"
+{
+    "state"    : "RESULT",
+    "yesVotes" : number,
+    "noVotes"  : number
+}
+
+500: "number of votes could not be fetched"
+500: "number of yes votes could not be fetched"
+{
+    "state" : "RESULT",
+    "msg"   : string
+}
+```
+
+```http
+POST /state
+```
+
+Responses and actions depending on the state:
+
+**VotingState.REGISTER**:
+
+```javascript
+201: "created"
+{
+    "state" : "STARTUP",
+    "msg"   : string
+}
+
+400: "not enough sealer wallets registered"
+{
+    "state" : "REGISTER",
+    "msg"   : string
+}
+```
+
+=> change to `STARTUP` state
+
+**VotingState.STARTUP**:
+
+```javascript
+201: "created"
+{
+    "state" : "CONFIG",
+    "msg"   : string
+}
+
+400: "not enough sealers connected"
+400: "ballot contract not deployed"
+{
+    "state" : "STARTUP",
+    "msg"   : string
+}
+
+500: "number of connected sealers could not be fetched"
+{
+    "state" : "STARTUP",
+    "msg"   : string
+}
+```
+
+=> change to `CONFIG` state
+
+**VotingState.CONFIG**:
+
+```javascript
+201: "created"
+{
+    "state" : "VOTING",
+    "msg"   : string
+}
+
+400: "not enough public key shares submitted"
+400: "public key not generated"
+{
+    "state" : "CONFIG",
+    "msg"   : string
+}
+
+500: "number of public key shares could not be fetched"
+500: "ballot could not be opened"
+{
+    "state" : "CONFIG",
+    "msg"   : string
+}
+```
+
+=> open ballot contract
+
+=> change to `VOTING` state
+
+**VotingState.VOTING**:
+
+```javascript
+201: "created"
+{
+    "state" : "TALLY",
+    "msg"   : string
+}
+
+500: "ballot could not be closed"
+{
+    "state" : "VOTING",
+    "msg"   : string
+}
+```
+
+=> close ballot contract
+
+=> change to `TALLY` state
+
+**VotingState.TALLY**:
+
+```javascript
+201: "created"
+{
+    "state" : "RESULT",
+    "msg"   : string
+}
+
+400: "not enough decrypted shares submitted"
+{
+    "state" : "TALLY",
+    "msg"   : string
+}
+
+500: "number of decrypted could not be fetched"
+500: "decrypted shares could not be combined"
+500: "voting result not available"
+{
+    "state" : "TALLY",
+    "msg"   : string
+}
+```
+
+=> combine decrypted shares
+
+=> change to `RESULT` state
+
 
 ### Contracts
 
