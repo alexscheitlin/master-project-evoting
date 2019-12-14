@@ -121,6 +121,16 @@ export const getNrOfPublicKeyShares = async (): Promise<number> => {
   }
 }
 
+export const getNumberOfDecryptedShares = async (): Promise<number> => {
+  const contract = getContract()
+  const authAcc = await unlockAuthAccount()
+  try {
+    return await contract.methods.getNrOfDecryptedShares().call({ from: authAcc })
+  } catch (error) {
+    throw new Error('The number of decrypted shares could not be assessed.')
+  }
+}
+
 /**
  * Combines the decrypted shares that were previously submitted by each authority.
  * Together they will generate the final decrypted result of the ballot.
