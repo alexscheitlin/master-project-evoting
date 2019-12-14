@@ -38,7 +38,8 @@
     "styled-components": "^4.4.1",
     "typescript": "3.7.2",
     "web3": "^1.2.2",
-    "web3-typescript-typings": "^0.10.2"
+    "web3-typescript-typings": "^0.10.2",
+    "zustand": "^2.2.1"
   },
   "scripts": {
     "start:localhost": "./dev.sh",

@@ -6,43 +6,6 @@ import React, { useState } from 'react';
 
 import { SubmissionState, VotingOption } from '../../models/voting';
 import { delay } from '../../util/helper';
-import { useVote } from '../../hooks/useVote';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    margin: theme.spacing(4, 0),
-    padding: theme.spacing(4, 2),
-    textAlign: 'center',
-  },
-  button: {
-    padding: theme.spacing(5, 8),
-    height: '100%',
-  },
-  selected: {
-    '&$selected': {
-      backgroundColor: theme.palette.primary.main,
-      color: 'white',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-      },
-    },
-  },
-  buttons: {
-    margin: theme.spacing(2, 0),
-  },
-  message: {
-    height: '30px',
-  },
-  proof: {
-    margin: theme.spacing(2, 0),
-  },
-  proofPaper: {
-    padding: theme.spacing(2, 4),
-  },
-  proofButton: {
-    float: 'right',
-  },
-}));
 
 interface Props {
   votingQuestion: string;
@@ -53,7 +16,6 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
   const [submissionState, setSubmissionState] = useState(SubmissionState.NOT_CONFIRMED);
   const [message, setMessage] = useState('Please submit a vote below');
   const [loading, setLoading] = useState(false);
-  const ctx = useVote();
 
   const handleToggle = (event: React.MouseEvent<HTMLElement>, newValue: string): void => {
     if (newValue === VotingOption.YES) {
@@ -68,9 +30,7 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
     setSubmissionState(SubmissionState.IN_SUBMISSION);
     setLoading(true);
     await delay(2000);
-    if (ctx !== null) {
-      await ctx.castVote(selectedVote);
-    }
+    console.log('cast vote here....');
     setLoading(false);
     setMessage('Your Vote was submitted successfully');
     setSubmissionState(SubmissionState.CONFIRMED);
@@ -124,12 +84,11 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
       {submissionState === SubmissionState.CONFIRMED ? (
         <div className={classes.proof}>
           <Typography variant="h4">Proof of your vote</Typography>
-          <Paper className={classes.proofPaper}>
-            {ctx && ctx.proof}
+          <div>
             <Button className={classes.proofButton} variant="contained" color="primary">
               verify
             </Button>
-          </Paper>
+          </div>
         </div>
       ) : null}
     </div>
@@ -137,3 +96,37 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
 };
 
 export default VotingPanel;
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    margin: theme.spacing(4, 0),
+    padding: theme.spacing(4, 2),
+    textAlign: 'center',
+  },
+  button: {
+    padding: theme.spacing(5, 8),
+    height: '100%',
+  },
+  selected: {
+    '&$selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: 'white',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+      },
+    },
+  },
+  buttons: {
+    margin: theme.spacing(2, 0),
+  },
+  message: {
+    height: '30px',
+  },
+  proof: {
+    margin: theme.spacing(2, 0),
+  },
+  proofPaper: {
+    padding: theme.spacing(2, 4),
+  },
+  proofButton: {},
+}));
