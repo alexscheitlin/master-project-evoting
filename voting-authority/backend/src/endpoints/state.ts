@@ -30,6 +30,7 @@ const router: express.Router = express.Router()
 // ----------------------------------------------------------------------------------------------------
 router.get('/state', async (req, res) => {
   const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  const votingQuestion: string = getValueFromDB(VOTING_QUESTION_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   // report current state along with information about ...
@@ -51,7 +52,6 @@ router.get('/state', async (req, res) => {
     // STARTUP
     // --------------------------------------------------
     // ... how many sealers are required and already connected
-    // TODO return question ? "...." : ""
     case VotingState.STARTUP:
       let connectedAuthorities: number = 0
       let signedUpSealers: number = 0
@@ -71,6 +71,7 @@ router.get('/state', async (req, res) => {
         connectedSealers: connectedAuthorities,
         signedUpSealers: signedUpSealers,
         requiredSealers: requiredAuthorities,
+        question: votingQuestion,
       })
       break
 
@@ -101,7 +102,6 @@ router.get('/state', async (req, res) => {
     // ... what the voting question is and ...
     // ... how many votes have been casted
     case VotingState.VOTING:
-      const votingQuestion: string = getValueFromDB(VOTING_QUESTION_TABLE)
       let numberOfVotes: number = 0
       try {
         await BallotManager.getNumberOfVotes()
