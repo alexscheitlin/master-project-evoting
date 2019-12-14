@@ -1,60 +1,62 @@
 import { Button, makeStyles, Theme } from '@material-ui/core';
-import axios, { AxiosResponse } from 'axios';
-import https from 'https';
-import React from 'react';
-import { DEV_URL } from '../../../constants';
-import { useVoteStateStore, useVoteQuestionStore } from '../../../models/voting';
+import React, { useState, useEffect } from 'react';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { useVoteStateStore, useVoteQuestionStore, VotingState } from '../../../models/voting';
 
-interface Props {
+interface VotingProps {
   handleNext: () => void;
 }
 
-export const Vote: React.FC<Props> = ({ handleNext }) => {
+export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
   const classes = useStyles();
-  const { state, nextState } = useVoteStateStore();
-  const { question } = useVoteQuestionStore();
 
-  const openVote = async () => {
-    // avoids ssl error with certificate
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
+  const { nextState } = useVoteStateStore();
+  const { question, setQuestion } = useVoteQuestionStore();
 
+  const [votesSubmitted, setVotesSubmitted] = useState<number>(0);
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  const nextStep = async () => {
     try {
-      const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent });
-
-      if (response.status === 201) {
-        const res = response.data;
-        console.log(res);
-
-        // trigger a global voteState update if request was successful
-        nextState();
-        handleNext();
-      } else {
-        console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`);
-        throw new Error(`Status Code not 201. Instead: ${response.status}`);
-      }
+      await nextState();
+      handleNext();
     } catch (error) {
-      console.error(error);
+      setErrorMessage(error.msg);
+      setHasError(true);
     }
   };
 
   return (
     <div className={classes.container}>
-      <p>{state}</p>
-      <p>{question}</p>
+      <div>
+        <h1>{`Voting Phase - Question: ${question}`}</h1>
+        <h4>{`The voting is currently in progress!`}</h4>
+        <h4>{`Votes submitted: ${votesSubmitted}`}</h4>
+      </div>
       <div className={classes.actionsContainer}>
-        <Button variant="contained" color="primary" onClick={openVote} className={classes.button}>
-          Open Vote
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={nextStep}
+          className={classes.button}
+          disabled={votesSubmitted === 0}
+        >
+          Close Vote
         </Button>
       </div>
+      {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
-    padding: '1em'
+    padding: '1em',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   button: {
     marginTop: theme.spacing(1),
