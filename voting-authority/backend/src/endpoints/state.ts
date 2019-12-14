@@ -88,11 +88,18 @@ router.get('/state', async (req, res) => {
         return
       }
 
+      // get public key
+      let publicKey: BN
+      try {
+        publicKey = await BallotManager.getPublicKey()
+      } catch (error) {}
+
       const requiredKeyShares: number = requiredAuthorities
       res.status(200).json({
         state: currentState,
         submittedKeyShares: submittedKeyShares,
         requiredKeyShares: requiredKeyShares,
+        publicKey: publicKey ? publicKey : -1,
       })
       break
 
