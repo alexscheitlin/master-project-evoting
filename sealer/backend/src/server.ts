@@ -20,8 +20,8 @@ server.use(logger)
 server.use(
   cors({
     origin: [
-      `http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`, 
-      `http://localhost:${process.env.SEALER_FRONTEND_PORT}`
+      `http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`,
+      `http://localhost:${process.env.SEALER_FRONTEND_PORT}`,
     ],
   })
 )
