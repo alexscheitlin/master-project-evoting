@@ -1,13 +1,13 @@
-import { Button, CircularProgress, makeStyles, Theme, Typography, Paper } from '@material-ui/core';
+import { Button, CircularProgress, makeStyles, Theme, Typography } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import React, { useState } from 'react';
 
 import { SubmissionState, VotingOption } from '../../models/voting';
-import { delay } from '../../util/helper';
 import { BallotService } from '../../services';
 import { useVoterStore } from '../../store';
+import { delay } from '../../util/helper';
 
 interface Props {
   votingQuestion: string;
@@ -106,16 +106,6 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
           submit
         </Button>
       </div>
-      {submissionState === SubmissionState.CONFIRMED ? (
-        <div className={classes.proof}>
-          <Typography variant="h4">Proof of your vote</Typography>
-          <div>
-            <Button className={classes.proofButton} variant="contained" color="primary">
-              verify
-            </Button>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 };

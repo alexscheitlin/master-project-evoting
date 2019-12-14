@@ -4,6 +4,12 @@ import axios from 'axios';
 const getAccessProviderUrl = () =>
   `http://${process.env.REACT_APP_ACCESS_PROVIDER_IP}:${process.env.REACT_APP_ACCESS_PROVIDER_PORT}`;
 
+/**
+ * Sends an ETH address and a token to the access provider, which will send Ether to the
+ * specified wallet
+ * @param token the token received from the access provider backend
+ * @param wallet the ETH address of the voter that will be funded
+ */
 export const fundWallet = async (token: string, wallet: string): Promise<string> => {
   const requestBody = {
     token: token,
@@ -20,6 +26,9 @@ export const fundWallet = async (token: string, wallet: string): Promise<string>
   }
 };
 
+/**
+ * Get the url at which the blockchain can be reached
+ */
 export const getConnectionNodeUrl = async () => {
   try {
     const res = await axios.get(getAccessProviderUrl() + '/getNodeURL');

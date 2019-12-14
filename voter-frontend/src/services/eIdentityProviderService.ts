@@ -4,6 +4,12 @@ import axios from 'axios';
 const getIdentityProviderUrl = () =>
   `http://${process.env.REACT_APP_IDENTITY_PROVIDER_IP}:${process.env.REACT_APP_IDENTITY_PROVIDER_PORT}`;
 
+/**
+ * Login function, will send username and password to the access provider backend
+ * to get a token. This token is used later for getting a ETH wallet funded
+ * @param username
+ * @param password
+ */
 export const getToken = async (username: string, password: string): Promise<string> => {
   const requestBody = {
     username: username,

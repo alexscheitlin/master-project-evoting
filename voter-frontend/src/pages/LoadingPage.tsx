@@ -15,19 +15,12 @@ import { useVoterStore } from '../store';
 import getWeb3 from '../util/getWeb3';
 import { delay } from '../util/helper';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      marginTop: theme.spacing(16),
-    },
-  }),
-);
-
+// The 4 things that are checked inside this component
 function getSteps(): string[] {
   return ['Checking your Login', 'Creating Voter Account', 'Setting up Wallet', 'Connect to Blockchain'];
 }
 
+// The descriptions for each step of this component
 function getStepContent(step: number): string {
   switch (step) {
     case 0:
@@ -53,13 +46,15 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   const steps = getSteps();
   const voterState = useVoterStore();
 
+  const LOADING_DELAY = 1000;
+
   const checkLogin = async (): Promise<any> => {
-    await delay(2000);
+    await delay(LOADING_DELAY);
     return true;
   };
 
   const createAccount = async (web3: Web3): Promise<string> => {
-    await delay(2000);
+    await delay(LOADING_DELAY);
     try {
       const account = await web3.eth.personal.newAccount('securePassword');
       //@ts-ignore
@@ -73,7 +68,7 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   };
 
   const fundWallet = async (account: string): Promise<string> => {
-    await delay(2000);
+    await delay(LOADING_DELAY);
     try {
       const ballotAddress = await AccessProviderService.fundWallet(voterState.token, account);
       voterState.setBallotContractAddress(ballotAddress);
@@ -85,7 +80,7 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   };
 
   const connectToContract = async (web3: Web3, ballot: string): Promise<any> => {
-    await delay(2000);
+    await delay(LOADING_DELAY);
     try {
       //@ts-ignore
       const contract = new web3.eth.Contract(BallotContract.abi, ballot);
@@ -101,6 +96,12 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
   };
 
   useEffect(() => {
+    // ------------------------------
+    // Setup function
+    // ------------------------------
+    // go through every step of the loading process
+    // - create account
+    // -
     async function setup(): Promise<any> {
       const connectionURL = await AccessProviderService.getConnectionNodeUrl();
       voterState.setConnectionNodeUrl(connectionURL);
@@ -140,3 +141,12 @@ export const LoadingPage: React.FC<Props> = ({ onSetupComplete }) => {
 };
 
 export default LoadingPage;
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+      marginTop: theme.spacing(16),
+    },
+  }),
+);
