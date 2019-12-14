@@ -3,6 +3,7 @@ import { Theme, createStyles, makeStyles, Button, Box, Typography } from '@mater
 import { SealerBackend } from '../../services';
 import { LoadSuccess } from '../shared/LoadSuccess';
 import { StepTitle } from '../shared/StepTitle';
+import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 
 interface Props {
   nextStep: () => void;
@@ -10,6 +11,9 @@ interface Props {
 
 export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const [keysSubmitted, setKeysSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -22,6 +26,8 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
       setLoading(false);
       setKeysSubmitted(true);
     } catch (error) {
+      setHasError(true);
+      setErrorMessage(error.msg);
       console.log(error);
     }
   };
@@ -50,6 +56,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
           </Button>
         </div>
       </Box>
+      {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>
   );
 };
