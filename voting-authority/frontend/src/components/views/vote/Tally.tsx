@@ -37,6 +37,9 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
     }
   };
 
+  // fetch state initially before polling
+  getState();
+
   useInterval(() => {
     getState();
   }, 4000);
@@ -75,7 +78,6 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
           Generate Summary
         </Button>
       </div>
-
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>
   );

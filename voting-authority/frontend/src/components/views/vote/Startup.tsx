@@ -52,10 +52,11 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         setConnectedSealers(response.data.connectedSealers);
 
         // check if the voteQuestion has been deployed i.e. exists on the backend
-        if (response.data.question !== '') {
-          setQuestion(response.data.question);
-          setVoteQuestionDeployed(true);
-        }
+        // TODO: check why this fails sometimes
+        // if (typeof response.data.question !== undefined && response.data.question !== '') {
+        //   setQuestion(response.data.question);
+        //   setVoteQuestionDeployed(true);
+        // }
       } else {
         throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
       }
@@ -96,11 +97,13 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       connectedSealers === requiredSealers &&
       question.length > 5
     );
+    // TODO: check why question.length fails sometimes
     setCanVoteBeDeployed(canVoteBeDeployed);
   }, [signedUpSealers, requiredSealers, connectedSealers, question]);
 
   const nextStep = async () => {
     try {
+      // TODO: Set loading animation
       await nextState();
       handleNext();
     } catch (error) {
@@ -116,7 +119,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     () => {
       checkNumberOfAuthoritiesOnline();
     },
-    connectedSealers !== requiredSealers || signedUpSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 0
+    connectedSealers !== requiredSealers || signedUpSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 10000000
   );
 
   return (

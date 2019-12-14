@@ -40,6 +40,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
   const generatePublicKey = async () => {
     try {
+      // TODO: add loading animation
       const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {});
 
       if (response.status === 201) {
