@@ -64,7 +64,7 @@ router.post('/publickey', async (req, res) => {
         return
       }
 
-      res.status(200).json({ msg: SUCCESSFUL, publicKey: publicKey })
+      res.status(201).json({ msg: SUCCESSFUL, publicKey: publicKey })
       return
     case VotingState.VOTING:
       res.status(400).json({ msg: TOO_LATE_MSG })
