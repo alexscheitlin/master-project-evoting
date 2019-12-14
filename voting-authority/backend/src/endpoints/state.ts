@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { parityConfig } from '../config'
-import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, NODES_TABLE, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
+import { AUTHORITIES_TABLE, BALLOT_DEPLOYED_TABLE, getValueFromDB, NODES_TABLE, setValue, STATE_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 
@@ -11,6 +11,7 @@ export enum VotingState {
   CONFIG = 'CONFIG',
   VOTING = 'VOTING',
   TALLY = 'TALLY',
+  RESULT = 'RESULT',
 }
 
 const router: express.Router = express.Router()
@@ -70,6 +71,18 @@ router.get('/state', async (req, res) => {
         submittedKeyShares: submittedKeyShares,
         requiredKeyShares: requiredKeyShares,
       })
+      break
+
+    // ... how many votes have been casted
+    case VotingState.VOTING:
+      break
+
+    // ... how many decrypted shares have been submitted
+    case VotingState.TALLY:
+      break
+
+    // ... how many yes/no votes have been recorded
+    case VotingState.RESULT:
       break
 
     default:
@@ -149,6 +162,11 @@ router.post('/state', async (req, res) => {
       }
 
       setValue(STATE_TABLE, VotingState.TALLY)
+      break
+
+    case VotingState.TALLY:
+      // TODO: check that enough decrypted shares are available
+      // TODO: combine shares => result
       break
 
     default:
