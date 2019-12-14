@@ -2,7 +2,6 @@ import { Button, makeStyles, Theme, Paper, TextField, CircularProgress } from '@
 import React, { useState, useEffect } from 'react';
 import { useVoteStateStore, VotingState, useVoteQuestionStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
-import https from 'https';
 import axios, { AxiosResponse } from 'axios';
 import { DEV_URL } from '../../../constants';
 import { useInterval } from '../helper/UseInterval';
@@ -17,6 +16,7 @@ interface StartupStateResponse {
   connectedSealers: number;
   signedUpSealers: number;
   requiredSealers: number;
+  question: string;
 }
 
 interface VoteDeployResponse {
@@ -46,11 +46,17 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const checkNumberOfAuthoritiesOnline = async () => {
     try {
       const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`);
-      console.log(response);
 
       if (response.status === 200) {
         setSignedUpSealers(response.data.signedUpSealers);
         setConnectedSealers(response.data.connectedSealers);
+
+        // check if the voteQuestion has been deployed i.e. exists on the backend
+        // TODO: check why this fails sometimes
+        // if (typeof response.data.question !== undefined && response.data.question !== '') {
+        //   setQuestion(response.data.question);
+        //   setVoteQuestionDeployed(true);
+        // }
       } else {
         throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
       }
@@ -65,32 +71,22 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   };
 
   const createVote = async () => {
-    // avoids ssl error with certificate
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
-
     try {
       setLoading(true);
-
-      const response: AxiosResponse<VoteDeployResponse> = await axios.post(
-        `${DEV_URL}/deploy`,
-        { question: question },
-        { httpsAgent: agent }
-      );
-
-      setLoading(false);
+      const response: AxiosResponse<VoteDeployResponse> = await axios.post(`${DEV_URL}/deploy`, { question: question });
 
       if (response.status === 201) {
         setAddress(response.data.address);
         setVoteQuestionDeployed(true);
+        setLoading(false);
       } else {
         throw new Error(`Unable to deploy vote! Status: ${response.status}\nMessage: ${JSON.stringify(response)}`);
       }
     } catch (error) {
       // show error or popup
+      setLoading(false);
       setHasError(true);
-      setErrorMessage(error.message);
+      setErrorMessage(error.msg);
       console.error(error);
     }
   };
@@ -101,11 +97,13 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       connectedSealers === requiredSealers &&
       question.length > 5
     );
+    // TODO: check why question.length fails sometimes
     setCanVoteBeDeployed(canVoteBeDeployed);
   }, [signedUpSealers, requiredSealers, connectedSealers, question]);
 
   const nextStep = async () => {
     try {
+      // TODO: Set loading animation
       await nextState();
       handleNext();
     } catch (error) {
@@ -121,7 +119,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     () => {
       checkNumberOfAuthoritiesOnline();
     },
-    connectedSealers !== requiredSealers || signedUpSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 0
+    connectedSealers !== requiredSealers || signedUpSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 10000000
   );
 
   return (

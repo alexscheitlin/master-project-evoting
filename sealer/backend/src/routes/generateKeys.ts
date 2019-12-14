@@ -33,8 +33,8 @@ router.post('/generateKeys', async (req, res) => {
   const keyShare: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(systemParameters)
 
   // store private key share for later
-  setValue(PUBLIC_KEY_SHARES_TABLE, keyShare.h)
-  setValue(PRIVATE_KEY_SHARE_TABLE, keyShare.sk)
+  setValue(PUBLIC_KEY_SHARES_TABLE, JSON.stringify(keyShare.h.toJSON()))
+  setValue(PRIVATE_KEY_SHARE_TABLE, JSON.stringify(keyShare.sk.toJSON()))
 
   const uniqueID = Account.getWallet()
   const keyGenProof = FFelGamal.Proof.KeyGeneration.generate(systemParameters, keyShare, uniqueID)

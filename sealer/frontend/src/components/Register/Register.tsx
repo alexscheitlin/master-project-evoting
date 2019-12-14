@@ -1,29 +1,24 @@
-import {
-  Button,
-  createStyles,
-  makeStyles,
-  Theme,
-  Typography
-} from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 
-import { config } from "../../config";
-import { AuthBackend, SealerBackend } from "../../services";
-import { delay } from "../../utils/helper";
-import { LoadSuccess } from "../shared/LoadSuccess";
-import { StepTitle } from "../shared/StepTitle";
+import { config } from '../../config';
+import { AuthBackend, SealerBackend } from '../../services';
+import { delay } from '../../utils/helper';
+import { LoadSuccess } from '../shared/LoadSuccess';
+import { StepTitle } from '../shared/StepTitle';
 
 interface Props {
   nextStep: () => void;
 }
 
-export const Register: React.FC<Props> = ({ nextStep }) => {
+export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [wallet, setWallet] = useState("");
+  const [wallet, setWallet] = useState('');
 
   const [state, setState] = useState();
+
   // TODO replace dynamically with a backend call
   const [requiredSealers, setRequiredSealers] = useState<number>(3);
   const [sealers, setSealers] = useState<string[]>([]);
@@ -53,7 +48,7 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
   // Subscribe to newly registered sealers
   useEffect(() => {
     if (!listening) {
-      const events = new EventSource(config.authBackend.devUrl + "/registered");
+      const events = new EventSource(config.authBackend.devUrl + '/registered');
       events.onmessage = event => {
         const parsedData = JSON.parse(event.data);
         setSealers(sealers => sealers.concat(parsedData));
@@ -101,21 +96,10 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
         </Typography>
       </div>
       <div className={classes.wrapper}>
-        <Button
-          className={classes.button}
-          variant="contained"
-          disabled={loading}
-          onClick={register}
-        >
+        <Button className={classes.button} variant="contained" disabled={loading} onClick={register}>
           Submit
         </Button>
-        <Button
-          className={classes.button}
-          variant="contained"
-          disabled={!readyForNextStep}
-          onClick={nextStep}
-          color="primary"
-        >
+        <Button className={classes.button} variant="contained" disabled={!readyForNextStep} onClick={nextStep} color="primary">
           Next
         </Button>
       </div>
@@ -129,23 +113,23 @@ export const Register: React.FC<Props> = ({ nextStep }) => {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      position: "relative"
+      position: 'relative',
     },
     wrapper: {
-      display: "flex",
-      alignItems: "center"
+      display: 'flex',
+      alignItems: 'center',
     },
     button: {
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     statusButtonWrapper: {},
     sealerInfo: {
-      padding: theme.spacing(3, 0)
+      padding: theme.spacing(3, 0),
     },
     loader: {
-      position: "absolute",
+      position: 'absolute',
       bottom: 0,
-      right: 0
-    }
+      right: 0,
+    },
   })
 );

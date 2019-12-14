@@ -10,6 +10,7 @@ This project also offers a **ganache-cli** dev chain. `npm run ganache:dev` will
 
 ```bash
 cd crypto
+npm i
 npm run build
 npm link
 cd ../contracts

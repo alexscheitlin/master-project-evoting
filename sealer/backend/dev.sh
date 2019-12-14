@@ -95,6 +95,8 @@ echo "# > cd $dir                                                               
 echo "# > npm link mp-crypto                                                     "
 echo "##########################################################################"
 cd $parentParentDir/crypto
+npm i 
+npm run build
 sudo npm link
 cd $dir
 npm link mp-crypto

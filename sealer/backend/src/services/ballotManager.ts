@@ -154,3 +154,72 @@ export const toSystemParams = (params: BN[]): FFelGamal.SystemParameters => {
   }
   return systemParams
 }
+
+export const getAllVotes = async (): Promise<FFelGamal.Cipher[]> => {
+  const votes: FFelGamal.Cipher[] = []
+  const voteCount = await getNumberOfVotes()
+
+  for (let i = 0; i < voteCount; i++) {
+    const vote = await getVote(i)
+    const c: FFelGamal.Cipher = { a: vote[0], b: vote[1] }
+    votes.push(c)
+  }
+  return votes
+}
+
+// TODO: move all local crypto operations out of the BallotManager and into a different service
+export const homomorphicallyAddVotes = (votes: FFelGamal.Cipher[], systemParameters: FFelGamal.SystemParameters): FFelGamal.Cipher => {
+  // homomorphically add votes
+  return FFelGamal.Voting.addVotes(votes, systemParameters)
+}
+
+// TODO: move all local crypto operations out of the BallotManager and into a different service
+export const decryptShare = (sumCipher: FFelGamal.Cipher, systemParameters: FFelGamal.SystemParameters, privateKeyShare: BN): BN => {
+  // create decrypted share
+  return FFelGamal.Encryption.decryptShare(systemParameters, sumCipher, privateKeyShare)
+}
+
+// TODO: move all local crypto operations out of the BallotManager and into a different service
+export const generateDecryptionProof = (
+  sumCipher: FFelGamal.Cipher,
+  systemParameters: FFelGamal.SystemParameters,
+  privateKeyShare: BN
+): FFelGamal.Proof.DecryptionProof => {
+  const uniqueAddress: string = Account.getWallet()
+
+  // create proof for homomorphic sum
+  const decryptedShareProof: FFelGamal.Proof.DecryptionProof = FFelGamal.Proof.Decryption.generate(
+    sumCipher,
+    systemParameters,
+    privateKeyShare,
+    uniqueAddress
+  )
+  return decryptedShareProof
+}
+
+export const submitDecryptedShare = async (
+  sumCipher: FFelGamal.Cipher,
+  decryptedShare: BN,
+  decryptedShareProof: FFelGamal.Proof.DecryptionProof
+) => {
+  const contract = getContract()
+  const authAcc = await getAuthAccount()
+
+  // submit decrypted share to the contract with a proof
+  try {
+    return await contract.methods
+      .submitDecryptedShare(
+        toHex(decryptedShare),
+        toHex(sumCipher.a),
+        toHex(sumCipher.b),
+        toHex(decryptedShareProof.a1),
+        toHex(decryptedShareProof.b1),
+        toHex(decryptedShareProof.d),
+        toHex(decryptedShareProof.f)
+      )
+      .call({ from: authAcc })
+  } catch (error) {
+    console.log(error)
+    throw new Error('The decrypted share + proof could not be submitted.')
+  }
+}

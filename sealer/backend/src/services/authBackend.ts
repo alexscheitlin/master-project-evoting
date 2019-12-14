@@ -1,5 +1,6 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import fs from 'fs'
+import { VotingState } from '../models/states'
 
 const authBackendUrl = () => `http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
 
@@ -62,15 +63,19 @@ export const getBallotAddress = async () => {
   return ballotAddress
 }
 
-export const fetchState = async (): Promise<string> => {
+interface StateResponse {
+  state: VotingState
+}
+
+export const fetchState = async (): Promise<VotingState> => {
   try {
-    const response = await axios.get(authBackendUrl() + '/state')
+    const response: AxiosResponse<StateResponse> = await axios.get(authBackendUrl() + '/state')
     if (response.status === 200) {
       return response.data.state
     } else {
-      throw new Error(`Unable to get state. ${response.status}`)
+      throw new Error(`Status: ${response.status}`)
     }
   } catch (error) {
-    throw new Error(`Unable to get state from authority backend. ${error.message}`)
+    throw new Error(`Unable to get state from authority backend. ${error.msg}`)
   }
 }

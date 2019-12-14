@@ -8,6 +8,7 @@ import generateKeys from './routes/generateKeys'
 import peer from './routes/peer'
 import register from './routes/register'
 import state from './routes/state'
+import decrypt from './routes/decrypt'
 import logger from './utils/logger'
 
 config()
@@ -20,8 +21,8 @@ server.use(logger)
 server.use(
   cors({
     origin: [
-      `http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`, 
-      `http://localhost:${process.env.SEALER_FRONTEND_PORT}`
+      `http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`,
+      `http://localhost:${process.env.SEALER_FRONTEND_PORT}`,
     ],
   })
 )
@@ -32,6 +33,7 @@ server.use('/', generateKeys)
 server.use('/', chainspec)
 server.use('/', peer)
 server.use('/', state)
+server.use('/', decrypt)
 
 // setup the database
 setupDB()
