@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 
 import { SubmissionState, VotingOption } from '../../models/voting';
 import { delay } from '../../util/helper';
+import { BallotService } from '../../services';
+import { useVoterStore } from '../../store';
 
 interface Props {
   votingQuestion: string;
@@ -16,6 +18,7 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
   const [submissionState, setSubmissionState] = useState(SubmissionState.NOT_CONFIRMED);
   const [message, setMessage] = useState('Please submit a vote below');
   const [loading, setLoading] = useState(false);
+  const voterState = useVoterStore();
 
   const handleToggle = (event: React.MouseEvent<HTMLElement>, newValue: string): void => {
     if (newValue === VotingOption.YES) {
@@ -29,11 +32,33 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
     setMessage('Submitting Vote');
     setSubmissionState(SubmissionState.IN_SUBMISSION);
     setLoading(true);
-    await delay(2000);
-    console.log('cast vote here....');
+    await delay(1000);
+    switch (selectedVote) {
+      case VotingOption.YES:
+        try {
+          await BallotService.castYesVote(voterState.contract, voterState.wallet);
+          setMessage('Your Vote was submitted successfully');
+          setSubmissionState(SubmissionState.CONFIRMED);
+        } catch (error) {
+          setMessage(`Could not submit your vote: ${error.message}`);
+          setSubmissionState(SubmissionState.NOT_CONFIRMED);
+        }
+        break;
+      case VotingOption.NO:
+        try {
+          await BallotService.castNoVote(voterState.contract, voterState.wallet);
+          setMessage('Your Vote was submitted successfully');
+          setSubmissionState(SubmissionState.CONFIRMED);
+        } catch (error) {
+          setMessage(`Could not submit your vote: ${error.message}`);
+          setSubmissionState(SubmissionState.NOT_CONFIRMED);
+        }
+        break;
+      default:
+        setMessage('Please choose YES or NO first');
+        setSubmissionState(SubmissionState.NOT_CONFIRMED);
+    }
     setLoading(false);
-    setMessage('Your Vote was submitted successfully');
-    setSubmissionState(SubmissionState.CONFIRMED);
   };
 
   const classes = useStyles();
