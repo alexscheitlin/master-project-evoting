@@ -52,7 +52,7 @@ echo NODE_ENV=$NODE_ENV >> $dir/.env
 # - make sure the network exists
 # - the script will create it if it does not
 ###########################################
-network_name=$(cat $globalConfig | jq .network.name)
+network_name=$(cat $globalConfig | jq .network.name | tr -d \")
 $parentDir/docker-network.sh $network_name
 
 ###########################################
