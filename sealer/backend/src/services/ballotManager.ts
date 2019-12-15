@@ -217,7 +217,7 @@ export const submitDecryptedShare = async (
         toHex(decryptedShareProof.d),
         toHex(decryptedShareProof.f)
       )
-      .call({ from: authAcc })
+      .send({ from: authAcc })
   } catch (error) {
     console.log(error)
     throw new Error('The decrypted share + proof could not be submitted.')

@@ -33,8 +33,8 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
         const sum = BallotManager.homomorphicallyAddVotes(votes, systemParams)
 
         // read private key share from DB and convert back to BN
-        const privateKeyShareString: string = JSON.parse(getValueFromDB(PRIVATE_KEY_SHARE_TABLE))
-        const privateKeyShare: BN = new BN(privateKeyShareString)
+        const privateKeyShareString: string = getValueFromDB(PRIVATE_KEY_SHARE_TABLE)
+        const privateKeyShare: BN = new BN(privateKeyShareString, 'hex')
 
         const decryptedShare = BallotManager.decryptShare(sum, systemParams, privateKeyShare)
 
