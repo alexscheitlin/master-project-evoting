@@ -44,8 +44,6 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
     getState();
   }, 4000);
 
-  const generateSummary = () => {};
-
   const nextStep = async () => {
     try {
       await nextState();
@@ -71,7 +69,7 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={generateSummary}
+          onClick={nextStep}
           className={classes.button}
           disabled={submittedDecryptedShares !== requiredDecryptedShares}
         >

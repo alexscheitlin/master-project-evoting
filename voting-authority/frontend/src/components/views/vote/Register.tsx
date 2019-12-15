@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { DEV_URL } from '../../../constants';
 import { useVoteStateStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { LoadSuccess } from '../helper/LoadSuccess';
 import { List } from '../helper/List';
 
 interface RegisterProps {
@@ -13,10 +14,13 @@ interface RegisterProps {
 export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext }: RegisterProps) => {
   const classes = useStyles();
 
-  const { state, nextState } = useVoteStateStore();
+  const { nextState } = useVoteStateStore();
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const [sealers, setSealers] = useState<string[]>([]);
   const [listening, setListening] = useState<boolean>(false);
@@ -43,7 +47,13 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
 
   const nextStep = async () => {
     try {
+      setLoading(true);
+
       await nextState();
+
+      setLoading(false);
+      setSuccess(true);
+
       handleNext();
     } catch (error) {
       setErrorMessage(error.message);
@@ -73,6 +83,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
         >
           Next Step
         </Button>
+        <LoadSuccess success={success} loading={loading} />
       </div>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </div>

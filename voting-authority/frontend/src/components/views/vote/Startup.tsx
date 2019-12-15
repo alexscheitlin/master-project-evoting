@@ -5,6 +5,7 @@ import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import axios, { AxiosResponse } from 'axios';
 import { DEV_URL } from '../../../constants';
 import { useInterval } from '../helper/UseInterval';
+import { LoadSuccess } from '../helper/LoadSuccess';
 
 interface StartupProps {
   requiredSealers: number;
@@ -34,7 +35,8 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
 
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const [connectedSealers, setConnectedSealers] = useState<number>(0);
   const [signedUpSealers, setSignedUpSealers] = useState<number>(0);
@@ -45,9 +47,13 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
 
   const checkNumberOfAuthoritiesOnline = async () => {
     try {
+      setLoading(true);
       const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`);
 
       if (response.status === 200) {
+        setLoading(false);
+        setSuccess(true);
+
         setSignedUpSealers(response.data.signedUpSealers);
         setConnectedSealers(response.data.connectedSealers);
 
@@ -61,8 +67,10 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
       }
     } catch (error) {
-      setErrorMessage(error.message);
+      setLoading(false);
+      setSuccess(false);
       setHasError(true);
+      setErrorMessage(error.message);
     }
   };
 
@@ -103,8 +111,13 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
 
   const nextStep = async () => {
     try {
-      // TODO: Set loading animation
+      setLoading(true);
+
       await nextState();
+
+      setLoading(false);
+      setSuccess(true);
+
       handleNext();
     } catch (error) {
       setErrorMessage(error.message);
@@ -133,12 +146,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
             ` You can deploy the vote question now!`}
         </h4>
         <Paper className={classes.questionContainer}>
-          {isLoading ? (
-            <div>
-              <h3>{`Your vote question is currently being deployed.`}</h3>
-              <CircularProgress />
-            </div>
-          ) : !voteQuestionDeployed ? (
+          {!voteQuestionDeployed ? (
             <div>
               <h3>Please enter a new question for the vote to be created?</h3>
               <TextField label="Vote Question" variant="outlined" required onChange={handleInputChange} />
@@ -152,6 +160,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
                 >
                   Create Votequestion
                 </Button>
+                <LoadSuccess success={success} loading={loading} />
               </div>
             </div>
           ) : (
@@ -170,6 +179,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
           <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
             Next Step
           </Button>
+          <LoadSuccess success={success} loading={loading} />
         </div>
       )}
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
