@@ -18,6 +18,8 @@ services:
     volumes:
       - ./backend/src:/usr/src/backend/src
       - ./backend/src/chainspec:/usr/src/backend/chainspec
+      - /usr/src/backend/database/
+      - ./backend/src/database/database.ts:/usr/src/database/database.ts
     networks:
       e-voting:
         ipv4_address: ${SEALER_BACKEND_IP}
