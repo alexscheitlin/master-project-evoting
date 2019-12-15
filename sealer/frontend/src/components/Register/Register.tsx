@@ -1,4 +1,6 @@
-import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import React, { useEffect, useState } from 'react';
 
 import { config } from '../../config';
@@ -85,28 +87,37 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   };
 
   return (
-    <div className={classes.root}>
-      <StepTitle title="Registration" />
-      <Typography>
-        <strong>Sealer Wallet: </strong> {wallet}
-      </Typography>
-      <div className={classes.sealerInfo}>
-        <Typography variant="body2">
-          {sealers.length} of {requiredSealers} Sealers registered
-        </Typography>
-      </div>
-      <div className={classes.wrapper}>
-        <Button className={classes.button} variant="contained" disabled={loading} onClick={register}>
-          Submit
-        </Button>
-        <Button className={classes.button} variant="contained" disabled={!readyForNextStep} onClick={nextStep} color="primary">
-          Next
-        </Button>
-      </div>
+    <Box className={classes.root}>
+      <StepTitle title="Address Registration" />
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <AccountBalanceWalletIcon color={'primary'} />
+          </ListItemIcon>
+          <ListItemText primary={wallet} secondary={'the public key of this sealer node'} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <SettingsEthernetIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${sealers.length} / ${requiredSealers} Sealers registered`} />
+        </ListItem>
+        <ListItem>
+          <ListItemText primary={`Click the button below to submit your wallet to the voting authority for registration.`} />
+        </ListItem>
+        <ListItem>
+          <Button className={classes.button} variant="contained" disabled={loading} onClick={register}>
+            Submit
+          </Button>
+          <Button className={classes.button} variant="contained" disabled={!readyForNextStep} onClick={nextStep} color="primary">
+            Next
+          </Button>
+        </ListItem>
+      </List>
       <div className={classes.loader}>
         <LoadSuccess loading={loading} success={success} />
       </div>
-    </div>
+    </Box>
   );
 };
 
@@ -123,9 +134,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
     },
     statusButtonWrapper: {},
-    sealerInfo: {
-      padding: theme.spacing(3, 0),
-    },
+
     loader: {
       position: 'absolute',
       bottom: 0,

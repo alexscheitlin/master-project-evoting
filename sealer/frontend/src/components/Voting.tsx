@@ -1,12 +1,13 @@
-import { Grid, makeStyles, Paper, Step, StepLabel, Stepper, Theme, Button } from '@material-ui/core';
+import { Box, Button, Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { VOTE_STATES, VOTE_LABELS } from '../models/states';
+
+import { VOTE_LABELS, VOTE_STATES } from '../models/states';
 import { AuthBackend } from '../services';
+import { Store } from '../store';
 import { KeyGeneration } from './KeyGeneration';
 import { Register } from './Register';
 import { StartNode } from './StartNode';
 import { TallyVotes } from './TallyVotes';
-import { Store } from '../store';
 
 export const Voting: React.FC = () => {
   const classes = useStyles();
@@ -61,8 +62,8 @@ export const Voting: React.FC = () => {
   };
 
   return (
-    <Grid container direction={'row'} className={classes.root}>
-      <Grid item xs={3}>
+    <Grid container className={classes.root}>
+      <Grid item xs={2}>
         <Stepper activeStep={activeStep} orientation="vertical">
           {VOTE_LABELS.map(label => (
             <Step key={label}>
@@ -71,8 +72,15 @@ export const Voting: React.FC = () => {
           ))}
         </Stepper>
       </Grid>
-      <Grid item className={classes.mainContainer}>
-        <Paper className={classes.contentWrapper}>{getStep(activeStep)}</Paper>
+      <Grid item>
+        <Divider orientation="vertical" />
+      </Grid>
+      <Grid item xs>
+        <Grid container>
+          <Grid item xs={8}>
+            <Box className={classes.contentWrapper}>{getStep(activeStep)}</Box>
+          </Grid>
+        </Grid>
       </Grid>
       {hasError && <h1>{`${errorMessage}`}</h1>}
     </Grid>
@@ -83,12 +91,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
   },
-  mainContainer: {
-    padding: theme.spacing(1),
-  },
   contentWrapper: {
-    width: 550,
-    margin: 'auto',
     padding: theme.spacing(3, 2),
   },
 }));
