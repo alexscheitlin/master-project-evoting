@@ -4,8 +4,10 @@ import LoginPage from './pages/LoginPage';
 import VotingPage from './pages/VotingPage';
 import { useVoterStore } from './store';
 import LoadingPage from './pages/LoadingPage';
+import { Grid, makeStyles } from '@material-ui/core';
 
 const AppManager: React.FC = () => {
+  const classes = useStyles();
   const state = useVoterStore();
 
   const setupDone = () => {
@@ -44,7 +46,17 @@ const AppManager: React.FC = () => {
   // LoginPage displays the login form per default
   // once the user submits her details, the LoginPage shows the LoadingPage
   // once everything is laoded correctly, the VotingPage is displayed
-  return <> {getPage()}</>;
+  return (
+    <Grid container alignItems="center" justify="center" className={classes.item}>
+      {getPage()}
+    </Grid>
+  );
 };
 
 export default AppManager;
+
+const useStyles = makeStyles({
+  item: {
+    flexGrow: 1,
+  },
+});

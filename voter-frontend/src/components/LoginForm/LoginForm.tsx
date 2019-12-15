@@ -23,8 +23,8 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <Paper className={classes.paper}>
-        <Typography component="h1" variant="h5">
-          Sign in
+        <Typography component="h1" variant="body2">
+          Please sign in with your Swiss E-Identity
         </Typography>
         <form className={classes.form} autoComplete="off">
           <TextField
@@ -59,7 +59,7 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
             onClick={(): void => onLogin(username, password)}
             disabled={loading}
           >
-            {!loading && <div>Login</div>}
+            {!loading && <div>submit</div>}
             {loading && <CircularProgress size={24} />}
           </Button>
         </form>
@@ -73,7 +73,6 @@ export default LoginForm;
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(16),
     padding: theme.spacing(2, 4),
     display: 'flex',
     flexDirection: 'column',

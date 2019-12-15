@@ -5,7 +5,9 @@ import React from 'react';
 const useStyles = makeStyles(() => ({
   divider: {
     margin: '1em auto',
-    paddingTop: '1em',
+  },
+  title: {
+    margin: '2em auto',
   },
 }));
 
@@ -18,13 +20,13 @@ const Question: React.FC<Props> = ({ votingQuestion }) => {
   return (
     <Grid container direction="column" justify="center">
       <Grid item>
-        <Box textAlign="center">
+        <Box textAlign="center" className={classes.title}>
           <Typography variant="h2">{votingQuestion}</Typography>
         </Box>
       </Grid>
       <Grid item>
         <Box textAlign="center" className={classes.divider}>
-          <Typography variant="h5">Abstimmung vom 2. Februar 2019</Typography>
+          <Typography variant="h5">Vote of February 16, 2020</Typography>
         </Box>
       </Grid>
     </Grid>

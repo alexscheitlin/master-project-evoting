@@ -37,10 +37,10 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
       case VotingOption.YES:
         try {
           await BallotService.castYesVote(voterState.contract, voterState.wallet);
-          setMessage('Your Vote was submitted successfully');
+          setMessage('Your Vote was submitted successfully.');
           setSubmissionState(SubmissionState.CONFIRMED);
         } catch (error) {
-          setMessage(`Could not submit your vote: ${error.message}`);
+          setMessage(`Unable to submit your vote.`);
           setSubmissionState(SubmissionState.NOT_CONFIRMED);
         }
         break;
@@ -50,7 +50,7 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
           setMessage('Your Vote was submitted successfully');
           setSubmissionState(SubmissionState.CONFIRMED);
         } catch (error) {
-          setMessage(`Could not submit your vote: ${error.message}`);
+          setMessage(`Unable to submit your vote.`);
           setSubmissionState(SubmissionState.NOT_CONFIRMED);
         }
         break;
@@ -121,6 +121,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     padding: theme.spacing(5, 8),
     height: '100%',
+    width: 200,
   },
   selected: {
     '&$selected': {

@@ -11,16 +11,9 @@ import { useVoterStore } from '../store';
 import getWeb3 from '../util/getWeb3';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  wrapper: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-  },
   paper: {
     position: 'relative',
-    padding: theme.spacing(2, 4, 0, 4),
-    display: 'flex',
-    flexDirection: 'column',
+    width: '80%',
   },
 }));
 
@@ -50,16 +43,13 @@ const VotingPage: React.FC = () => {
   }, []);
 
   return (
-    <Container maxWidth="md" className={classes.wrapper}>
-      <Paper>
-        <div className={classes.paper}>
-          <Question votingQuestion={votingQuestion} />
-          <VotingPanel votingQuestion={votingQuestion} />
-        </div>
+    <>
+      <Paper className={classes.paper}>
+        <Question votingQuestion={votingQuestion} />
+        <VotingPanel votingQuestion={votingQuestion} />
         <ChainInfo contractAddress={state.contractAddress} walletAddress={state.wallet} balance={balance} />
       </Paper>
-      <Button onClick={state.logout}>Logout</Button>
-    </Container>
+    </>
   );
 };
 
