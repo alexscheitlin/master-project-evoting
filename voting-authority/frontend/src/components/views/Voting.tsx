@@ -16,6 +16,7 @@ import { DEV_URL } from '../../constants';
 import { useActiveStepStore, useVoteStateStore, VOTE_LABELS, VOTE_STATES, VotingState } from '../../models/voting';
 import { ErrorSnackbar } from '../defaults/ErrorSnackbar';
 import { Config, Register, Startup, Tally, Vote } from './vote';
+import { Result } from './vote/Result';
 
 interface StateResponse {
   state: VotingState;
@@ -69,6 +70,8 @@ export const Voting: React.FC = () => {
         return <Vote handleNext={nextStep} />;
       case 4:
         return <Tally handleNext={nextStep} />;
+      case 5:
+        return <Result handleNext={nextStep} />;
       default:
         return (
           <div>

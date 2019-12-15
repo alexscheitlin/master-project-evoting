@@ -36,7 +36,7 @@ const submitVote = async (
   wallet: string,
 ) => {
   try {
-    await contract.methods
+    const res = await contract.methods
       .vote(
         [toHex(vote.a), toHex(vote.b)],
         [toHex(proof.a0), toHex(proof.a1)],
@@ -45,6 +45,10 @@ const submitVote = async (
         [toHex(proof.f0), toHex(proof.f1)],
       )
       .send({ from: wallet });
+
+    // TODO: check returnValues field on response -> event emitted from Ballot
+    // If user votes altough the vote is closed, the UI renders it as success
+    console.log(res);
     return true;
   } catch (error) {
     throw new Error(`Vote submission failed: ${error.message}`);

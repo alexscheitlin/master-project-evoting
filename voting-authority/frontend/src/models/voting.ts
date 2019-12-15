@@ -8,7 +8,8 @@ export enum VotingState {
   STARTUP = 'STARTUP',
   CONFIG = 'CONFIG',
   VOTING = 'VOTING',
-  TALLY = 'TALLY'
+  TALLY = 'TALLY',
+  RESULT = 'RESULT'
 }
 
 export const VOTE_STATES: string[] = [
@@ -16,7 +17,8 @@ export const VOTE_STATES: string[] = [
   VotingState.STARTUP,
   VotingState.CONFIG,
   VotingState.VOTING,
-  VotingState.TALLY
+  VotingState.TALLY,
+  VotingState.RESULT
 ];
 
 export enum VoteLabels {
@@ -24,7 +26,8 @@ export enum VoteLabels {
   STARTUP = 'STARTUP',
   CONFIG = 'CONFIG',
   VOTING = 'VOTING',
-  TALLY = 'TALLY'
+  TALLY = 'TALLY',
+  RESULT = 'RESULT'
 }
 
 export const VOTE_LABELS: string[] = [
@@ -32,7 +35,8 @@ export const VOTE_LABELS: string[] = [
   VoteLabels.STARTUP,
   VoteLabels.CONFIG,
   VoteLabels.VOTING,
-  VoteLabels.TALLY
+  VoteLabels.TALLY,
+  VoteLabels.RESULT
 ];
 
 export const [useVoteStateStore] = create((set, get) => ({
