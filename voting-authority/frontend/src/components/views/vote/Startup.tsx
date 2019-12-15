@@ -1,11 +1,11 @@
-import { Button, makeStyles, Theme, Paper, TextField, CircularProgress } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
-import { useVoteStateStore, VotingState, useVoteQuestionStore } from '../../../models/voting';
-import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { Button, makeStyles, Paper, TextField, Theme } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
+import React, { useState } from 'react';
 import { DEV_URL } from '../../../constants';
-import { useInterval } from '../helper/UseInterval';
+import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import { LoadSuccess } from '../helper/LoadSuccess';
+import { useInterval } from '../helper/UseInterval';
 
 interface StartupProps {
   requiredSealers: number;
@@ -41,19 +41,14 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [connectedSealers, setConnectedSealers] = useState<number>(0);
   const [signedUpSealers, setSignedUpSealers] = useState<number>(0);
 
-  const [canVoteBeDeployed, setCanVoteBeDeployed] = useState<boolean>(false);
   const [voteQuestionDeployed, setVoteQuestionDeployed] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
 
   const checkNumberOfAuthoritiesOnline = async () => {
     try {
-      setLoading(true);
       const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`);
 
       if (response.status === 200) {
-        setLoading(false);
-        setSuccess(true);
-
         setSignedUpSealers(response.data.signedUpSealers);
         setConnectedSealers(response.data.connectedSealers);
 
@@ -67,8 +62,6 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         throw new Error(`GET /state -> status code not 200. Status code is: ${response.status}`);
       }
     } catch (error) {
-      setLoading(false);
-      setSuccess(false);
       setHasError(true);
       setErrorMessage(error.message);
     }
@@ -99,34 +92,15 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   };
 
-  useEffect(() => {
-    const canVoteBeDeployed: boolean = !(
-      signedUpSealers === requiredSealers &&
-      connectedSealers === requiredSealers &&
-      question.length > 5
-    );
-    // TODO: check why question.length fails sometimes
-    setCanVoteBeDeployed(canVoteBeDeployed);
-  }, [signedUpSealers, requiredSealers, connectedSealers, question]);
-
   const nextStep = async () => {
     try {
-      setLoading(true);
-
       await nextState();
-
-      setLoading(false);
-      setSuccess(true);
-
       handleNext();
     } catch (error) {
       setErrorMessage(error.message);
       setHasError(true);
     }
   };
-
-  // call request initially once before starting to poll with useInterval
-  checkNumberOfAuthoritiesOnline();
 
   useInterval(
     () => {
@@ -156,7 +130,13 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
                   color="primary"
                   onClick={createVote}
                   className={classes.button}
-                  disabled={canVoteBeDeployed}
+                  disabled={
+                    !(
+                      signedUpSealers === requiredSealers &&
+                      connectedSealers === requiredSealers &&
+                      question.length > 5
+                    )
+                  }
                 >
                   Create Votequestion
                 </Button>

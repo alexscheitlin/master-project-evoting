@@ -1,9 +1,9 @@
 import { Button, makeStyles, Theme } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useVoteStateStore, VotingState } from '../../../models/voting';
+import { fetchState } from '../../../services/authBackend';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
 import { useInterval } from '../helper/UseInterval';
-import { fetchState } from '../../../services/authBackend';
 
 interface TallyProps {
   handleNext: () => void;
@@ -36,9 +36,6 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
       console.error(error);
     }
   };
-
-  // fetch state initially before polling
-  getState();
 
   useInterval(() => {
     getState();

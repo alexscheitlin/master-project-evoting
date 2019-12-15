@@ -11,12 +11,11 @@ import {
   Typography
 } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
-import https from 'https';
 import React, { useEffect, useState } from 'react';
 import { DEV_URL } from '../../constants';
-import { useActiveStepStore, useVoteStateStore, VOTE_LABELS, VotingState, VOTE_STATES } from '../../models/voting';
-import { Config, Register, Startup, Tally, Vote } from './vote';
+import { useActiveStepStore, useVoteStateStore, VOTE_LABELS, VOTE_STATES, VotingState } from '../../models/voting';
 import { ErrorSnackbar } from '../defaults/ErrorSnackbar';
+import { Config, Register, Startup, Tally, Vote } from './vote';
 
 interface StateResponse {
   state: VotingState;
@@ -38,12 +37,7 @@ export const Voting: React.FC = () => {
   useEffect(() => {
     const getRequiredValidators = async () => {
       try {
-        // avoids ssl error with certificate
-        const agent = new https.Agent({
-          rejectUnauthorized: false
-        });
-
-        const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`, { httpsAgent: agent });
+        const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`);
 
         if (response.status === 200) {
           setRequiredSealers(response.data.requiredSealers);
@@ -59,6 +53,8 @@ export const Voting: React.FC = () => {
     };
 
     getRequiredValidators();
+    // TODO: figure out why this only works with an empty dependency array added but not when it is removed
+    // => should be the same since we only want to run this hook once at the beginning of the component rendering
   }, []);
 
   const getStep = (step: number): any => {
