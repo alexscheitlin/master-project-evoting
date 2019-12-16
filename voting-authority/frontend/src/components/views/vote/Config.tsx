@@ -12,6 +12,9 @@ import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
 
+// simulates a delay like an asyc call would
+const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
+
 interface ConfigProps {
   handleNext: () => void;
 }
@@ -66,6 +69,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
       if (response.status === 201) {
         setPublicKey(response.data.publicKey);
         setPublicKeyGenerated(true);
+        await delay(500);
         setInKeyGeneration(false);
       } else {
         throw new Error(`GET /state. Status Code: ${response.status} -> not what was expected.`);
@@ -96,6 +100,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
   const nextStep = async () => {
     setInOpeningVote(true);
+    await delay(2000);
     try {
       await nextState();
       setInOpeningVote(false);
@@ -131,15 +136,23 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
           />
         </ListItem>
         <ListItem>
-          <ListItemIcon>
-            {!allKeySharesSubmitted ? (
+          {!allKeySharesSubmitted && (
+            <ListItemIcon>
               <LoadSuccess loading={!allKeySharesSubmitted} />
-            ) : !publicKeyGenerated ? (
+            </ListItemIcon>
+          )}
+          {allKeySharesSubmitted && !publicKeyGenerated && !inKeyGeneration && (
+            <ListItemIcon>
               <PriorityHighIcon color="action" />
-            ) : (
-              <LoadSuccess loading={inKeyGeneration} success={publicKeyGenerated} />
-            )}
-          </ListItemIcon>
+            </ListItemIcon>
+          )}
+
+          {publicKeyGenerated || inKeyGeneration ? (
+            <ListItemIcon>
+              <LoadSuccess loading={inKeyGeneration} success={publicKeyGenerated && !inKeyGeneration} />
+            </ListItemIcon>
+          ) : null}
+
           <ListItemText
             primary={
               !allKeySharesSubmitted
@@ -169,9 +182,9 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
             color="primary"
             onClick={nextStep}
             disabled={!publicKeyGenerated}
-            className={classes.button}
+            className={classes.voteButton}
           >
-            {!inOpeningVote ? `Open Vote` : <LoadSuccess loading={true} />}
+            {!inOpeningVote ? `Open Vote` : <LoadSuccess loading={true} white={true} />}
           </Button>
         </ListItem>
       </List>
@@ -194,6 +207,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1)
+  },
+  voteButton: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 160,
+    height: 36
   },
   actionsContainer: {
     marginBottom: theme.spacing(2)
