@@ -1,7 +1,8 @@
 import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { useInterval } from '../../hooks/useInterval';
 import { SealerBackend } from '../../services';
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 import { LoadSuccess } from '../shared/LoadSuccess';
@@ -14,6 +15,8 @@ interface Props {
 export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles();
 
+  const [ballotDeployed, setBallotDeployed] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
 
@@ -24,7 +27,6 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
     try {
       setLoading(true);
       await SealerBackend.generateKeys();
-
       setLoading(false);
       setKeysSubmitted(true);
     } catch (error) {
@@ -34,6 +36,21 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
     }
   };
 
+  const checkIfBallotDeployed = async () => {
+    try {
+      const isDeployed = await SealerBackend.isBallotDeployed();
+      setBallotDeployed(isDeployed);
+    } catch (error) {
+      throw new Error('could not determine if ballot is deployed already');
+    }
+  };
+
+  useEffect(() => {
+    checkIfBallotDeployed();
+  }, []);
+
+  useInterval(checkIfBallotDeployed, !ballotDeployed ? 4000 : 0);
+
   return (
     <Box className={classes.root}>
       <StepTitle title="Key generation" />
@@ -41,6 +58,18 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
         <ListItem>
           <ListItemText
             primary={`Take part in the distributed key generation for the e-Voting system. By clicking the button below a key pair will be generated. The public part will be submitted to the Ballot Smart Contract.`}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <LoadSuccess loading={!ballotDeployed} success={ballotDeployed} />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              !ballotDeployed
+                ? `Waiting for the Voting Authority to deploy the Smart Contract`
+                : `The Smart Contract was deployed. You can submit your key share now.`
+            }
           />
         </ListItem>
         <ListItem>
@@ -55,7 +84,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
             </ListItemIcon>
           ) : null}
 
-          <Button variant="outlined" onClick={generateKeys} disabled={keysSubmitted}>
+          <Button variant="outlined" onClick={generateKeys} disabled={keysSubmitted || !ballotDeployed}>
             Generate and submit keyshare
           </Button>
         </ListItem>

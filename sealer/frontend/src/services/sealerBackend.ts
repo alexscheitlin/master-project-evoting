@@ -2,13 +2,33 @@ import axios from 'axios';
 
 const sealerBackendUrl = () => `http://${process.env.REACT_APP_SEALER_BACKEND_IP}:${process.env.REACT_APP_SEALER_BACKEND_PORT}`;
 
+export const getState = async () => {
+  try {
+    const response = await axios.get(sealerBackendUrl() + '/state');
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Could not get state from sealer backend. ${error.message}`);
+  }
+};
+
+export const isBallotDeployed = async (): Promise<boolean> => {
+  try {
+    const response = await axios.get(sealerBackendUrl() + '/deploy');
+    return response.data.deployed;
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Could not check if ballot was deployed: ${error.message}`);
+  }
+};
+
 export const getWalletAddress = async (): Promise<string> => {
   try {
     const response = await axios.get(sealerBackendUrl() + '/register');
     return response.data.result;
   } catch (error) {
     console.log(error);
-    throw new Error(`Could not get wallet from sealer baclend. ${error.message}`);
+    throw new Error(`Could not get wallet from sealer backend. ${error.message}`);
   }
 };
 
@@ -26,7 +46,7 @@ export const loadConfiguration = async () => {
     await axios.get(sealerBackendUrl() + '/chainspec');
   } catch (error) {
     console.log(error);
-    throw new Error(`Could not connect to sealer backend to get new chain specification. ${error.message}`);
+    throw new Error(`Could not connect to sealer backend to get blockchain specification. ${error.message}`);
   }
 };
 
