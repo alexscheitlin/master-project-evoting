@@ -182,7 +182,9 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
           <ListItem>
             <TextField fullWidth label="Enter Vote Question" variant="outlined" required onChange={handleInputChange} />
             {loading ? (
-              <LoadSuccess success={success} loading={loading} />
+              <IconButton disabled={true}>
+                <LoadSuccess success={success} loading={loading} />
+              </IconButton>
             ) : (
               <IconButton onClick={createVote} disabled={!(readyForDeployment && question.length > 5)}>
                 <SendIcon color={!(readyForDeployment && question.length > 5) ? 'disabled' : 'primary'} />
