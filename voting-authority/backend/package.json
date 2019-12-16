@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "server.ts",
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
     "pre-commit": "lint-staged",
     "test": "nyc --reporter=text ts-mocha ./**/*.spec.ts",
     "test:watch": "ts-mocha ./**/*.spec.ts -w --watch-extensions ts ",
