@@ -1,4 +1,15 @@
-import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  createStyles,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Theme,
+  CircularProgress,
+} from '@material-ui/core';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import React, { useEffect, useState } from 'react';
@@ -103,20 +114,26 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
           <ListItemText primary={`${sealers.length} / ${requiredSealers} Sealers registered`} />
         </ListItem>
         <ListItem>
-          <ListItemText primary={`Click the button below to submit your wallet to the voting authority for registration.`} />
+          <ListItemText primary={`Click the button below to submit your public key to the voting authority for registration.`} />
         </ListItem>
         <ListItem>
-          <Button className={classes.button} variant="contained" disabled={loading} onClick={register}>
-            Submit
+          <Button className={classes.button} variant="contained" disabled={loading || success} onClick={register}>
+            {!loading && !success ? <div> Submit </div> : null}
+            <LoadSuccess loading={loading} success={success} />
           </Button>
           <Button className={classes.button} variant="contained" disabled={!readyForNextStep} onClick={nextStep} color="primary">
             Next
           </Button>
         </ListItem>
+        {!readyForNextStep && success ? (
+          <ListItem>
+            <ListItemIcon>
+              <CircularProgress size={24} />
+            </ListItemIcon>
+            <ListItemText primary={`Please wait for all other sealers to register.`} />
+          </ListItem>
+        ) : null}
       </List>
-      <div className={classes.loader}>
-        <LoadSuccess loading={loading} success={success} />
-      </div>
     </Box>
   );
 };
@@ -132,6 +149,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     button: {
       marginRight: theme.spacing(1),
+      width: 160,
     },
     statusButtonWrapper: {},
 
