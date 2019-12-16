@@ -3,6 +3,7 @@ import { AdapterSync } from 'lowdb'
 import low from 'lowdb'
 import fs from 'fs'
 import FileSync from 'lowdb/adapters/FileSync'
+import path from 'path'
 
 let db: low.LowdbSync<any>
 
@@ -16,10 +17,10 @@ export const VOTING_QUESTION_TABLE: string = 'votingQuestion'
 export const CHAINSPEC_TABLE: string = 'chainspec'
 
 export const setupDB = (): void => {
-  const adapter: AdapterSync = new FileSync('./src/database/db.json')
+  const adapter: AdapterSync = new FileSync(path.join(__dirname, 'db.json'))
   db = low(adapter)
 
-  const defaultConfig = JSON.parse(fs.readFileSync('./src/database/defaultChainspec.json', 'utf-8'))
+  const defaultConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'defaultChainspec.json'), 'utf-8'))
 
   // set defaults (if JSON is empty)
   db.defaults({
