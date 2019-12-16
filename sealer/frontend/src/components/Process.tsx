@@ -8,8 +8,9 @@ import { KeyGeneration } from './KeyGeneration';
 import { Register } from './Register';
 import { StartNode } from './StartNode';
 import { TallyVotes } from './TallyVotes';
+import { Voting } from './Voting/Voting';
 
-export const Voting: React.FC = () => {
+export const Process: React.FC = () => {
   const classes = useStyles();
 
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -41,12 +42,7 @@ export const Voting: React.FC = () => {
       case 2:
         return <KeyGeneration nextStep={nextStep} />;
       case 3:
-        return (
-          <div>
-            <h1>Voting STATE</h1>
-            <Button onClick={nextStep}>MoveNext</Button>
-          </div>
-        );
+        return <Voting nextStep={nextStep} />;
       case 4:
         return <TallyVotes nextStep={nextStep} />;
       case 5:

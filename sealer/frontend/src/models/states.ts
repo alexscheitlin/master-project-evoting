@@ -12,7 +12,7 @@ export enum VoteLabels {
   REGISTER = 'Address Registration',
   STARTUP = 'Starting Sealer Node',
   CONFIG = 'Key Generation',
-  VOTING = 'VOTING',
+  VOTING = 'Voting',
   TALLY = 'Tally Votes',
 }
 
