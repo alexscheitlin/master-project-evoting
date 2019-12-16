@@ -25,11 +25,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   const [isNodeRunning, setIsNodeRunning] = useState(false);
   const [isBootNode, setIsBootNode] = useState(false);
 
-  const [notification, setNotification] = useState('');
-
   const [peers, setPeers] = useState(0);
-
-  const [isLookingForPeers, setIsLookingForPeers] = useState(false);
 
   const loadConfiguration = async () => {
     setLoading(true);
@@ -53,15 +49,9 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   };
 
   const registerMySealerNode = async () => {
-    setIsLookingForPeers(true);
-
     try {
       const response = await SealerBackend.registerMySealerNode();
       setIsBootNode(response.bootnode);
-
-      if (response.bootnode) {
-        setNotification(response.msg);
-      }
     } catch (error) {
       console.log(error.message);
     }
