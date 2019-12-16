@@ -1,8 +1,12 @@
-import { Button, makeStyles, Theme } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Box, Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import React, { useEffect, useState } from 'react';
+
 import { useVoteStateStore, VotingState } from '../../../models/voting';
 import { fetchState } from '../../../services/authBackend';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepTitle } from '../../defaults/StepTitle';
+import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
 
 interface TallyProps {
@@ -25,6 +29,19 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
 
+  const [readyForSummary, setReadyForSummary] = useState(false);
+  const [inTransition, setInTransition] = useState(false);
+
+  useEffect(() => {
+    getState();
+  }, []);
+
+  useEffect(() => {
+    if (submittedDecryptedShares === requiredDecryptedShares) {
+      setReadyForSummary(true);
+    }
+  }, [submittedDecryptedShares, requiredDecryptedShares]);
+
   const getState = async () => {
     try {
       const data: TallyStateResponse = (await fetchState()) as TallyStateResponse;
@@ -43,7 +60,9 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
 
   const nextStep = async () => {
     try {
+      setInTransition(true);
       await nextState();
+      setInTransition(false);
       handleNext();
     } catch (error) {
       setErrorMessage(error.msg);
@@ -52,42 +71,59 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
   };
 
   return (
-    <div className={classes.container}>
-      <div>
-        <h1>{`Tally Phase`}</h1>
-        <h4>
-          {`The vote has ended.` && submittedDecryptedShares !== requiredDecryptedShares
-            ? `Please wait until all decrypted shares have been submitted.`
-            : `All decrypted shares have been submitted. Summary can be generated!`}
-        </h4>
-        <h4>{`Nr. of decrypted shares: ${submittedDecryptedShares}/${requiredDecryptedShares}`}</h4>
-      </div>
-      <div className={classes.actionsContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={nextStep}
-          className={classes.button}
-          disabled={submittedDecryptedShares !== requiredDecryptedShares}
-        >
-          Generate Summary
-        </Button>
-      </div>
+    <Box className={classes.root}>
+      <StepTitle title="Tally" />
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <VpnKeyIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${submittedDecryptedShares}/${requiredDecryptedShares} decrypted shares submitted`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <LoadSuccess loading={!readyForSummary} success={readyForSummary} />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              !readyForSummary
+                ? `waiting until all decrypted shares have been submitted.`
+                : `all decrypted shares have been submitted, summary can be generated`
+            }
+          />
+        </ListItem>
+        <ListItem>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={nextStep}
+            className={classes.summaryButton}
+            disabled={!readyForSummary}
+          >
+            {!inTransition ? `Generate Summary` : <LoadSuccess loading={true} white={true} />}
+          </Button>
+        </ListItem>
+      </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+    </Box>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    position: 'relative'
+  },
   container: {
     padding: '1em',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between'
   },
-  button: {
+  summaryButton: {
     marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    width: 215,
+    height: 36
   },
   actionsContainer: {
     marginBottom: theme.spacing(2)

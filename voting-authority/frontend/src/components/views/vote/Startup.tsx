@@ -163,18 +163,21 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
           </ListItemIcon>
           <ListItemText primary={`currently ${signedUpSealers}/${requiredSealers} sealers have signed up`} />
         </ListItem>
-        <ListItem>
-          <ListItemIcon>
-            <LoadSuccess loading={!readyForDeployment} success={readyForDeployment} />
-          </ListItemIcon>
-          <ListItemText
-            primary={
-              readyForDeployment
-                ? `all sealers registered, you can now deploy the contrat`
-                : `please wait until all sealers have registered to deploy the contract`
-            }
-          />
-        </ListItem>
+        {!voteQuestionDeployed && (
+          <ListItem>
+            <ListItemIcon>
+              <LoadSuccess loading={!readyForDeployment} success={readyForDeployment} />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                readyForDeployment
+                  ? `all sealers registered, you can now deploy the contrat`
+                  : `please wait until all sealers have registered to deploy the contract`
+              }
+            />
+          </ListItem>
+        )}
+
         {!voteQuestionDeployed && (
           <ListItem>
             <TextField fullWidth label="Enter Vote Question" variant="outlined" required onChange={handleInputChange} />
