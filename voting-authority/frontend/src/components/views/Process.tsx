@@ -8,7 +8,8 @@ import {
   StepLabel,
   Stepper,
   Theme,
-  Typography
+  Typography,
+  Box
 } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -24,7 +25,7 @@ interface StateResponse {
   requiredSealers: number;
 }
 
-export const Voting: React.FC = () => {
+export const Process: React.FC = () => {
   const classes = useStyles();
 
   const [requiredSealers, setRequiredSealers] = useState<number>(3);
@@ -104,8 +105,12 @@ export const Voting: React.FC = () => {
       <Grid item>
         <Divider orientation="vertical" />
       </Grid>
-      <Grid item className={classes.mainContainer}>
-        {getStep(activeStep)}
+      <Grid item xs>
+        <Grid container>
+          <Grid item xs={6}>
+            <Box className={classes.contentWrapper}>{getStep(activeStep)}</Box>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );
@@ -118,6 +123,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   mainContainer: {
     display: 'flex',
     flexGrow: 1
+  },
+  contentWrapper: {
+    padding: theme.spacing(3, 2)
   },
   button: {
     marginTop: theme.spacing(1),
