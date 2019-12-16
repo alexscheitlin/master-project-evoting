@@ -125,7 +125,6 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         setVoteQuestionDeployed(true);
         setLoading(false);
       } else {
-        console.log(response);
         throw new Error(`Unable to deploy vote! Status: ${response.status}\nMessage: ${JSON.stringify(response)}`);
       }
     } catch (error) {
