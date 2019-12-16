@@ -303,11 +303,10 @@ contract Ballot {
             return (false, 'Vote not open');
         }
 
-        // TODO: Enable once system is ready
-        // if(election.hasVoted[msg.sender]) {
-        // 	emit VoteStatusEvent(msg.sender, false, "Voter already voted");
-        // 	return (false, "Voter already voted");
-        // }
+        if(election.hasVoted[msg.sender]) {
+        	emit VoteStatusEvent(msg.sender, false, "Voter already voted");
+        	return (false, "Voter already voted");
+        }
 
         if (!voteVerifier.verifyProof(cipher, a, b, c, f, msg.sender)) {
             emit VoteStatusEvent(msg.sender, false, 'Proof not correct');

@@ -84,6 +84,7 @@ contract('Ballot.sol', () => {
      */
 
     const client_uniqueID = unlockedAddresses.client;
+    const client_uniqueID2 = unlockedAddresses.client2;
 
     // Client/Voter queries the system parameters from the Ballot contract
     const client_sysParamsFromContract = await ballotContract.getParameters();
@@ -125,7 +126,7 @@ contract('Ballot.sol', () => {
       noVote,
       client_sysParams,
       client_publicKey,
-      client_uniqueID,
+      client_uniqueID2,
     );
     await ballotContract.vote(
       [noVote.a, noVote.b],
@@ -133,7 +134,7 @@ contract('Ballot.sol', () => {
       [noProof.b0, noProof.b1],
       [noProof.c0, noProof.c1],
       [noProof.f0, noProof.f1],
-      {from: client_uniqueID},
+      {from: client_uniqueID2},
     );
 
     // assert that contract saved the votes correctly
