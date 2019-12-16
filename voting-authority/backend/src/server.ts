@@ -1,6 +1,7 @@
 import cors from 'cors'
 import { config } from 'dotenv'
 import express from 'express'
+import path from 'path'
 
 import { setupDB } from './database/database'
 import chainspec from './endpoints/chainspec'
@@ -48,6 +49,12 @@ server.use('/', connection)
 server.use('/', deploy)
 server.use('/', publicKey)
 server.use('/', state)
+
+server.use(express.static(path.join(__dirname, '/../../frontend/build/')))
+
+server.get('/', (req: express.Request, res: express.Response) => {
+  res.sendFile(path.join(__dirname, '/../../frontend/build/', 'index.html'))
+})
 
 // setup the database
 setupDB()
