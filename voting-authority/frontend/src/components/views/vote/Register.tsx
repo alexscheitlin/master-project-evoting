@@ -94,14 +94,17 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
             primary={
               allSealersConnected
                 ? `all sealers registered, you can proceed to the next step`
-                : `please wait until all sealers have registered`
+                : `please wait until all sealers have registered their address`
             }
           />
         </ListItem>
       </List>
-      <Typography style={{ paddingLeft: '16px' }} variant="h6">
-        Connected Sealers
-      </Typography>
+      {sealers.length > 0 && (
+        <Typography style={{ paddingLeft: '16px' }} variant="h6">
+          Connected Sealers
+        </Typography>
+      )}
+
       <List>
         {sealers.map((sealer, index) => {
           return (
