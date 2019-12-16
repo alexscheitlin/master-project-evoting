@@ -9,6 +9,7 @@ import { Register } from './Register';
 import { StartNode } from './StartNode';
 import { TallyVotes } from './TallyVotes';
 import { Voting } from './Voting/Voting';
+import { Result } from './Result/Result';
 
 export const Process: React.FC = () => {
   const classes = useStyles();
@@ -22,7 +23,6 @@ export const Process: React.FC = () => {
     const getRequiredValidators = async () => {
       try {
         const data = await AuthBackend.getState();
-        console.log(data);
         setActiveStep(VOTE_STATES.indexOf(data.state));
       } catch (error) {
         setErrorMessage(error.message);
@@ -46,13 +46,7 @@ export const Process: React.FC = () => {
       case 4:
         return <TallyVotes nextStep={nextStep} />;
       case 5:
-        return (
-          <div>
-            <h1>Result State</h1>
-            <h3>You are at the fucking end!!</h3>
-            <h4>The vote is done! You won! Congrats Bro!</h4>
-          </div>
-        );
+        return <Result />;
       default:
         reset();
     }
