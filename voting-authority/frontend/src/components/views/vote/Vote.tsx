@@ -1,9 +1,14 @@
-import { Button, makeStyles, Theme } from '@material-ui/core';
-import React, { useState } from 'react';
-import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
-import { useVoteStateStore, useVoteQuestionStore, VotingState } from '../../../models/voting';
-import { useInterval } from '../helper/UseInterval';
+import { Box, Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import ReceiptIcon from '@material-ui/icons/Receipt';
+import React, { useEffect, useState } from 'react';
+
+import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting';
 import { fetchState } from '../../../services/authBackend';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepTitle } from '../../defaults/StepTitle';
+import { LoadSuccess } from '../helper/LoadSuccess';
+import { useInterval } from '../helper/UseInterval';
 
 interface VotingStateResponse {
   state: VotingState;
@@ -26,6 +31,12 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [hasError, setHasError] = useState<boolean>(false);
 
+  const [inTransition, setInTransition] = useState(false);
+
+  useEffect(() => {
+    getState();
+  }, []);
+
   const getState = async () => {
     try {
       const data: VotingStateResponse = (await fetchState()) as VotingStateResponse;
@@ -44,49 +55,66 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
 
   const nextStep = async () => {
     try {
+      setInTransition(true);
       await nextState();
+      setInTransition(false);
       handleNext();
     } catch (error) {
+      setInTransition(false);
       setErrorMessage(error.msg);
       setHasError(true);
     }
   };
 
   return (
-    <div className={classes.container}>
-      <div>
-        <h1>{`Voting Phase - Question: ${question}`}</h1>
-        <h4>{`The voting is currently in progress!`}</h4>
-        <h4>{`Votes submitted: ${votesSubmitted}`}</h4>
-      </div>
-      <div className={classes.actionsContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={nextStep}
-          className={classes.button}
-          disabled={votesSubmitted === 0}
-        >
-          Close Vote
-        </Button>
-      </div>
+    <Box className={classes.root}>
+      <StepTitle title="Voting Phase" subtitle={'the vote is currently open'} />
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <QuestionAnswerIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${question}`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <ReceiptIcon />
+          </ListItemIcon>
+          <ListItemText>{votesSubmitted} - votes submitted</ListItemText>
+        </ListItem>
+        <ListItem>
+          The vote is currently ongoing. Press the button below to end the vote. After closing the vote, no voters can
+          submit votes anymore. This action cannot be reverted!
+        </ListItem>
+        <ListItem>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={nextStep}
+            className={classes.closeButton}
+            disabled={votesSubmitted === 0}
+          >
+            {!inTransition ? `Close Vote` : <LoadSuccess loading={true} white={true} />}
+          </Button>
+        </ListItem>
+      </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+    </Box>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    padding: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+  root: {
+    position: 'relative'
   },
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1)
   },
-  actionsContainer: {
-    marginBottom: theme.spacing(2)
+  closeButton: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 160,
+    height: 36
   }
 }));
