@@ -50,17 +50,17 @@ export const registerWallet = async (addressToRegister: string) => {
 }
 
 export const getBallotAddress = async () => {
-  let ballotAddress
   try {
     const response = await axios.get(authBackendUrl() + '/deploy')
-    ballotAddress = response.data.address
+    if (response.status === 204) {
+      return ''
+    }
+    return response.data.address
   } catch (error) {
     console.log(error)
     console.log(error.response.data.msg)
     throw new Error(`Unable to get the address of the ballot from the authority backend. ${error.response.data.msg}`)
   }
-
-  return ballotAddress
 }
 
 interface StateResponse {

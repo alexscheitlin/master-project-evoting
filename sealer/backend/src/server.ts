@@ -9,6 +9,7 @@ import peer from './routes/peer'
 import register from './routes/register'
 import state from './routes/state'
 import decrypt from './routes/decrypt'
+import deploy from './routes/deploy'
 import logger from './utils/logger'
 
 config()
@@ -34,6 +35,7 @@ server.use('/', chainspec)
 server.use('/', peer)
 server.use('/', state)
 server.use('/', decrypt)
+server.use('/', deploy)
 
 // setup the database
 setupDB()
