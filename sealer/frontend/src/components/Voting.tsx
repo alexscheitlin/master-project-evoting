@@ -77,7 +77,7 @@ export const Voting: React.FC = () => {
       </Grid>
       <Grid item xs>
         <Grid container>
-          <Grid item xs={8}>
+          <Grid item xs={6}>
             <Box className={classes.contentWrapper}>{getStep(activeStep)}</Box>
           </Grid>
         </Grid>

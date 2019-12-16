@@ -1,5 +1,9 @@
-import { Box, Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import React, { useState } from 'react';
+
 import { useInterval } from '../../hooks/useInterval';
 import { SealerBackend } from '../../services';
 import { delay } from '../../utils/helper';
@@ -30,7 +34,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   const loadConfiguration = async () => {
     setLoading(true);
     setChainSpecLoaded(false);
-    await delay(500);
+    await delay(1000);
     try {
       await SealerBackend.loadConfiguration();
       setLoading(false);
@@ -72,78 +76,92 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   useInterval(pollPeers, isNodeRunning ? REFRESH_INTERVAL_MS : 0);
 
   return (
-    <div className={classes.root}>
-      <StepTitle title="SEALER NODE SETUP" />
-      <div className={classes.contentSection}>
-        <Box textAlign="center">
-          <Button variant="contained" disabled={chainSpecLoaded} onClick={loadConfiguration}>
-            Load Blockchain Configuration
-          </Button>
-          <div className={classes.statusIcons}>
-            <LoadSuccess loading={loading} success={chainSpecLoaded} />
-          </div>
-        </Box>
-      </div>
+    <Box className={classes.root}>
+      <StepTitle title="SEALER NODE" />
+      <List>
+        <ListItem>
+          {!loading && !chainSpecLoaded ? (
+            <ListItemIcon>
+              <FiberManualRecordIcon />
+            </ListItemIcon>
+          ) : null}
+          {loading || chainSpecLoaded ? (
+            <ListItemIcon>
+              <LoadSuccess loading={loading} success={chainSpecLoaded} />
+            </ListItemIcon>
+          ) : null}
 
-      {chainSpecLoaded && (
-        <div className={classes.contentSection}>
-          <Box textAlign="center" className={classes.textBox}>
-            <Typography variant="caption">Please start your sealer node. Once it's running confirm below.</Typography>
-          </Box>
+          <ListItemText primary={'Load Blockchain Configuration'} />
+          {!chainSpecLoaded && (
+            <Button disabled={chainSpecLoaded} onClick={loadConfiguration}>
+              <GetAppIcon />
+            </Button>
+          )}
+        </ListItem>
+        {chainSpecLoaded && (
+          <>
+            <ListItem>
+              {!isNodeRunning ? (
+                <ListItemIcon>
+                  <FiberManualRecordIcon />
+                </ListItemIcon>
+              ) : (
+                <ListItemIcon>
+                  <LoadSuccess loading={loading} success={isNodeRunning} />
+                </ListItemIcon>
+              )}
 
-          <div className={classes.instructions}>
-            <pre>
-              <code>
-                cd parity-node/ <br />
-                ./run.sh {frontendPort && frontendPort.charAt(frontendPort.length - 1)}
-              </code>
-            </pre>
-          </div>
-          <div className={classes.confirmation}>
-            <Box textAlign="center">
+              <ListItemText primary={`Please start your sealer node. Confirm once it's running.`} />
               {!isNodeRunning && (
-                <Button variant="contained" color="primary" onClick={confirmNodeIsRunning}>
-                  my node is running
+                <Button variant="outlined" onClick={confirmNodeIsRunning}>
+                  confirm
                 </Button>
               )}
-              {isNodeRunning && (
-                <>
-                  <Box textAlign="center">
-                    <Typography>Node is runnning</Typography>
-                    <div className={classes.statusIcons}>
-                      <LoadSuccess loading={loading} success={isNodeRunning} />
-                    </div>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </div>
-        </div>
-      )}
-
-      {isNodeRunning && (
-        <div className={classes.contentSection}>
-          <Box textAlign="center" className={classes.textBox}>
-            {isBootNode ? (
-              <Typography variant="caption">{notification}</Typography>
-            ) : (
-              <Typography variant="caption">looking for peers...</Typography>
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <KeyboardArrowRightIcon />
+              </ListItemIcon>
+              <div className={classes.instructions}>
+                <pre>
+                  <code>
+                    cd parity-node/ <br />
+                    ./run.sh {frontendPort && frontendPort.charAt(frontendPort.length - 1)}
+                  </code>
+                </pre>
+              </div>
+            </ListItem>
+            {isNodeRunning && (
+              <>
+                <ListItem>
+                  <ListItemIcon>
+                    <LoadSuccess success={true} />
+                  </ListItemIcon>
+                  <ListItemText primary={`Established connection with the authority.`} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <LoadSuccess loading={true} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      isBootNode ? `You are the bootnode. Please wait for other sealers to connect.` : `Looking for peers to connect to..`
+                    }
+                    secondary={`connected to ${peers} peers`}
+                  />
+                </ListItem>
+              </>
             )}
-          </Box>
+          </>
+        )}
 
-          <Box textAlign="center" className={classes.textBox}>
-            <Typography variant="caption">...connected to {peers} peers</Typography>
-          </Box>
-
-          <Box textAlign="center">
-            <LoadSuccess loading={isLookingForPeers} />
-            <Button className={classes.button} disabled={peers === 0} variant="contained" onClick={nextStep}>
-              Next
-            </Button>
-          </Box>
-        </div>
-      )}
-    </div>
+        <ListItem>
+          <Button className={classes.button} disabled={peers === 0} variant="contained" onClick={nextStep}>
+            Next
+          </Button>
+        </ListItem>
+      </List>
+    </Box>
   );
 };
 
@@ -152,51 +170,17 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       position: 'relative',
     },
-    button: {
-      marginRight: theme.spacing(1),
-    },
-    statusIcons: {
-      padding: theme.spacing(1, 0),
-      height: 10,
-    },
     instructions: {
       borderRadius: 4,
       background: '#212121',
       color: 'white',
       padding: theme.spacing(1),
-      margin: 'auto',
-      fontSize: '0.8em',
+      fontSize: '1.1em',
       width: '50%',
     },
-    confirmation: {
-      padding: theme.spacing(2, 0),
-    },
-    wrapper: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    statusButtonWrapper: {
-      marginLeft: 10,
-    },
-    sealerInfo: {
-      padding: theme.spacing(3, 0),
-    },
-    successIcon: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-    },
-    loader: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-    },
-    textBox: {
-      width: 400,
-      margin: 'auto',
-    },
-    contentSection: {
-      padding: theme.spacing(1),
+    button: {
+      marginRight: theme.spacing(1),
+      width: 160,
     },
   })
 );
