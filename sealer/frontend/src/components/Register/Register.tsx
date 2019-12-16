@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   createStyles,
   List,
   ListItem,
@@ -8,13 +9,15 @@ import {
   ListItemText,
   makeStyles,
   Theme,
-  CircularProgress,
 } from '@material-ui/core';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import React, { useEffect, useState } from 'react';
 
 import { config } from '../../config';
+import { useInterval } from '../../hooks/useInterval';
+import { VotingState } from '../../models/states';
 import { AuthBackend, SealerBackend } from '../../services';
 import { delay } from '../../utils/helper';
 import { LoadSuccess } from '../shared/LoadSuccess';
@@ -31,17 +34,19 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   const [wallet, setWallet] = useState('');
 
   const [state, setState] = useState();
+  const [chainspecReady, setChainSpecReady] = useState(false);
 
   // TODO replace dynamically with a backend call
-  const [requiredSealers, setRequiredSealers] = useState<number>(3);
+  const [requiredSealers, setRequiredSealers] = useState<number>();
   const [sealers, setSealers] = useState<string[]>([]);
   const [listening, setListening] = useState<boolean>(false);
 
   const [readyForNextStep, setReadyForNextStep] = useState<boolean>(false);
 
-  // set a flag in the parent component that transition into next step is possible
   useEffect(() => {
-    setReadyForNextStep(requiredSealers === sealers.length);
+    if (requiredSealers === sealers.length) {
+      setReadyForNextStep(true);
+    }
   }, [sealers, requiredSealers]);
 
   useEffect(() => {
@@ -81,6 +86,15 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
     return () => {};
   }, []);
 
+  const isChainSpecReady = async () => {
+    const response = await AuthBackend.getState();
+    if (response.state === VotingState.STARTUP) {
+      setChainSpecReady(true);
+    }
+  };
+
+  useInterval(isChainSpecReady, readyForNextStep && !chainspecReady ? 4000 : 0);
+
   // Tell the backend to register this sealer's wallet
   const register = async () => {
     try {
@@ -103,30 +117,34 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
       <List>
         <ListItem>
           <ListItemIcon>
+            <SettingsEthernetIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${sealers.length} / ${requiredSealers} Sealers registered`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
             <AccountBalanceWalletIcon color={'primary'} />
           </ListItemIcon>
           <ListItemText primary={wallet} secondary={'the public key of this sealer node'} />
         </ListItem>
         <ListItem>
-          <ListItemIcon>
-            <SettingsEthernetIcon />
-          </ListItemIcon>
-          <ListItemText primary={`${sealers.length} / ${requiredSealers} Sealers registered`} />
-        </ListItem>
-        {!success ? (
-          <ListItem>
-            <ListItemText primary={`Click the button below to submit your public key to the voting authority for registration.`} />
-          </ListItem>
-        ) : null}
-
-        <ListItem>
-          <Button className={classes.button} variant="contained" disabled={loading || success} onClick={register}>
-            {!loading && !success ? <div> Submit </div> : null}
-            <LoadSuccess loading={loading} success={success} />
-          </Button>
-          <Button className={classes.button} variant="contained" disabled={!readyForNextStep} onClick={nextStep} color="primary">
-            Next
-          </Button>
+          {!loading && !success ? (
+            <ListItemIcon>
+              <VpnKeyIcon />
+            </ListItemIcon>
+          ) : null}
+          {loading || success ? (
+            <ListItemIcon>
+              <LoadSuccess loading={loading} success={success} />
+            </ListItemIcon>
+          ) : null}
+          {!success ? (
+            <Button variant="outlined" disabled={loading || success} onClick={register}>
+              {!loading || !success ? <div> submit public key to authority </div> : null}
+            </Button>
+          ) : (
+            <ListItemText primary="public key submitted" />
+          )}
         </ListItem>
         {!readyForNextStep && success ? (
           <ListItem>
@@ -136,6 +154,31 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
             <ListItemText primary={`Please wait for all other sealers to register.`} />
           </ListItem>
         ) : null}
+        {readyForNextStep && !chainspecReady ? (
+          <ListItem>
+            <ListItemIcon>
+              <CircularProgress size={24} />
+            </ListItemIcon>
+            <ListItemText primary={`Waiting for Authority to provide blockchain configuration.`} />
+          </ListItem>
+        ) : null}
+        {!success ? (
+          <ListItem>
+            <ListItemText primary={`Please click the button above to submit your public key to the voting authority for registration.`} />
+          </ListItem>
+        ) : null}
+
+        <ListItem>
+          <Button
+            className={classes.button}
+            variant="contained"
+            disabled={!readyForNextStep || !chainspecReady}
+            onClick={nextStep}
+            color="primary"
+          >
+            Next
+          </Button>
+        </ListItem>
       </List>
     </Box>
   );
