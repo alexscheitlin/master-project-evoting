@@ -186,8 +186,10 @@ router.get('/state', async (req, res) => {
 
       res.status(200).json({
         state: currentState,
-        yesVotes: yesVotes,
+        // TODO: can we handle this more elegantly?
+        yesVotes: parseInt(yesVotes.toString()),
         noVotes: totalVotes - yesVotes,
+        votingQuestion: getValueFromDB(VOTING_QUESTION_TABLE),
       })
       break
 
