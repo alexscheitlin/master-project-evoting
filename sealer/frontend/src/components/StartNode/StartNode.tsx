@@ -44,6 +44,9 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
     // try to register myself
     await registerMySealerNode();
 
+    const nrPeers = await SealerBackend.getNrPeers();
+    setPeers(nrPeers);
+
     // this activates the polling of the peers
     setIsNodeRunning(true);
   };

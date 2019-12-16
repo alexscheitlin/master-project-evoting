@@ -113,9 +113,12 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
           </ListItemIcon>
           <ListItemText primary={`${sealers.length} / ${requiredSealers} Sealers registered`} />
         </ListItem>
-        <ListItem>
-          <ListItemText primary={`Click the button below to submit your public key to the voting authority for registration.`} />
-        </ListItem>
+        {!success ? (
+          <ListItem>
+            <ListItemText primary={`Click the button below to submit your public key to the voting authority for registration.`} />
+          </ListItem>
+        ) : null}
+
         <ListItem>
           <Button className={classes.button} variant="contained" disabled={loading || success} onClick={register}>
             {!loading && !success ? <div> Submit </div> : null}
