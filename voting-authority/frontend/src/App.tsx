@@ -3,7 +3,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import { Footer } from './components/defaults/Footer';
 import { Header } from './components/defaults/Header';
-import { Voting } from './components/views/Voting';
+import { Process } from './components/views/Process';
 import mainTheme from './Theme';
 
 const useStyles = makeStyles({
@@ -21,7 +21,7 @@ const App: React.FC = () => {
       <CssBaseline />
       <Grid container direction={'column'} className={classes.wrapper}>
         <Header />
-        <Voting />
+        <Process />
         <Footer />
       </Grid>
     </ThemeProvider>

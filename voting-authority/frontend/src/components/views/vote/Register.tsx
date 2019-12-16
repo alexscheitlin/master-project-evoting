@@ -1,10 +1,23 @@
-import { Button, makeStyles, Theme } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Theme,
+  Typography
+} from '@material-ui/core';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import React, { useEffect, useState } from 'react';
+
 import { DEV_URL } from '../../../constants';
 import { useVoteStateStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
-import { List } from '../helper/List';
 
 interface RegisterProps {
   requiredSealers: number;
@@ -25,10 +38,12 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
   const [sealers, setSealers] = useState<string[]>([]);
   const [listening, setListening] = useState<boolean>(false);
 
-  const [buttonActive, setButtonActive] = useState<boolean>(false);
+  const [allSealersConnected, setAllSealersConnected] = useState(false);
 
   useEffect(() => {
-    setButtonActive(requiredSealers !== sealers.length);
+    if (sealers.length === requiredSealers) {
+      setAllSealersConnected(true);
+    }
   }, [sealers, requiredSealers]);
 
   useEffect(() => {
@@ -62,46 +77,69 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
   };
 
   return (
-    <div className={classes.container}>
-      <div>
-        <h1>{`Sealer Registration`}</h1>
-        <h3>
-          {`${sealers.length}/${requiredSealers}: Sealears are registered!`}
-          {sealers.length !== requiredSealers
-            ? ` Please wait for all selears to be registered!`
-            : ` All sealers are registered, you can proceed to the next step!`}
-        </h3>
-        <List items={sealers} />
-      </div>
-      <div className={classes.actionsContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={nextStep}
-          className={classes.button}
-          disabled={buttonActive}
-        >
-          Next Step
-        </Button>
-        <LoadSuccess success={success} loading={loading} />
-      </div>
+    <Box className={classes.root}>
+      <StepTitle title="Address Registration" />
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <SettingsEthernetIcon />
+          </ListItemIcon>
+          <ListItemText primary={`currently ${sealers.length}/${requiredSealers} sealers are registered`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <LoadSuccess loading={!allSealersConnected} success={allSealersConnected} />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              allSealersConnected
+                ? `all sealers registered, you can proceed to the next step`
+                : `please wait until all sealers have registered`
+            }
+          />
+        </ListItem>
+      </List>
+      <Typography style={{ paddingLeft: '16px' }} variant="h6">
+        Connected Sealers
+      </Typography>
+      <List>
+        {sealers.map((sealer, index) => {
+          return (
+            <ListItem key={index}>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon />
+              </ListItemIcon>
+              <ListItemText primary={`${sealer}`} />
+            </ListItem>
+          );
+        })}
+      </List>
+
+      <List>
+        <ListItem>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={nextStep}
+            className={classes.button}
+            disabled={!allSealersConnected}
+          >
+            Next Step
+          </Button>
+          <LoadSuccess success={success} loading={loading} />
+        </ListItem>
+      </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+    </Box>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    padding: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+  root: {
+    position: 'relative'
   },
   button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2)
+    marginRight: theme.spacing(1),
+    width: 160
   }
 }));
