@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-  Typography
-} from '@material-ui/core';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import React, { useEffect, useState } from 'react';
@@ -16,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { DEV_URL } from '../../../constants';
 import { useVoteStateStore } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepContentWrapper } from '../../defaults/StepContentWrapper';
 import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 
@@ -77,7 +68,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
   };
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Address Registration" />
       <List>
         <ListItem>
@@ -118,7 +109,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
         })}
       </List>
 
-      <List>
+      <List className={classes.nextButton}>
         <ListItem>
           <Button
             variant="contained"
@@ -133,16 +124,21 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
         </ListItem>
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    position: 'relative'
+    position: 'relative',
+    minHeight: 700
   },
   button: {
     marginRight: theme.spacing(1),
     width: 160
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 0
   }
 }));

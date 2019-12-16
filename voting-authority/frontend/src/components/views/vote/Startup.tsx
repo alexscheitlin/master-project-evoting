@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   IconButton,
   List,
@@ -20,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { DEV_URL } from '../../../constants';
 import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepContentWrapper } from '../../defaults/StepContentWrapper';
 import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
@@ -154,7 +154,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   );
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Contract Deployment" />
       <List>
         <ListItem>
@@ -192,32 +192,34 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
             )}
           </ListItem>
         )}
+      </List>
 
-        {voteQuestionDeployed && (
-          <>
-            <ListItem>
-              <ListItemIcon>
-                <LoadSuccess success={true} />
-              </ListItemIcon>
-              <ListItemText primary={`Vote Question Successfully Deployed`} />
-            </ListItem>
+      {voteQuestionDeployed && (
+        <List>
+          <ListItem>
+            <ListItemIcon>
+              <LoadSuccess success={true} />
+            </ListItemIcon>
+            <ListItemText primary={`Vote Question Successfully Deployed`} />
+          </ListItem>
 
-            <ListItem>
-              <ListItemIcon>
-                <AccountBalanceWalletIcon />
-              </ListItemIcon>
-              <ListItemText primary={`${address}`} />
-            </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <AccountBalanceWalletIcon />
+            </ListItemIcon>
+            <ListItemText primary={`${address}`} />
+          </ListItem>
 
-            <ListItem>
-              <ListItemIcon>
-                <QuestionAnswerIcon />
-              </ListItemIcon>
-              <ListItemText primary={`${question}`} />
-            </ListItem>
-          </>
-        )}
+          <ListItem>
+            <ListItemIcon>
+              <QuestionAnswerIcon />
+            </ListItemIcon>
+            <ListItemText primary={`${question}`} />
+          </ListItem>
+        </List>
+      )}
 
+      <List className={classes.nextButton}>
         <ListItem>
           <Button
             variant="contained"
@@ -232,14 +234,11 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       </List>
 
       <div className={classes.container}>{hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}</div>
-    </Box>
+    </StepContentWrapper>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative'
-  },
   container: {
     padding: '1em',
     display: 'flex',
@@ -253,5 +252,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     marginRight: theme.spacing(1),
     width: 160
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 0
   }
 }));

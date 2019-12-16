@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-  Typography
-} from '@material-ui/core';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core';
 import { green, red } from '@material-ui/core/colors';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
@@ -19,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { useVoteStateStore, VotingState } from '../../../models/voting';
 import { fetchState } from '../../../services/authBackend';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepContentWrapper } from '../../defaults/StepContentWrapper';
 import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 
@@ -84,7 +75,7 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
   };
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Voting Result" />
       <List>
         <ListItem>
@@ -118,6 +109,9 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
             </Typography>
           </ListItemText>
         </ListItem>
+      </List>
+
+      <List className={classes.nextButton}>
         <ListItem>
           <Button variant="contained" color="primary" onClick={reset} className={classes.button}>
             {!inTransition ? `New Vote` : <LoadSuccess loading={true} white={true} />}
@@ -126,14 +120,11 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
       </List>
 
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative'
-  },
   container: {
     padding: '1em',
     display: 'flex',
@@ -147,5 +138,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   actionsContainer: {
     marginBottom: theme.spacing(2)
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 0
   }
 }));

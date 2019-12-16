@@ -16,6 +16,9 @@ const mainTheme = createMuiTheme({
     background: {
       default: '#fff'
     }
+  },
+  typography: {
+    fontSize: 16
   }
 });
 
