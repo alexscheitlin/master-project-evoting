@@ -1,10 +1,11 @@
-import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Button, createStyles, List, ListItem, ListItemIcon, makeStyles, Theme } from '@material-ui/core';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import React, { useState } from 'react';
+
+import { SealerBackend } from '../../services';
+import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 import { LoadSuccess } from '../shared/LoadSuccess';
 import { StepTitle } from '../shared/StepTitle';
-
-import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
-import { SealerBackend } from '../../services';
 
 interface Props {
   nextStep: () => void;
@@ -22,10 +23,7 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
   const submitDecryptedShare = async () => {
     try {
       setLoading(true);
-
       const response = await SealerBackend.decryptShare();
-      console.log(response);
-
       setLoading(false);
       setSuccess(true);
     } catch (error) {
@@ -35,26 +33,32 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
   };
 
   return (
-    <div className={classes.root}>
+    <Box className={classes.root}>
       <StepTitle title="Tally Votes" />
-      <div className={classes.wrapper}>
-        {!success ? (
-          <Button className={classes.button} variant="contained" onClick={submitDecryptedShare}>
+      <List>
+        <ListItem>
+          {!loading && !success ? (
+            <ListItemIcon>
+              <VpnKeyIcon />
+            </ListItemIcon>
+          ) : null}
+          {loading || success ? (
+            <ListItemIcon>
+              <LoadSuccess loading={loading} success={success} />
+            </ListItemIcon>
+          ) : null}
+          <Button variant="outlined" onClick={submitDecryptedShare}>
             Submit Decrypted Share
           </Button>
-        ) : (
-          // TODO: disable button until not all decrypted shares have been submitted
-          <Button className={classes.button} variant="contained" onClick={nextStep}>
+        </ListItem>
+        <ListItem>
+          <Button variant="contained" color="primary" onClick={nextStep} disabled={!success}>
             Next Step
           </Button>
-        )}
-      </div>
-      <div className={classes.loader}>
-        <LoadSuccess loading={loading} success={success} />
-      </div>
-
+        </ListItem>
+      </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+    </Box>
   );
 };
 
@@ -62,22 +66,6 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
-    },
-    wrapper: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    button: {
-      marginRight: theme.spacing(1),
-    },
-    statusButtonWrapper: {},
-    sealerInfo: {
-      padding: theme.spacing(3, 0),
-    },
-    loader: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
     },
   })
 );
