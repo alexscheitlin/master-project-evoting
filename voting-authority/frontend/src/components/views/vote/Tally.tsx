@@ -1,10 +1,11 @@
-import { Box, Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import React, { useEffect, useState } from 'react';
 
 import { useVoteStateStore, VotingState } from '../../../models/voting';
 import { fetchState } from '../../../services/authBackend';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepContentWrapper } from '../../defaults/StepContentWrapper';
 import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
@@ -71,7 +72,7 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
   };
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Tally" />
       <List>
         <ListItem>
@@ -92,6 +93,9 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
             }
           />
         </ListItem>
+      </List>
+
+      <List className={classes.nextButton}>
         <ListItem>
           <Button
             variant="contained"
@@ -105,14 +109,11 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
         </ListItem>
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative'
-  },
   container: {
     padding: '1em',
     display: 'flex',
@@ -127,5 +128,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   actionsContainer: {
     marginBottom: theme.spacing(2)
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 0
   }
 }));

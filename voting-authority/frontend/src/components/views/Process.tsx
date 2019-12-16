@@ -1,18 +1,7 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  makeStyles,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  Theme,
-  Typography,
-  Box
-} from '@material-ui/core';
+import { Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme, Typography } from '@material-ui/core';
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
+
 import { DEV_URL } from '../../constants';
 import { useActiveStepStore, useVoteStateStore, VOTE_LABELS, VOTE_STATES, VotingState } from '../../models/voting';
 import { ErrorSnackbar } from '../defaults/ErrorSnackbar';
@@ -84,45 +73,33 @@ export const Process: React.FC = () => {
   };
 
   return (
-    <Grid container direction={'row'} className={classes.root}>
-      <Grid item xs={2}>
+    <Grid container direction={'row'} justify="center" className={classes.root}>
+      <Grid item xs={3}>
         <Stepper activeStep={activeStep} orientation="vertical">
           {VOTE_LABELS.map(label => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel>
+                <Typography variant="h5">{label}</Typography>
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
-        {activeStep === VOTE_LABELS.length && (
-          <Paper square elevation={0} className={classes.resetContainer}>
-            <Typography>All steps completed. The vote is done.</Typography>
-            <Button onClick={reset} className={classes.button}>
-              Reset
-            </Button>
-          </Paper>
-        )}
       </Grid>
       <Grid item>
         <Divider orientation="vertical" />
       </Grid>
-      <Grid item xs>
-        <Grid container>
-          <Grid item xs={6}>
-            <Box className={classes.contentWrapper}>{getStep(activeStep)}</Box>
-          </Grid>
-        </Grid>
+      <Grid item xs={8}>
+        <div className={classes.contentWrapper}>{getStep(activeStep)}</div>
       </Grid>
+      <Grid item xs></Grid>
     </Grid>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    flexGrow: 1
-  },
-  mainContainer: {
-    display: 'flex',
-    flexGrow: 1
+    flexGrow: 1,
+    minHeight: 700
   },
   contentWrapper: {
     padding: theme.spacing(3, 2)
@@ -130,8 +107,5 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1)
-  },
-  resetContainer: {
-    padding: theme.spacing(3)
   }
 }));

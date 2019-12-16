@@ -1,4 +1,4 @@
-import { Box, Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import React, { useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting';
 import { fetchState } from '../../../services/authBackend';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepContentWrapper } from '../../defaults/StepContentWrapper';
 import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
@@ -67,7 +68,7 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
   };
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Voting Phase" subtitle={'the vote is currently open'} />
       <List>
         <ListItem>
@@ -86,6 +87,8 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
           The vote is currently ongoing. Press the button below to end the vote. After closing the vote, no voters can
           submit votes anymore. This action cannot be reverted!
         </ListItem>
+      </List>
+      <List className={classes.nextButton}>
         <ListItem>
           <Button
             variant="contained"
@@ -99,14 +102,11 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
         </ListItem>
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative'
-  },
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1)
@@ -116,5 +116,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: theme.spacing(1),
     width: 160,
     height: 36
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 0
   }
 }));

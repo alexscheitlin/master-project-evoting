@@ -1,4 +1,4 @@
-import { Box, Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import axios, { AxiosResponse } from 'axios';
@@ -8,6 +8,7 @@ import { DEV_URL } from '../../../constants';
 import { useVoteStateStore, VotingState } from '../../../models/voting';
 import { fetchState } from '../../../services/authBackend';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepContentWrapper } from '../../defaults/StepContentWrapper';
 import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
@@ -120,7 +121,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   );
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Vote Configuration" subtitle="Generation of Public Key" />
       <List>
         <ListItem>
@@ -166,8 +167,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
         <ListItem>
           <Button
-            variant="contained"
-            color="primary"
+            variant="outlined"
             onClick={generatePublicKey}
             className={classes.button}
             disabled={!allKeySharesSubmitted || publicKeyGenerated}
@@ -175,7 +175,9 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
             Generate Public Key
           </Button>
         </ListItem>
+      </List>
 
+      <List className={classes.nextButton}>
         <ListItem>
           <Button
             variant="contained"
@@ -190,14 +192,11 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
       </List>
 
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative'
-  },
   container: {
     padding: '1em',
     display: 'flex',
@@ -216,5 +215,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   actionsContainer: {
     marginBottom: theme.spacing(2)
+  },
+  nextButton: {
+    position: 'absolute',
+    bottom: 0
   }
 }));
