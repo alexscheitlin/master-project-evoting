@@ -1,9 +1,26 @@
-import { Button, makeStyles, Paper, TextField, Theme } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  TextField,
+  Theme
+} from '@material-ui/core';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import SendIcon from '@material-ui/icons/Send';
+import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
 import axios, { AxiosResponse } from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { DEV_URL } from '../../../constants';
 import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting';
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepTitle } from '../../defaults/StepTitle';
 import { LoadSuccess } from '../helper/LoadSuccess';
 import { useInterval } from '../helper/UseInterval';
 
@@ -41,8 +58,33 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [connectedSealers, setConnectedSealers] = useState<number>(0);
   const [signedUpSealers, setSignedUpSealers] = useState<number>(0);
 
+  const [readyForDeployment, setReadyForDeployment] = useState(false);
+
   const [voteQuestionDeployed, setVoteQuestionDeployed] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
+
+  useEffect(() => {
+    // load page data on component mount
+    checkNumberOfAuthoritiesOnline();
+  }, []);
+
+  useEffect(() => {
+    // check if the contract is already deployed
+    // if yes, get the needed information for the UI
+    checkIfContractDeployed();
+  }, []);
+
+  const checkIfContractDeployed = async () => {
+    try {
+      const response = await axios.get(`${DEV_URL}/deploy`);
+      if (response.status === 200 && response.data.address !== '') {
+        setVoteQuestionDeployed(true);
+        setAddress(response.data.address);
+        const state: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`);
+        setQuestion(state.data.question);
+      }
+    } catch (error) {}
+  };
 
   const checkNumberOfAuthoritiesOnline = async () => {
     try {
@@ -51,6 +93,8 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       if (response.status === 200) {
         setSignedUpSealers(response.data.signedUpSealers);
         setConnectedSealers(response.data.connectedSealers);
+
+        setReadyForDeployment(response.data.signedUpSealers === response.data.connectedSealers);
 
         // check if the voteQuestion has been deployed i.e. exists on the backend
         // TODO: check why this fails sometimes
@@ -81,6 +125,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         setVoteQuestionDeployed(true);
         setLoading(false);
       } else {
+        console.log(response);
         throw new Error(`Unable to deploy vote! Status: ${response.status}\nMessage: ${JSON.stringify(response)}`);
       }
     } catch (error) {
@@ -110,64 +155,87 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   );
 
   return (
-    <div className={classes.container}>
-      <div>
-        <h1>{`Vote Startup Phase: Create and Deploy the Voting Question`}</h1>
-        <h4>
-          {`${signedUpSealers}/${requiredSealers}: Authorities have signed up!`}
-          {requiredSealers === connectedSealers &&
-            signedUpSealers === requiredSealers &&
-            ` You can deploy the vote question now!`}
-        </h4>
-        <Paper className={classes.questionContainer}>
-          {!voteQuestionDeployed ? (
-            <div>
-              <h3>Please enter a new question for the vote to be created?</h3>
-              <TextField label="Vote Question" variant="outlined" required onChange={handleInputChange} />
-              <div className={classes.actionsContainer}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={createVote}
-                  className={classes.button}
-                  disabled={
-                    !(
-                      signedUpSealers === requiredSealers &&
-                      connectedSealers === requiredSealers &&
-                      question.length > 5
-                    )
-                  }
-                >
-                  Create Votequestion
-                </Button>
-                <LoadSuccess success={success} loading={loading} />
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h3>{`Vote Question Successfully Deployed!`}</h3>
-              <ul>
-                <li>{`Address: ${address}`}</li>
-                <li>{`Question: ${question}`}</li>
-              </ul>
-            </div>
-          )}
-        </Paper>
-      </div>
-      {voteQuestionDeployed && (
-        <div className={classes.actionsContainer}>
-          <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
+    <Box className={classes.root}>
+      <StepTitle title="Contract Deployment" />
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <SettingsEthernetIcon />
+          </ListItemIcon>
+          <ListItemText primary={`currently ${signedUpSealers}/${requiredSealers} sealers have signed up`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <LoadSuccess loading={!readyForDeployment} success={readyForDeployment} />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              readyForDeployment
+                ? `all sealers registered, you can now deploy the contrat`
+                : `please wait until all sealers have registered to deploy the contract`
+            }
+          />
+        </ListItem>
+        {!voteQuestionDeployed && (
+          <ListItem>
+            <TextField fullWidth label="Enter Vote Question" variant="outlined" required onChange={handleInputChange} />
+            {loading ? (
+              <LoadSuccess success={success} loading={loading} />
+            ) : (
+              <IconButton onClick={createVote} disabled={!(readyForDeployment && question.length > 5)}>
+                <SendIcon color={!(readyForDeployment && question.length > 5) ? 'disabled' : 'primary'} />
+              </IconButton>
+            )}
+          </ListItem>
+        )}
+
+        {voteQuestionDeployed && (
+          <>
+            <ListItem>
+              <ListItemIcon>
+                <LoadSuccess success={true} />
+              </ListItemIcon>
+              <ListItemText primary={`Vote Question Successfully Deployed`} />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon />
+              </ListItemIcon>
+              <ListItemText primary={`${address}`} />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <QuestionAnswerIcon />
+              </ListItemIcon>
+              <ListItemText primary={`${question}`} />
+            </ListItem>
+          </>
+        )}
+
+        <ListItem>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={nextStep}
+            className={classes.button}
+            disabled={!voteQuestionDeployed}
+          >
             Next Step
           </Button>
-          <LoadSuccess success={success} loading={loading} />
-        </div>
-      )}
-      {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+        </ListItem>
+      </List>
+
+      <div className={classes.container}>{hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}</div>
+    </Box>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    position: 'relative'
+  },
   container: {
     padding: '1em',
     display: 'flex',
@@ -179,10 +247,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     elevation: 2
   },
   button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2)
+    marginRight: theme.spacing(1),
+    width: 160
   }
 }));
