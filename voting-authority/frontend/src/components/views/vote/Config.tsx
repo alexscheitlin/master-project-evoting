@@ -1,11 +1,16 @@
-import { Button, makeStyles, Theme } from '@material-ui/core';
+import { Box, Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import axios, { AxiosResponse } from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { DEV_URL } from '../../../constants';
 import { useVoteStateStore, VotingState } from '../../../models/voting';
-import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
-import { useInterval } from '../helper/UseInterval';
 import { fetchState } from '../../../services/authBackend';
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
+import { StepTitle } from '../../defaults/StepTitle';
+import { LoadSuccess } from '../helper/LoadSuccess';
+import { useInterval } from '../helper/UseInterval';
 
 interface ConfigProps {
   handleNext: () => void;
@@ -35,21 +40,38 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   const [requiredKeyShares, setRequiredKeyShares] = useState<number>(1000);
   const [submittedKeyShares, setSubmittedKeyShares] = useState<number>(0);
 
-  const [publicKey, setPublicKey] = useState<number>(-2);
+  const [allKeySharesSubmitted, setAllKeySharesSubmitted] = useState(false);
+
+  const [publicKey, setPublicKey] = useState<number>(0);
   const [publicKeyGenerated, setPublicKeyGenerated] = useState<boolean>(false);
+
+  const [inKeyGeneration, setInKeyGeneration] = useState(false);
+  const [inOpeningVote, setInOpeningVote] = useState(false);
+
+  useEffect(() => {
+    checkNumberOfSubmittedPublicKeyShares();
+  }, []);
+
+  useEffect(() => {
+    if (requiredKeyShares === submittedKeyShares) {
+      setAllKeySharesSubmitted(true);
+    }
+  }, [requiredKeyShares, submittedKeyShares]);
 
   const generatePublicKey = async () => {
     try {
-      // TODO: add loading animation
+      setInKeyGeneration(true);
       const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {});
 
       if (response.status === 201) {
         setPublicKey(response.data.publicKey);
         setPublicKeyGenerated(true);
+        setInKeyGeneration(false);
       } else {
         throw new Error(`GET /state. Status Code: ${response.status} -> not what was expected.`);
       }
     } catch (error) {
+      setInKeyGeneration(false);
       console.error(error);
       setErrorMessage(error.msg);
       setHasError(true);
@@ -73,10 +95,13 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   };
 
   const nextStep = async () => {
+    setInOpeningVote(true);
     try {
       await nextState();
+      setInOpeningVote(false);
       handleNext();
     } catch (error) {
+      setInOpeningVote(false);
       setErrorMessage(error.msg);
       setHasError(true);
     }
@@ -86,46 +111,80 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
     () => {
       checkNumberOfSubmittedPublicKeyShares();
     },
-    requiredKeyShares !== submittedKeyShares ? REFRESH_INTERVAL_MS : 0
+    !allKeySharesSubmitted ? REFRESH_INTERVAL_MS : 0
   );
 
   return (
-    <div className={classes.container}>
-      <div>
-        <h1>{`Vote Configuration Phase`}</h1>
-        <h4>
-          {`${submittedKeyShares}/${requiredKeyShares}: Public Key Shares have been submitted!`}
-          {requiredKeyShares === submittedKeyShares
-            ? publicKeyGenerated
-              ? ` You can open the vote now!`
-              : ` You can create the public key now!`
-            : ``}
-        </h4>
-        {publicKeyGenerated && <h3>{`The public key is: ${publicKey}`}</h3>}
-      </div>
-      <div className={classes.actionsContainer}>
-        {!publicKeyGenerated ? (
+    <Box className={classes.root}>
+      <StepTitle title="Vote Configuration" subtitle="Generation of Public Key" />
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <VpnKeyIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              !publicKeyGenerated
+                ? `${submittedKeyShares}/${requiredKeyShares} public key shares have been submitted`
+                : `the public key of the system is: ${publicKey}`
+            }
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            {!allKeySharesSubmitted ? (
+              <LoadSuccess loading={!allKeySharesSubmitted} />
+            ) : !publicKeyGenerated ? (
+              <PriorityHighIcon color="action" />
+            ) : (
+              <LoadSuccess loading={inKeyGeneration} success={publicKeyGenerated} />
+            )}
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              !allKeySharesSubmitted
+                ? `waiting for all key shares to be submitted`
+                : !publicKeyGenerated
+                ? `the public key can be generated`
+                : `public key set, vote can be opened`
+            }
+          />
+        </ListItem>
+
+        <ListItem>
           <Button
             variant="contained"
             color="primary"
             onClick={generatePublicKey}
             className={classes.button}
-            disabled={requiredKeyShares !== submittedKeyShares}
+            disabled={!allKeySharesSubmitted || publicKeyGenerated}
           >
             Generate Public Key
           </Button>
-        ) : (
-          <Button variant="contained" color="primary" onClick={nextStep} className={classes.button}>
-            Open Vote
+        </ListItem>
+
+        <ListItem>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={nextStep}
+            disabled={!publicKeyGenerated}
+            className={classes.button}
+          >
+            {!inOpeningVote ? `Open Vote` : <LoadSuccess loading={true} />}
           </Button>
-        )}
-      </div>
+        </ListItem>
+      </List>
+
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+    </Box>
   );
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    position: 'relative'
+  },
   container: {
     padding: '1em',
     display: 'flex',
