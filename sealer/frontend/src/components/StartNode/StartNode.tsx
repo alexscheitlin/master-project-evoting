@@ -156,7 +156,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
         )}
 
         <ListItem>
-          <Button className={classes.button} disabled={peers === 0} variant="contained" onClick={nextStep}>
+          <Button className={classes.button} disabled={peers === 0} variant="contained" color="primary" onClick={nextStep}>
             Next
           </Button>
         </ListItem>

@@ -1,9 +1,11 @@
+import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import React, { useState } from 'react';
-import { Theme, createStyles, makeStyles, Button, Box, Typography } from '@material-ui/core';
+
 import { SealerBackend } from '../../services';
+import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 import { LoadSuccess } from '../shared/LoadSuccess';
 import { StepTitle } from '../shared/StepTitle';
-import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 
 interface Props {
   nextStep: () => void;
@@ -33,31 +35,39 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   };
 
   return (
-    <div className={classes.root}>
-      <Box textAlign="center">
-        <StepTitle title="Key generation" />
-        <div className={classes.contentSection}>
-          <Button variant="contained" color="default" onClick={generateKeys} disabled={keysSubmitted}>
-            Generate and Submit Keyshare
-          </Button>
-          <div className={classes.statusIcons}>
-            <LoadSuccess success={keysSubmitted} loading={loading} />
-            {keysSubmitted && (
-              <Box textAlign="center" className={classes.textBox}>
-                <Typography variant="caption">Keys submitted.</Typography>
-              </Box>
-            )}
-          </div>
-        </div>
+    <Box className={classes.root}>
+      <StepTitle title="Key generation" />
+      <List>
+        <ListItem>
+          <ListItemText
+            primary={`Take part in the distributed key generation for the e-Voting system. By clicking the button below a key pair will be generated. The public part will be submitted to the Ballot Smart Contract.`}
+          />
+        </ListItem>
+        <ListItem>
+          {!loading && !keysSubmitted ? (
+            <ListItemIcon>
+              <VpnKeyIcon />
+            </ListItemIcon>
+          ) : null}
+          {loading || keysSubmitted ? (
+            <ListItemIcon>
+              <LoadSuccess loading={loading} success={keysSubmitted} />
+            </ListItemIcon>
+          ) : null}
 
-        <div className={classes.contentSection}>
-          <Button variant="contained" color="default" disabled={!keysSubmitted} onClick={nextStep}>
+          <Button variant="outlined" onClick={generateKeys} disabled={keysSubmitted}>
+            Generate and submit keyshare
+          </Button>
+        </ListItem>
+
+        <ListItem>
+          <Button className={classes.button} variant="contained" color="primary" disabled={!keysSubmitted} onClick={nextStep}>
             Next
           </Button>
-        </div>
-      </Box>
+        </ListItem>
+      </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </div>
+    </Box>
   );
 };
 
@@ -66,16 +76,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       position: 'relative',
     },
-    contentSection: {
-      padding: theme.spacing(1),
-    },
-    statusIcons: {
-      padding: theme.spacing(1, 0),
-      height: 30,
-    },
-    textBox: {
-      width: 400,
-      margin: 'auto',
+    button: {
+      marginRight: theme.spacing(1),
+      width: 160,
     },
   })
 );
