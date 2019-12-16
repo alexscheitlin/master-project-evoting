@@ -16,21 +16,28 @@ contract Ballot {
     // /////////////////////////////////
     enum VotingState {CONFIG, VOTING, TALLY, RESULT}
 
+    // parameters for the elgamal crypto system
     struct SystemParameters {
         uint256 p; // prime
         uint256 q; // prime factor: p = 2*q+1
         uint256 g; // generator
     }
 
+    // the public key used in the elgamal crypto system
     struct PublicKey {
         uint256 h;
     }
 
+    // represents one part of the public key (distributed key generation)
+    // this struct also records a proof along with the public key share
     struct PublicKeyShare {
         uint256 share;
         KeyShareProof keyShareProof;
     }
 
+    // represents the decryption of all vote-ciphers done by one sealer
+    // each sealer will go through this process and submit it's share
+    // their product will then form the final sum
     struct DecryptedShare {
         uint256 share;
         DecryptedShareProof decryptedShareProof;
@@ -115,6 +122,8 @@ contract Ballot {
         IS_PARAMETERS_SET = false;
         IS_PUBKEY_SET = false;
 
+        // set the owner of the contract
+        // needed for guarding certain functionalites
         _owner = msg.sender;
 
         // initialize empty Election struct
@@ -129,6 +138,10 @@ contract Ballot {
     // /////////////////////////////////////////
     // VOTING AUTHORITY core functions (owner)
     // /////////////////////////////////////////
+    
+    // set the parameters of the elgamal crypto system
+    // can only be done by the owner (authority) and should
+    // be set after contract deployment
     function setParameters(uint256[3] calldata params) external {
         require(msg.sender == _owner);
         require(!IS_PARAMETERS_SET);
@@ -137,16 +150,23 @@ contract Ballot {
         IS_PARAMETERS_SET = true;
     }
 
+    // generates the public key of the elgamal crypto system
+    // - the public key is generated from all submitted public key shares by the sealer nodes
+    // - their product forms the public key
     function generatePublicKey() external {
         require(msg.sender == _owner);
+
         // public key can only be generated once
         require(!IS_PUBKEY_SET);
+
         // every sealer needs to have published it's public key share
         require(election.publicKeyShareWallet.length == NR_OF_AUTHORITY_NODES);
 
+        // set an initial key (here, we take the first)
         address firstSealerAddress = election.publicKeyShareWallet[0];
         uint256 key = election.pubKeyShareMapping[firstSealerAddress].share;
 
+        // form the product of all public key shares
         for (uint256 i = 1; i < election.publicKeyShareWallet.length; i++) {
             address addr = election.publicKeyShareWallet[i];
             key = key.modMul(election.pubKeyShareMapping[addr].share, systemParameters.p);
@@ -156,10 +176,14 @@ contract Ballot {
         publicKey = PublicKey(key);
 
         IS_PUBKEY_SET = true;
-
+        
+        // trigger the creation of the verifiers (for proof verification)
+        // they depend on the system parameters and public key, that's why
+        // they are created only once the public key is set
         createVerifiers();
     }
 
+    // create proof verifiers
     function createVerifiers() private {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
@@ -168,7 +192,7 @@ contract Ballot {
         sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
     }
 
-    // Change into state VOTING
+    // open the Ballot and change into state VOTING
     function openBallot() public {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
@@ -178,6 +202,7 @@ contract Ballot {
         votingState = VotingState.VOTING;
     }
 
+    // close the Ballot and change into state TALLY
     function closeBallot() public {
         require(msg.sender == _owner);
         require(IS_PUBKEY_SET == true);
@@ -187,14 +212,18 @@ contract Ballot {
         votingState = VotingState.TALLY;
     }
 
-    // Combine all submitted decrypted shares to find the final tally
+    // combine all submitted decrypted shares to find the final tally
+    // each sealer has to first submit it's decrypted share
+    // the product of all decrypted shares will form the final result (nr of yes-votes) 
     function combineDecryptedShares() public {
         require(votingState == VotingState.TALLY);
         require(election.decryptedShareWallet.length == NR_OF_AUTHORITY_NODES);
 
+        // define starting value (here, we take the share of the first address)
         address firstSealerAddress = election.decryptedShareWallet[0];
         uint256 res = election.decryptedShareMapping[firstSealerAddress].share;
 
+        // calculate the product of all decrypted shares
         for (uint256 i = 1; i < election.decryptedShareWallet.length; i++) {
             address addr = election.decryptedShareWallet[i];
             res = res.modMul(election.decryptedShareMapping[addr].share, systemParameters.p);
@@ -207,11 +236,14 @@ contract Ballot {
         uint256 g = systemParameters.g;
         uint256 p = systemParameters.p;
         while ((g.modPow(m, p)) != mh) {
+            // the homomorphic property will reveal how many yes-votes there are
             m = m + 1;
         }
 
+        // set the result
         election.yesVotes = m;
 
+        // move into the RESULT state
         votingState = VotingState.RESULT;
     }
 
@@ -219,20 +251,24 @@ contract Ballot {
     // SEALER core functions
     // /////////////////////////////////
 
-    // For Public Key Generation
+    // submit the public key share from the distributed key generation
     function submitPublicKeyShare(uint256 key, uint256 proof_c, uint256 proof_d)
         external
         returns (bool, string memory)
     {
+        // accept key shares only if state is CONFIG
+        // and the public key does not yet exist
         require(votingState == VotingState.CONFIG);
         require(IS_PUBKEY_SET == false);
 
+        // don't accept if proof not valid
         bool proofValid = keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender);
         if (!proofValid) {
             emit SystemStatusEvent(msg.sender, false, 'Key Generation Proof is not correct.');
             return (false, 'Key Generation Proof is not correct.');
         }
 
+        // check if this address has already submitted a share 
         bool sealerAlreadySubmitted = false;
 
         for (uint256 i; i < election.publicKeyShareWallet.length; i++) {
@@ -244,27 +280,32 @@ contract Ballot {
         PublicKeyShare memory publicKeyShare = PublicKeyShare(key, KeyShareProof(proof_c, proof_d));
 
         if (!sealerAlreadySubmitted) {
+            // add sealer address to array
             election.publicKeyShareWallet.push(msg.sender);
         }
 
+        // add or replace the share
         election.pubKeyShareMapping[msg.sender] = publicKeyShare;
 
         return (true, 'Key Generation Proof is valid.');
     }
 
-    // For Tallying the Votes
+    // submit the decrypted share (a decryption share of all vote-ciphers)
     function submitDecryptedShare(uint256 share, uint256 a, uint256 b, uint256 a1, uint256 b1, uint256 d, uint256 f)
         external
         returns (bool, string memory)
-    {
+    {   
+        // only allow submission if in state
         require(votingState == VotingState.TALLY);
 
+        // don't accept if proof verification fails
         uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender].share;
         if (!sumVerifier.verifyProof(a, b, a1, b1, d, f, msg.sender, publicKeyShare)) {
             emit VoteStatusEvent(msg.sender, false, 'Proof not correct');
             return (false, 'Proof not correct');
         }
 
+        // check if this address has already submitted a share 
         bool sealerAlreadySubmitted = false;
 
         for (uint256 i; i < election.decryptedShareWallet.length; i++) {
@@ -276,9 +317,11 @@ contract Ballot {
         DecryptedShare memory decryptedShare = DecryptedShare(share, DecryptedShareProof(a1, b1, d, f));
 
         if (!sealerAlreadySubmitted) {
+            // add sealer address to array
             election.decryptedShareWallet.push(msg.sender);
         }
-
+        
+        // add or replace the share
         election.decryptedShareMapping[msg.sender] = decryptedShare;
 
         // store the cipher for later decryption
@@ -298,16 +341,20 @@ contract Ballot {
         uint256[2] calldata c,
         uint256[2] calldata f
     ) external returns (bool, string memory) {
+
+        // don't accept if not in VOTING state
         if (votingState != VotingState.VOTING) {
             emit VoteStatusEvent(msg.sender, false, 'Vote not open');
             return (false, 'Vote not open');
         }
 
+        // don't accept if address has already voted
         if(election.hasVoted[msg.sender]) {
         	emit VoteStatusEvent(msg.sender, false, "Voter already voted");
         	return (false, "Voter already voted");
         }
 
+        // don't accept if the proof is not valid
         if (!voteVerifier.verifyProof(cipher, a, b, c, f, msg.sender)) {
             emit VoteStatusEvent(msg.sender, false, 'Proof not correct');
             return (false, 'Proof not correct');
@@ -317,6 +364,7 @@ contract Ballot {
         Cipher memory _cipher = Cipher(cipher[0], cipher[1]);
         Voter memory voter = Voter(msg.sender, _cipher, voteProof);
 
+        // add Voter struct
         election.voters.push(voter);
         election.nrOfVoters += 1;
         election.hasVoted[msg.sender] = true;
@@ -329,6 +377,7 @@ contract Ballot {
     // getters
     // /////////////////////////////////
 
+    // get the voting question
     function getVotingQuestion() external view returns (string memory) {
         return election.votingQuestion;
     }
