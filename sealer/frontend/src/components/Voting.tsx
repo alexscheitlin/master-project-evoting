@@ -21,6 +21,7 @@ export const Voting: React.FC = () => {
     const getRequiredValidators = async () => {
       try {
         const data = await AuthBackend.getState();
+        console.log(data);
         setActiveStep(VOTE_STATES.indexOf(data.state));
       } catch (error) {
         setErrorMessage(error.message);
