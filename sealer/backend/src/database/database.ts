@@ -1,3 +1,5 @@
+/*eslint @typescript-eslint/no-explicit-any: "off"*/
+
 import low, { AdapterSync } from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
 
@@ -9,7 +11,7 @@ export const PUBLIC_KEY_SHARES_TABLE = 'publicKeyShare'
 
 let db: low.LowdbSync<any>
 
-export const setupDB = () => {
+export const setupDB = (): void => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
 
@@ -23,17 +25,7 @@ export const setupDB = () => {
   }).write()
 }
 
-export const addToList = (table: string, value: any[]) => {
-  // read content from DB + add the new value
-  const tableContent: string[] = getListFromDB(table)
-  tableContent.push(...value)
-
-  // write the content to the DB
-  db.set(table, tableContent).value()
-  db.write()
-}
-
-export const setValue = (table: string, value: any | any[]) => {
+export const setValue = (table: string, value: any | any[]): void => {
   // write the new value to the field in the DB
   db.set(table, value).value()
   db.write()
@@ -47,6 +39,16 @@ export const getValueFromDB = (table: string): string => {
   return db.get(table).value()
 }
 
-export const getObjectFromDB = (table: string): any => {
+export const getObjectFromDB = (table: string): {} => {
   return db.get(table).value()
+}
+
+export const addToList = (table: string, value: any[]): void => {
+  // read content from DB + add the new value
+  const tableContent: string[] = getListFromDB(table)
+  tableContent.push(...value)
+
+  // write the content to the DB
+  db.set(table, tableContent).value()
+  db.write()
 }

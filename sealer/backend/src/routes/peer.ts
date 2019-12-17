@@ -26,7 +26,7 @@ router.post('/peer', async (req, res) => {
   }
 
   // check if I am the bootnode
-  let iAmBootNode = bootNodeUrl === myUrl
+  const iAmBootNode = bootNodeUrl === myUrl
 
   if (!iAmBootNode) {
     let enode
