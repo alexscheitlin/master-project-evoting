@@ -20,7 +20,7 @@ export const toSystemParams = (params: BN[]): FFelGamal.SystemParameters => {
  * Utility function to properly encode numbers for solidity
  * @param number BN number to convert
  */
-const toHex = (number: BN) => Web3.utils.toHex(number)
+const toHex = (number: BN): string => Web3.utils.toHex(number)
 
 /**
  * Sends a vote to the blockchain to be verified and accepted
@@ -34,7 +34,7 @@ const submitVote = async (
   vote: FFelGamal.Cipher,
   contract: any,
   wallet: string
-) => {
+): Promise<boolean> => {
   try {
     const res = await contract.methods
       .vote(
