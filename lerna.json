@@ -5,7 +5,8 @@
     "crypto/**",
     "identity-provider-backend/",
     "voter-frontend/",
-    "voting-authority/backend/"
+    "voting-authority/backend/",
+    "voting-authority/frontend/"
   ],
   "npmClient": "npm",
   "version": "3.18.4"

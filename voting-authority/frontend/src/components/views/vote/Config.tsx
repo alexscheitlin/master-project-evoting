@@ -34,7 +34,7 @@ interface PublicKeyPostResponse {
 
 export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
   const classes = useStyles();
-  const REFRESH_INTERVAL_MS: number = 4000;
+  const REFRESH_INTERVAL_MS = 4000;
 
   const { nextState } = useVoteStateStore();
 

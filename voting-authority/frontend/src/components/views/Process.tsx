@@ -65,7 +65,7 @@ export const Process: React.FC = () => {
       default:
         return (
           <div>
-            <h1>Error: Step doesn't exist!</h1>
+            <h1>Error: Step doesn`&apos;`t exist!</h1>
             <ErrorSnackbar open={hasError} message={errorMessage} />
           </div>
         );
