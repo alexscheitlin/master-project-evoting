@@ -263,7 +263,6 @@ Responses and actions depending on the state:
 
 => change to `RESULT` state
 
-
 ### Contracts
 
 See README in root folder

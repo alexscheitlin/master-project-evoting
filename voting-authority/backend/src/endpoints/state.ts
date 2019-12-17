@@ -29,7 +29,7 @@ const router: express.Router = express.Router()
 // GET /state
 // ----------------------------------------------------------------------------------------------------
 router.get('/state', async (req, res) => {
-  const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  const currentState: string = getValueFromDB(STATE_TABLE) as string
   const votingQuestion: string = getValueFromDB(VOTING_QUESTION_TABLE)
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
@@ -40,7 +40,7 @@ router.get('/state', async (req, res) => {
     // --------------------------------------------------
     // ... how many sealers are required and already registered
     case VotingState.REGISTER:
-      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
+      const registeredAuthorities: string[] = getValueFromDB(AUTHORITIES_TABLE) as string[]
       res.status(200).json({
         state: currentState,
         registeredSealers: registeredAuthorities.length,
@@ -95,17 +95,19 @@ router.get('/state', async (req, res) => {
       }
 
       // get public key
-      let publicKey: BN
+      let publicKey: BN = new BN(0)
       try {
         publicKey = await BallotManager.getPublicKey()
-      } catch (error) {}
+      } catch (error) {
+        // ignore
+      }
 
       const requiredKeyShares: number = requiredAuthorities
       res.status(200).json({
         state: currentState,
         submittedKeyShares: submittedKeyShares,
         requiredKeyShares: requiredKeyShares,
-        publicKey: publicKey ? publicKey : -1,
+        publicKey: !(publicKey.toNumber() !== 0) ? publicKey : -1,
       })
       break
 
@@ -202,7 +204,7 @@ router.get('/state', async (req, res) => {
 // POST /state
 // ----------------------------------------------------------------------------------------------------
 router.post('/state', async (req, res) => {
-  const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  const currentState: string = getValueFromDB(STATE_TABLE) as string
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {
@@ -211,7 +213,7 @@ router.post('/state', async (req, res) => {
     // --------------------------------------------------
     case VotingState.REGISTER:
       // verify that all sealers are registered
-      const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
+      const registeredAuthorities: string[] = getValueFromDB(AUTHORITIES_TABLE) as string[]
       if (registeredAuthorities.length !== requiredAuthorities) {
         res.status(400).json({
           state: currentState,
@@ -248,7 +250,7 @@ router.post('/state', async (req, res) => {
       }
 
       // verify that the contracts are deployed
-      const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
+      const isDeployed: boolean = getValueFromDB(BALLOT_DEPLOYED_TABLE) as boolean
       if (!isDeployed) {
         res.status(400).json({
           state: currentState,

@@ -13,7 +13,7 @@ const router: express.Router = express.Router()
 
 router.post('/connectionNode', async (req, res) => {
   const url: string = req.body.url
-  const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  const currentState: string = getValueFromDB(STATE_TABLE) as string
   const nodes: string[] = getValueFromDB(NODES_TABLE)
 
   let msg: string = ''

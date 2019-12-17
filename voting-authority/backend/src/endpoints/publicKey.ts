@@ -15,7 +15,7 @@ const SUCCESSFUL: string = 'The public key generation was successful!'
 const router: express.Router = express.Router()
 
 router.post('/publickey', async (req, res) => {
-  const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  const currentState: string = getValueFromDB(STATE_TABLE) as string
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {

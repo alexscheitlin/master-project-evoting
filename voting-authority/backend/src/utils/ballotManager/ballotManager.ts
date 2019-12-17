@@ -26,10 +26,10 @@ export const setSystemParameters = async () => {
   // TODO: how do we generate suitable params?
   const p_: number = 23
   const g_: number = 2
-  const bund_systemParams: FFelGamal.SystemParameters = FFelGamal.SystemSetup.generateSystemParameters(p_, g_)
+  const systemParams: FFelGamal.SystemParameters = FFelGamal.SystemSetup.generateSystemParameters(p_, g_)
   try {
     await contract.methods
-      .setParameters([toHex(bund_systemParams.p), toHex(bund_systemParams.q), toHex(bund_systemParams.g)])
+      .setParameters([toHex(systemParams.p), toHex(systemParams.q), toHex(systemParams.g)])
       .send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
     throw new Error('System parameters could not be initialized.')

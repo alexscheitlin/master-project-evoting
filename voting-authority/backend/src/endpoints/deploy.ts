@@ -25,17 +25,24 @@ const ACCOUNT_CREATION_FAILED: string = 'The wallet could not be created!'
 
 const router: express.Router = express.Router()
 
+export const validateVoteQuestion = (question: string) => {
+  if (question === null || typeof question !== 'string') {
+    return true
+  }
+  return false
+}
+
 router.post('/deploy', async (req, res) => {
-  const currentState: string = <string>getValueFromDB(STATE_TABLE)
+  const currentState: string = getValueFromDB(STATE_TABLE) as string
   if (currentState === VotingState.REGISTER) {
     res.status(400).json({ msg: TOO_EARLY })
     return
   }
 
   // check if the contracts are already deployed
-  const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
+  const isDeployed: boolean = getValueFromDB(BALLOT_DEPLOYED_TABLE) as boolean
   if (isDeployed) {
-    const address: boolean = <boolean>getValueFromDB(BALLOT_ADDRESS_TABLE)
+    const address: boolean = getValueFromDB(BALLOT_ADDRESS_TABLE) as boolean
     res.status(409).json({ address: address, msg: BALLOT_ALREADY_DEPLOYED_MESSAGE })
     return
   }
@@ -73,7 +80,7 @@ router.post('/deploy', async (req, res) => {
     return
   }
 
-  const voteQuestion: string = <string>req.body.question
+  const voteQuestion: string = req.body.question as string
   const questionIsInvalid: boolean = validateVoteQuestion(voteQuestion)
   if (questionIsInvalid) {
     res.status(400).json({ msg: VOTE_QUESTION_INVALID })
@@ -113,10 +120,10 @@ router.post('/deploy', async (req, res) => {
 })
 
 router.get('/deploy', (req, res) => {
-  const isDeployed: boolean = <boolean>getValueFromDB(BALLOT_DEPLOYED_TABLE)
+  const isDeployed: boolean = getValueFromDB(BALLOT_DEPLOYED_TABLE) as boolean
 
   if (isDeployed) {
-    const address: boolean = <boolean>getValueFromDB(BALLOT_ADDRESS_TABLE)
+    const address: boolean = getValueFromDB(BALLOT_ADDRESS_TABLE) as boolean
     res.status(200).json({ address: address, msg: BALLOT_ALREADY_DEPLOYED_MESSAGE })
   } else {
     // reason why we don't return anything at all
@@ -126,12 +133,5 @@ router.get('/deploy', (req, res) => {
     res.sendStatus(204)
   }
 })
-
-export const validateVoteQuestion = (question: string) => {
-  if (question === null || typeof question !== 'string') {
-    return true
-  }
-  return false
-}
 
 export default router

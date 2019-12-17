@@ -55,10 +55,34 @@ const sendValidatorToAllClients = (newValidator: string) => {
   clients.forEach(c => c.res.write(`data: ${JSON.stringify([newValidator])}\n\n`))
 }
 
+export const addValidatorToChainspec = (chainspec: any, address: string): any => {
+  if (chainspec === null || typeof chainspec === undefined) {
+    throw new TypeError('Cannot read chainspec since it is null.')
+  }
+
+  // updates the list of current validators in the current chainspec
+  const validators: string[] = chainspec['engine']['authorityRound']['params']['validators']['list']
+  if (validators === null || typeof validators === undefined) {
+    throw new TypeError('Validators cannot be retrieved from chainspec since it is null.')
+  }
+  validators.push(address)
+  chainspec['engine']['authorityRound']['params']['validators']['list'] = validators
+
+  // pre-fund validator
+  const accounts: any = chainspec['accounts']
+  if (accounts === null || typeof accounts === undefined) {
+    throw new TypeError('Accounts cannot be retrieved from chainspec since it is null.')
+  }
+  accounts[`${address}`] = { balance: '10000000000000000000000' }
+  chainspec['accounts'] = accounts
+
+  return chainspec
+}
+
 router.get('/chainspec', (req, res) => {
-  const state: string = <string>getValueFromDB(STATE_TABLE)
+  const state: string = getValueFromDB(STATE_TABLE) as string
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
-  const registeredAuthorities: string[] = <string[]>getValueFromDB(AUTHORITIES_TABLE)
+  const registeredAuthorities: string[] = getValueFromDB(AUTHORITIES_TABLE) as string[]
 
   // REGISTER -> returns default chainspec for authority account creation
   if (state === 'REGISTER') {
@@ -76,7 +100,7 @@ router.get('/chainspec', (req, res) => {
 })
 
 router.post('/chainspec', (req, res) => {
-  const state: string = <string>getValueFromDB(STATE_TABLE)
+  const state: string = getValueFromDB(STATE_TABLE) as string
 
   // no longer allow authority registration once the voting state has changed to STARTUP
   if (state !== 'REGISTER') {
@@ -109,29 +133,5 @@ router.post('/chainspec', (req, res) => {
     res.status(400).json({ created: false, msg: error.message })
   }
 })
-
-export const addValidatorToChainspec = (chainspec: any, address: string): any => {
-  if (chainspec === null || typeof chainspec === undefined) {
-    throw new TypeError('Cannot read chainspec since it is null.')
-  }
-
-  // updates the list of current validators in the current chainspec
-  const validators: string[] = chainspec['engine']['authorityRound']['params']['validators']['list']
-  if (validators === null || typeof validators === undefined) {
-    throw new TypeError('Validators cannot be retrieved from chainspec since it is null.')
-  }
-  validators.push(address)
-  chainspec['engine']['authorityRound']['params']['validators']['list'] = validators
-
-  // pre-fund validator
-  const accounts: any = chainspec['accounts']
-  if (accounts === null || typeof accounts === undefined) {
-    throw new TypeError('Accounts cannot be retrieved from chainspec since it is null.')
-  }
-  accounts[`${address}`] = { balance: '10000000000000000000000' }
-  chainspec['accounts'] = accounts
-
-  return chainspec
-}
 
 export default router

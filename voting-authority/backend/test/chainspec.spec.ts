@@ -73,7 +73,7 @@ describe('Chainspec Tests', () => {
     })
   })
 
-  describe('GET Tests', () => {})
+  //describe('GET Tests', () => {})
 
-  describe('POST Tests', () => {})
+  //describe('POST Tests', () => {})
 })

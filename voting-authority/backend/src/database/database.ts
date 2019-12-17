@@ -33,6 +33,18 @@ export const setupDB = () => {
   }).write()
 }
 
+export const getListFromDB = (table: string): string[] => {
+  return db.get(table).value()
+}
+
+export const getValueFromDB = (table: string): any => {
+  return db.get(table).value()
+}
+
+export const getObjectFromDB = (table: string): any => {
+  return db.get(table).value()
+}
+
 export const addToList = (table: string, value: string[]) => {
   // read content from DB + add the new value
   const tableContent: string[] = getListFromDB(table)
@@ -47,16 +59,4 @@ export const setValue = (table: string, value: any) => {
   // write the new value to the field in the DB
   db.set(table, value).value()
   db.write()
-}
-
-export const getListFromDB = (table: string): string[] => {
-  return db.get(table).value()
-}
-
-export const getValueFromDB = (table: string): any => {
-  return db.get(table).value()
-}
-
-export const getObjectFromDB = (table: string): any => {
-  return db.get(table).value()
 }
