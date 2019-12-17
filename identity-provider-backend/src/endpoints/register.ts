@@ -36,8 +36,8 @@ export const getRandomToken = (): string => {
 
 router.post('/registerVoters', async (req, res) => {
   const voters: string[] = req.body.voters || []
-  const identities = <Identity[]>getListFromDB(IDENTITIES_TABLE)
-  const tokens = <IdentityToken[]>getListFromDB(TOKENS_TABLE)
+  const identities = getListFromDB(IDENTITIES_TABLE) as Identity[]
+  const tokens = getListFromDB(TOKENS_TABLE) as IdentityToken[]
 
   // validate given voters (= uuids)
   try {

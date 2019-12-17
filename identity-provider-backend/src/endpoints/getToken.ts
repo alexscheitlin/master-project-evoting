@@ -46,8 +46,8 @@ export const getToken = (tokens: IdentityToken[], uuid: string): string => {
 router.post('/getToken', (req, res) => {
   const username: string = req.body.username
   const password: string = req.body.password
-  const identities = <Identity[]>getListFromDB(IDENTITIES_TABLE)
-  const tokens = <IdentityToken[]>getListFromDB(TOKENS_TABLE)
+  const identities = getListFromDB(IDENTITIES_TABLE) as Identity[]
+  const tokens = getListFromDB(TOKENS_TABLE) as IdentityToken[]
 
   if (!doesUserExist(identities, username)) {
     res.status(400).json({ success: false, msg: INVALID + `username ${username}` })

@@ -11,10 +11,10 @@ export const requestLogger = (request: express.Request, response: express.Respon
 }
 
 export const responseLogger = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
-  let oldWrite = response.write
-  let oldEnd = response.end
+  const oldWrite = response.write
+  const oldEnd = response.end
 
-  let chunks: any[] = []
+  const chunks: any[] = []
 
   response.write = function(chunk: any): boolean {
     chunks.push(chunk)
