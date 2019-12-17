@@ -17,12 +17,12 @@ export const VOTE_STATES: string[] = [
 ];
 
 export enum VoteLabels {
-  REGISTER = 'Address Registration',
-  STARTUP = 'Starting Sealer Node',
-  CONFIG = 'Key Generation',
-  VOTING = 'Voting',
-  TALLY = 'Tally Votes',
-  RESULT = 'Result',
+  REGISTER = 'REGISTER',
+  STARTUP = 'STARTUP',
+  CONFIG = 'CONFIG',
+  VOTING = 'VOTING',
+  TALLY = 'TALLY',
+  RESULT = 'RESULT',
 }
 
 export const VOTE_LABELS: string[] = [

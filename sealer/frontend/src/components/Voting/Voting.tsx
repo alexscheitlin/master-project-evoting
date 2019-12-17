@@ -6,6 +6,7 @@ import { StepTitle } from '../shared/StepTitle';
 import { useInterval } from '../../hooks/useInterval';
 import { AuthBackend } from '../../services';
 import { VotingState } from '../../models/states';
+import { StepContentWrapper } from '../Helpers/StepContentWrapper';
 
 interface Props {
   nextStep: () => void;
@@ -24,8 +25,8 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
   useInterval(getState, !readyForTally ? 4000 : 0);
 
   return (
-    <Box className={classes.root}>
-      <StepTitle title="VOTING" />
+    <StepContentWrapper>
+      <StepTitle title="Voting" />
       <List>
         <ListItem>
           <ListItemIcon>
@@ -47,7 +48,7 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
           </Button>
         </ListItem>
       </List>
-    </Box>
+    </StepContentWrapper>
   );
 };
 
@@ -55,10 +56,15 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      minHeight: 700,
     },
     button: {
       marginRight: theme.spacing(1),
       width: 160,
+    },
+    nextButton: {
+      position: 'absolute',
+      bottom: 0,
     },
   })
 );

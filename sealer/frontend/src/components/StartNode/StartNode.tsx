@@ -9,6 +9,7 @@ import { SealerBackend } from '../../services';
 import { delay } from '../../utils/helper';
 import { LoadSuccess } from '../shared/LoadSuccess';
 import { StepTitle } from '../shared/StepTitle';
+import { StepContentWrapper } from '../Helpers/StepContentWrapper';
 
 interface Props {
   nextStep: () => void;
@@ -69,8 +70,8 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   useInterval(pollPeers, isNodeRunning ? REFRESH_INTERVAL_MS : 0);
 
   return (
-    <Box className={classes.root}>
-      <StepTitle title="SEALER NODE" />
+    <StepContentWrapper>
+      <StepTitle title="Start Node" />
       <List>
         <ListItem>
           {!loading && !chainSpecLoaded ? (
@@ -147,14 +148,16 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
             )}
           </>
         )}
+      </List>
 
+      <List className={classes.nextButton}>
         <ListItem>
           <Button className={classes.button} disabled={peers === 0} variant="contained" color="primary" onClick={nextStep}>
             Next
           </Button>
         </ListItem>
       </List>
-    </Box>
+    </StepContentWrapper>
   );
 };
 
@@ -162,6 +165,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      minHeight: 700,
     },
     instructions: {
       borderRadius: 4,
@@ -174,6 +178,10 @@ const useStyles = makeStyles((theme: Theme) =>
     button: {
       marginRight: theme.spacing(1),
       width: 160,
+    },
+    nextButton: {
+      position: 'absolute',
+      bottom: 0,
     },
   })
 );
