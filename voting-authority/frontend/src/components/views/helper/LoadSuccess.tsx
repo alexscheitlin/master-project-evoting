@@ -1,7 +1,7 @@
 import { CircularProgress } from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import React from 'react';
+import mainTheme from '../../../Theme';
 
 interface Props {
   loading?: boolean;
@@ -13,7 +13,7 @@ export const LoadSuccess: React.FC<Props> = ({ loading, success, white }) => {
   return (
     <div>
       {loading && <CircularProgress size={24} style={{ color: white ? 'white' : '' }} />}
-      {success && <CheckCircleIcon style={{ fontSize: 24, color: green[500] }} />}
+      {success && <CheckCircleIcon style={{ fontSize: 24, color: mainTheme.palette.primary.main }} />}
     </div>
   );
 };
