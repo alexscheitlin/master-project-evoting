@@ -50,21 +50,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
-    "lint": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet",
-    "lint:fix": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet --fix"
-  },
-  "lint-staged": {
-    "*.+(js|jsx|ts|tsx)": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.+(json|css|md)": [
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "lint": "eslint . --ext .js,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix"
   },
   "browserslist": {
     "production": [
