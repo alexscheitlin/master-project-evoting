@@ -2,7 +2,7 @@ export {}
 import { expect } from 'chai'
 import { describe } from 'mocha'
 import sinon from 'sinon'
-import * as Registration from '../src/registration/register'
+import * as Registration from '../src/endpoints/register'
 import * as DB from '../src/database/database'
 
 describe('Voter Registration Tests', () => {
