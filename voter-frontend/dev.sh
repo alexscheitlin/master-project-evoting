@@ -13,7 +13,6 @@ readonly parentParentDir="$(dirname "$parentDir")"
 # Cleanup
 ###########################################
 rm -f $dir/.env
-rm -rf mp-crypto # only needed locally if started with docker
 
 ###########################################
 # Mode
@@ -52,23 +51,6 @@ echo "# Installing NPM Packages for you                                         
 echo "##########################################################################"
 echo
 npm i
-
-###########################################
-# making sure mp-crypto is linked
-###########################################
-echo "##########################################################################"
-echo "# Linking mp-crypto, running the commands below                           "
-echo "##########################################################################"
-echo "# > cd $parentParentDir/crypto                                             "
-echo "# > sudo npm link                                                          "
-echo "# > cd $dir                                                                "
-echo "# > npm link mp-crypto                                                     "
-echo "##########################################################################"
-echo
-cd $parentParentDir/crypto
-sudo npm link
-cd $dir
-npm link mp-crypto
 
 ###########################################
 # start dev server

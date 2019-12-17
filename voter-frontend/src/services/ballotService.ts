@@ -1,5 +1,5 @@
 import BN from 'bn.js'
-import { FFelGamal } from 'mp-crypto'
+import { FFelGamal } from '@meck93/evote-crypto';
 import Web3 from 'web3'
 
 /**
