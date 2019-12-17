@@ -1,6 +1,12 @@
 {
   "lerna": "3.18.4",
-  "packages": ["crypto/**", "voter-frontend/**"],
+  "packages": [
+    "access-provider-backend/",
+    "crypto/**",
+    "identity-provider-backend/",
+    "voter-frontend/",
+    "voting-authority/backend/"
+  ],
   "npmClient": "npm",
   "version": "3.18.4"
 }
