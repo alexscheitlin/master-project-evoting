@@ -51,7 +51,7 @@ router.get('/registered', (req: express.Request, res: express.Response) => {
   })
 })
 
-const sendValidatorToAllClients = (newValidator: string) => {
+const sendValidatorToAllClients = (newValidator: string): void => {
   clients.forEach(c => c.res.write(`data: ${JSON.stringify([newValidator])}\n\n`))
 }
 

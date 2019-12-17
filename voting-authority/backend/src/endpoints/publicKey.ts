@@ -19,13 +19,15 @@ router.post('/publickey', async (req, res) => {
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {
-    case VotingState.REGISTER:
+    case VotingState.REGISTER: {
       res.status(400).json({ msg: TOO_EARLY_MSG })
       return
-    case VotingState.STARTUP:
+    }
+    case VotingState.STARTUP: {
       res.status(400).json({ msg: TOO_EARLY_MSG })
       return
-    case VotingState.CONFIG:
+    }
+    case VotingState.CONFIG: {
       let publicKey: BN
 
       // check if the public key was already created
@@ -66,12 +68,15 @@ router.post('/publickey', async (req, res) => {
 
       res.status(201).json({ msg: SUCCESSFUL, publicKey: publicKey })
       return
-    case VotingState.VOTING:
+    }
+    case VotingState.VOTING: {
       res.status(400).json({ msg: TOO_LATE_MSG })
       return
-    case VotingState.TALLY:
+    }
+    case VotingState.TALLY: {
       res.status(400).json({ msg: TOO_LATE_MSG })
       return
+    }
   }
 })
 

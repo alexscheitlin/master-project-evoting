@@ -25,7 +25,7 @@ const ACCOUNT_CREATION_FAILED: string = 'The wallet could not be created!'
 
 const router: express.Router = express.Router()
 
-export const validateVoteQuestion = (question: string) => {
+export const validateVoteQuestion = (question: string): boolean => {
   if (question === null || typeof question !== 'string') {
     return true
   }

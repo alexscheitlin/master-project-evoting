@@ -15,7 +15,7 @@ export const BALLOT_DEPLOYED_TABLE: string = 'ballotDeployed'
 export const VOTING_QUESTION_TABLE: string = 'votingQuestion'
 export const CHAINSPEC_TABLE: string = 'chainspec'
 
-export const setupDB = () => {
+export const setupDB = (): void => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
 
@@ -45,7 +45,7 @@ export const getObjectFromDB = (table: string): any => {
   return db.get(table).value()
 }
 
-export const addToList = (table: string, value: string[]) => {
+export const addToList = (table: string, value: string[]): void => {
   // read content from DB + add the new value
   const tableContent: string[] = getListFromDB(table)
   tableContent.push(...value)
@@ -55,7 +55,7 @@ export const addToList = (table: string, value: string[]) => {
   db.write()
 }
 
-export const setValue = (table: string, value: any) => {
+export const setValue = (table: string, value: any): void => {
   // write the new value to the field in the DB
   db.set(table, value).value()
   db.write()

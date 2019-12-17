@@ -39,7 +39,7 @@ router.get('/state', async (req, res) => {
     // REGISTER
     // --------------------------------------------------
     // ... how many sealers are required and already registered
-    case VotingState.REGISTER:
+    case VotingState.REGISTER: {
       const registeredAuthorities: string[] = getValueFromDB(AUTHORITIES_TABLE) as string[]
       res.status(200).json({
         state: currentState,
@@ -47,12 +47,13 @@ router.get('/state', async (req, res) => {
         requiredSealers: requiredAuthorities,
       })
       break
+    }
 
     // --------------------------------------------------
     // STARTUP
     // --------------------------------------------------
     // ... how many sealers are required and already connected
-    case VotingState.STARTUP:
+    case VotingState.STARTUP: {
       let connectedAuthorities: number = 0
       let signedUpSealers: number = 0
       try {
@@ -77,12 +78,13 @@ router.get('/state', async (req, res) => {
         question: votingQuestion,
       })
       break
+    }
 
     // --------------------------------------------------
     // CONFIG
     // --------------------------------------------------
     // ... how many public key shares are required and already submitted
-    case VotingState.CONFIG:
+    case VotingState.CONFIG: {
       let submittedKeyShares: number = 0
       try {
         submittedKeyShares = await BallotManager.getNrOfPublicKeyShares()
@@ -110,13 +112,14 @@ router.get('/state', async (req, res) => {
         publicKey: !(publicKey.toNumber() !== 0) ? publicKey : -1,
       })
       break
+    }
 
     // --------------------------------------------------
     // VOTING
     // --------------------------------------------------
     // ... what the voting question is and ...
     // ... how many votes have been casted
-    case VotingState.VOTING:
+    case VotingState.VOTING: {
       let numberOfVotes: number = 0
       try {
         numberOfVotes = await BallotManager.getNumberOfVotes()
@@ -134,12 +137,13 @@ router.get('/state', async (req, res) => {
         votesSubmitted: numberOfVotes,
       })
       break
+    }
 
     // --------------------------------------------------
     // TALLY
     // --------------------------------------------------
     // ... how many decrypted shares are required and have been submitted
-    case VotingState.TALLY:
+    case VotingState.TALLY: {
       let submittedDecryptedShares: number = 0
       const requiredDecryptedShares: number = requiredAuthorities
       try {
@@ -158,12 +162,13 @@ router.get('/state', async (req, res) => {
         requiredDecryptedShares: requiredDecryptedShares,
       })
       break
+    }
 
     // --------------------------------------------------
     // RESULT
     // --------------------------------------------------
     // ... how many yes/no votes have been recorded
-    case VotingState.RESULT:
+    case VotingState.RESULT: {
       let totalVotes: number = 0
       try {
         totalVotes = await BallotManager.getNumberOfVotes()
@@ -194,9 +199,11 @@ router.get('/state', async (req, res) => {
         votingQuestion: getValueFromDB(VOTING_QUESTION_TABLE),
       })
       break
+    }
 
-    default:
+    default: {
       res.status(200).json({ state: currentState })
+    }
   }
 })
 
@@ -211,7 +218,7 @@ router.post('/state', async (req, res) => {
     // --------------------------------------------------
     // REGISTER
     // --------------------------------------------------
-    case VotingState.REGISTER:
+    case VotingState.REGISTER: {
       // verify that all sealers are registered
       const registeredAuthorities: string[] = getValueFromDB(AUTHORITIES_TABLE) as string[]
       if (registeredAuthorities.length !== requiredAuthorities) {
@@ -224,11 +231,12 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.STARTUP)
       break
+    }
 
     // --------------------------------------------------
     // STARTUP
     // --------------------------------------------------
-    case VotingState.STARTUP:
+    case VotingState.STARTUP: {
       // verify that all sealers are connected
       let connectedAuthorities: number = 0
       try {
@@ -261,11 +269,12 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.CONFIG)
       break
+    }
 
     // --------------------------------------------------
     // CONFIG
     // --------------------------------------------------
-    case VotingState.CONFIG:
+    case VotingState.CONFIG: {
       // check that all public key shares are submitted
       const requiredKeyShares: number = requiredAuthorities
       let submittedKeyShares: number = 0
@@ -311,11 +320,12 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.VOTING)
       break
+    }
 
     // --------------------------------------------------
     // VOTING
     // --------------------------------------------------
-    case VotingState.VOTING:
+    case VotingState.VOTING: {
       try {
         await BallotManager.closeBallot()
         await BallotManager.isBallotOpen()
@@ -329,11 +339,12 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.TALLY)
       break
+    }
 
     // --------------------------------------------------
     // TALLY
     // --------------------------------------------------
-    case VotingState.TALLY:
+    case VotingState.TALLY: {
       // check that all decrypted shares are submitted
       const requiredDecryptedShares: number = requiredAuthorities
       let submittedDecryptedShares: number = 0
@@ -378,10 +389,12 @@ router.post('/state', async (req, res) => {
 
       setValue(STATE_TABLE, VotingState.RESULT)
       break
+    }
 
-    default:
+    default: {
       res.status(400).json({ state: currentState, msg: `There is nothing to change!` })
       return
+    }
   }
 
   const newState: string = getValueFromDB(STATE_TABLE)

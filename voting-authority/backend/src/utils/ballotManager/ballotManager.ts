@@ -1,25 +1,26 @@
 import BN = require('bn.js')
 import { FFelGamal } from 'mp-crypto'
+import { Contract } from 'web3-eth-contract'
 
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database'
-import { getWeb3, unlockAuthAccount } from '../web3'
 import { VotingState } from '../../endpoints/state'
+import { getWeb3, unlockAuthAccount } from '../web3'
 
 const ballotContract = require('../../../solidity/toDeploy/Ballot.json')
 const web3 = getWeb3()
 const GAS_LIMIT = 6000000
-const toHex = (number: BN) => web3.utils.toHex(number)
+const toHex = (number: BN): string => web3.utils.toHex(number)
 
 /**
  * Returns a Contract object with which one can interface with the Ballot.
  */
-const getContract = () => {
+const getContract = (): Contract => {
   const contractAddress: string = getValueFromDB(BALLOT_ADDRESS_TABLE)
   const contract = new web3.eth.Contract(ballotContract.abi, contractAddress)
   return contract
 }
 
-export const setSystemParameters = async () => {
+export const setSystemParameters = async (): void => {
   const contract = getContract()
   const authAcc = await unlockAuthAccount()
 
@@ -50,7 +51,7 @@ export const getPublicKey = async (): Promise<BN> => {
  * key shares submitted by the sealer nodes. Hence, this function can only be called
  * once all shares are submitted and stored inside the contract.
  */
-export const generatePublicKey = async () => {
+export const generatePublicKey = async (): Promise<void> => {
   const contract = getContract()
   const authAcc = await unlockAuthAccount()
   try {
@@ -63,7 +64,7 @@ export const generatePublicKey = async () => {
 /**
  * Will create verifiers for the system parameters set inside the contract.
  */
-export const createVerifiers = async () => {
+export const createVerifiers = async (): Promise<void> => {
   const contract = getContract()
   const authAcc = await unlockAuthAccount()
   try {
@@ -76,7 +77,7 @@ export const createVerifiers = async () => {
 /**
  * Opens the ballot for voting. Inside the contract, IS_VOTING_OPEN is set to true.
  */
-export const openBallot = async () => {
+export const openBallot = async (): Promise<void> => {
   const contract = getContract()
   const authAcc = await unlockAuthAccount()
   try {
@@ -89,7 +90,7 @@ export const openBallot = async () => {
 /**
  * Closes the ballot and prevents further votes from being recorded.
  */
-export const closeBallot = async () => {
+export const closeBallot = async (): Promise<void> => {
   const contract = getContract()
   const authAcc = await unlockAuthAccount()
   try {
