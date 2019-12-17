@@ -1,8 +1,8 @@
-import { Box, Button, Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme, Typography } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import { Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme, Typography } from '@material-ui/core'
+import React, { useEffect } from 'react'
 
 import { VOTE_LABELS, VOTE_STATES } from '../models/states'
-import { AuthBackend } from '../services'
+import { SealerBackend } from '../services'
 import { Store } from '../store'
 import { KeyGeneration } from './KeyGeneration'
 import { Register } from './Register'
@@ -14,26 +14,23 @@ import { Result } from './Result/Result'
 export const Process: React.FC = () => {
   const classes = useStyles()
 
-  const [errorMessage, setErrorMessage] = useState<string>('')
-  const [hasError, setHasError] = useState<boolean>(false)
-
   const { activeStep, setActiveStep, nextStep, reset } = Store.useActiveStepStore()
 
   useEffect(() => {
-    const getRequiredValidators = async () => {
+    const getRequiredValidators = async (): Promise<void> => {
       try {
-        const data = await AuthBackend.getState()
+        const data = await SealerBackend.getState()
         setActiveStep(VOTE_STATES.indexOf(data.state))
       } catch (error) {
-        setErrorMessage(error.message)
-        setHasError(true)
+        // TODO: wire up project with a error snack bar
+        console.log(error)
       }
     }
 
     getRequiredValidators()
   }, [])
 
-  const getStep = (step: number): any => {
+  const getStep = (step: number): React.ReactNode => {
     switch (step) {
       case 0:
         return <Register nextStep={nextStep} />

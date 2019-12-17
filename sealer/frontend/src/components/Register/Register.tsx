@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   CircularProgress,
   createStyles,
@@ -18,11 +17,11 @@ import React, { useEffect, useState } from 'react'
 import { config } from '../../config'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
-import { AuthBackend, SealerBackend } from '../../services'
+import { SealerBackend } from '../../services'
 import { delay } from '../../utils/helper'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
-import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 interface Props {
   nextStep: () => void
@@ -34,7 +33,6 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   const [success, setSuccess] = useState(false)
   const [wallet, setWallet] = useState('')
 
-  const [state, setState] = useState()
   const [chainspecReady, setChainSpecReady] = useState(false)
 
   // TODO replace dynamically with a backend call
@@ -51,12 +49,11 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   }, [sealers, requiredSealers])
 
   useEffect(() => {
-    const getRequiredValidators = async () => {
+    const getRequiredValidators = async (): Promise<void> => {
       try {
         // FIXME: something does not work in the auth backend when connecting to the blockchain
-        const response = await AuthBackend.getState()
+        const response = await SealerBackend.getState()
         setRequiredSealers(response.requiredSealers)
-        setState(response.state)
       } catch (error) {
         console.log(error.message)
       }
@@ -68,7 +65,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   useEffect(() => {
     if (!listening) {
       const events = new EventSource(config.authBackend.devUrl + '/registered')
-      events.onmessage = event => {
+      events.onmessage = (event): void => {
         const parsedData = JSON.parse(event.data)
         setSealers(sealers => sealers.concat(parsedData))
       }
@@ -79,16 +76,15 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   // Get Wallet information from sealer backend
   useEffect(() => {
-    async function init() {
+    async function init(): Promise<void> {
       const address = await SealerBackend.getWalletAddress()
       setWallet(address)
     }
     init()
-    return () => {}
   }, [])
 
-  const isChainSpecReady = async () => {
-    const response = await AuthBackend.getState()
+  const isChainSpecReady = async (): Promise<void> => {
+    const response = await SealerBackend.getState()
     if (response.state === VotingState.STARTUP) {
       setChainSpecReady(true)
     }
@@ -97,7 +93,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   useInterval(isChainSpecReady, readyForNextStep && !chainspecReady ? 4000 : 0)
 
   // Tell the backend to register this sealer's wallet
-  const register = async () => {
+  const register = async (): Promise<void> => {
     try {
       setLoading(true)
       setSuccess(false)

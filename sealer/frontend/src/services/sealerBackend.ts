@@ -1,11 +1,19 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
+import { VotingState } from '../models/states'
 
-const sealerBackendUrl = () =>
+const sealerBackendUrl = (): string =>
   `http://${process.env.REACT_APP_SEALER_BACKEND_IP}:${process.env.REACT_APP_SEALER_BACKEND_PORT}`
 
-export const getState = async () => {
+// TODO: Think about improving the StateResponse since it's not always the same!
+interface StateResponse {
+  state: VotingState
+  registeredSealers: number
+  requiredSealers: number
+}
+
+export const getState = async (): Promise<StateResponse> => {
   try {
-    const response = await axios.get(sealerBackendUrl() + '/state')
+    const response: AxiosResponse<StateResponse> = await axios.get(sealerBackendUrl() + '/state')
     return response.data
   } catch (error) {
     console.log(error)
@@ -33,7 +41,7 @@ export const getWalletAddress = async (): Promise<string> => {
   }
 }
 
-export const registerWallet = async (wallet: string) => {
+export const registerWallet = async (wallet: string): Promise<void> => {
   try {
     await axios.post(sealerBackendUrl() + '/register')
   } catch (error) {
@@ -42,7 +50,7 @@ export const registerWallet = async (wallet: string) => {
   }
 }
 
-export const loadConfiguration = async () => {
+export const loadConfiguration = async (): Promise<void> => {
   try {
     await axios.get(sealerBackendUrl() + '/chainspec')
   } catch (error) {
@@ -51,7 +59,11 @@ export const loadConfiguration = async () => {
   }
 }
 
-export const registerMySealerNode = async () => {
+interface RegisterSealerResponse {
+  bootnode: boolean
+}
+
+export const registerMySealerNode = async (): Promise<RegisterSealerResponse> => {
   try {
     const response = await axios.post(sealerBackendUrl() + '/peer')
     return response.data
@@ -71,7 +83,7 @@ export const getNrPeers = async (): Promise<number> => {
   }
 }
 
-export const generateKeys = async () => {
+export const generateKeys = async (): Promise<void> => {
   try {
     const response = await axios.post(sealerBackendUrl() + '/generateKeys')
     console.log(response.data)
@@ -81,9 +93,9 @@ export const generateKeys = async () => {
   }
 }
 
-export const decryptShare = async () => {
+export const decryptShare = async (): Promise<void> => {
   try {
-    return await axios.post(sealerBackendUrl() + '/decrypt', {})
+    await axios.post(sealerBackendUrl() + '/decrypt', {})
   } catch (error) {
     console.log(error)
     throw new Error(`Something went wrong with decrypting the share. ${error.message}`)

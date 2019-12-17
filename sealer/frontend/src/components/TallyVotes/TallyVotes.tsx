@@ -20,10 +20,10 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [success, setSuccess] = useState<boolean>(false)
 
-  const submitDecryptedShare = async () => {
+  const submitDecryptedShare = async (): Promise<void> => {
     try {
       setLoading(true)
-      const response = await SealerBackend.decryptShare()
+      await SealerBackend.decryptShare()
       setLoading(false)
       setSuccess(true)
     } catch (error) {

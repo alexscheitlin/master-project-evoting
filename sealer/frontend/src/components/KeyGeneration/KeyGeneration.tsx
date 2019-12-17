@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  createStyles,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-} from '@material-ui/core'
+import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import React, { useEffect, useState } from 'react'
 
@@ -34,7 +24,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   const [keysSubmitted, setKeysSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const generateKeys = async () => {
+  const generateKeys = async (): Promise<void> => {
     try {
       setLoading(true)
       await SealerBackend.generateKeys()
@@ -47,7 +37,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
     }
   }
 
-  const checkIfBallotDeployed = async () => {
+  const checkIfBallotDeployed = async (): Promise<void> => {
     try {
       const isDeployed = await SealerBackend.isBallotDeployed()
       setBallotDeployed(isDeployed)
