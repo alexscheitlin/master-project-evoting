@@ -3,7 +3,7 @@ import { getValueFromDB, PRIVATE_KEY_SHARE_TABLE } from '../database/database'
 import { VotingState } from '../models/states'
 import { AuthBackend, BallotManager } from '../services'
 import BN = require('bn.js')
-import { FFelGamal } from 'mp-crypto'
+import { FFelGamal } from '@meck93/evote-crypto'
 
 const router: express.Router = express.Router()
 

@@ -26,6 +26,11 @@ sudo apt-get install jq
 sudo dnf install jq
 ```
 
+While the crypto library is a private npm package, you need to login to npm on your command line.
+`npm login --registry=https://npm.pkg.github.com`
+
+You will need a Github personal access token with `package:read, package:write` permission. Unlock this in your Github account.
+
 ## Modules
 
 ![modules](./assets/eVoting.svg)

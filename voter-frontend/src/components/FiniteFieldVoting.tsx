@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { FFelGamal, Summary } from 'mp-crypto'
+import { FFelGamal, Summary } from '@meck93/evote-crypto';
 
 import { getRandomWalletAddress } from '../util/helper'
 

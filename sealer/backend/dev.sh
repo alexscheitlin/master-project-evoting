@@ -82,25 +82,6 @@ echo "##########################################################################
 echo
 npm i
 
-
-###########################################
-# making sure mp-crypto is linked
-###########################################
-echo "##########################################################################"
-echo "# Linking mp-crypto, running the commands below                          "
-echo "##########################################################################"
-echo "# > cd $parentParentDir/crypto                                             "
-echo "# > sudo npm link                                                               "
-echo "# > cd $dir                                                                "
-echo "# > npm link mp-crypto                                                     "
-echo "##########################################################################"
-cd $parentParentDir/crypto
-npm i 
-npm run build
-sudo npm link
-cd $dir
-npm link mp-crypto
-
 ###########################################
 # start dev server
 ###########################################

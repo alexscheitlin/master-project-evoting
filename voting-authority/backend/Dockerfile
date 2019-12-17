@@ -1,8 +1,5 @@
 FROM node:12-alpine
 
-# install bash
-RUN apk add --no-cache bash
-
 # Create app directory
 WORKDIR /usr/src/backend
 
@@ -15,11 +12,3 @@ RUN npm install --force
 
 # Bundle app source
 COPY . .
-
-# Copy over source files of crypto library
-COPY ./mp-crypto ./mp-crypto
-
-# This script will install dependencies inside /mp-crypto
-# and add the custom weier curve to the elliptic package
-RUN chmod +x crypto.sh
-RUN ./crypto.sh
