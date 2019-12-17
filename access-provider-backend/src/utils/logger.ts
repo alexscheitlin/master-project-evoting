@@ -16,21 +16,21 @@ export const responseLogger = (request: express.Request, response: express.Respo
 
   const chunks: any[] = []
 
-  response.write = function(chunk: any): boolean {
-    chunks.push(chunk)
+  response.write = (...args: any[]): boolean => {
+    chunks.push(args[0])
 
     // @ts-ignore
-    return oldWrite.apply(response, arguments)
+    return oldWrite.apply(response, args)
   }
 
-  response.end = function(chunk: any): boolean {
-    if (chunk) {
-      chunks.push(chunk)
+  response.end = (...args: any[]): boolean => {
+    if (args[0]) {
+      chunks.push(args[0])
     }
 
     let body = ''
-    if (typeof chunk === 'string') {
-      body = chunk
+    if (typeof args[0] === 'string') {
+      body = args[0]
     } else {
       body = Buffer.concat(chunks).toString('utf8')
     }
@@ -38,7 +38,7 @@ export const responseLogger = (request: express.Request, response: express.Respo
     console.log('res', request.method, request.path, response.statusCode, body)
 
     // @ts-ignore
-    return oldEnd.apply(response, arguments)
+    return oldEnd.apply(response, args)
   }
 
   next()
