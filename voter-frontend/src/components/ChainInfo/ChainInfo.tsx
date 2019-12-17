@@ -1,5 +1,9 @@
-import { Grid, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Grid, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import React from 'react';
+
+import mainTheme from '../../Theme';
 
 interface Props {
   contractAddress: string;
@@ -11,42 +15,30 @@ const ChainInfo: React.FC<Props> = ({ contractAddress, walletAddress, balance })
   const classes = useStyles();
 
   return (
-    <Paper elevation={2} className={classes.root}>
+    <div className={classes.root}>
       <Grid container direction="row">
         <Grid item xs={6}>
-          <Grid container direction="row" alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="caption">Contract:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Typography variant="caption">{contractAddress}</Typography>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography variant="caption"> Status:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Typography variant="caption"> Open</Typography>
-            </Grid>
-          </Grid>
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <AccountBalanceWalletIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary={`${walletAddress}`} secondary={`wallet address`} />
+            </ListItem>
+          </List>
         </Grid>
         <Grid item xs={6}>
-          <Grid container direction="row" alignItems="center">
-            <Grid item xs={3}>
-              <Typography variant="caption"> Wallet:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Typography variant="caption"> {walletAddress}</Typography>
-            </Grid>
-            <Grid item xs={3}>
-              <Typography variant="caption"> Balance:</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <Typography variant="caption"> {balance}</Typography>
-            </Grid>
-          </Grid>
+          <List>
+            <ListItem>
+              <ListItemIcon>
+                <FontAwesomeIcon color={mainTheme.palette.primary.main} size="2x" icon={'file-contract'} />
+              </ListItemIcon>
+              <ListItemText primary={`${walletAddress}`} secondary={`contract address`} />
+            </ListItem>
+          </List>
         </Grid>
       </Grid>
-    </Paper>
+    </div>
   );
 };
 
@@ -54,7 +46,8 @@ export default ChainInfo;
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
+    position: 'absolute',
+    bottom: 0,
     padding: theme.spacing(1),
-    background: theme.palette.background.default,
   },
 }));

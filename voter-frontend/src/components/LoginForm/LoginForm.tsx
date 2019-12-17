@@ -1,4 +1,4 @@
-import { Paper, CircularProgress } from '@material-ui/core';
+import { CircularProgress, Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -22,7 +22,7 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <Paper className={classes.paper}>
+      <Paper className={classes.paper} elevation={2}>
         <Typography component="h1" variant="body2">
           Please sign in with your Swiss E-Identity
         </Typography>
