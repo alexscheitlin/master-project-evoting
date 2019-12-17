@@ -7,6 +7,7 @@ import { SealerBackend } from '../../services';
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
 import { LoadSuccess } from '../shared/LoadSuccess';
 import { StepTitle } from '../shared/StepTitle';
+import { StepContentWrapper } from '../Helpers/StepContentWrapper';
 
 interface Props {
   nextStep: () => void;
@@ -52,8 +53,9 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   useInterval(checkIfBallotDeployed, !ballotDeployed ? 4000 : 0);
 
   return (
-    <Box className={classes.root}>
-      <StepTitle title="Key generation" />
+    <StepContentWrapper>
+      <StepTitle title="Key Generation" />
+
       <List>
         <ListItem>
           <ListItemText
@@ -88,7 +90,9 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
             Generate and submit keyshare
           </Button>
         </ListItem>
+      </List>
 
+      <List className={classes.nextButton}>
         <ListItem>
           <Button className={classes.button} variant="contained" color="primary" disabled={!keysSubmitted} onClick={nextStep}>
             Next
@@ -96,7 +100,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
         </ListItem>
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   );
 };
 
@@ -104,10 +108,15 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      minHeight: 700,
     },
     button: {
       marginRight: theme.spacing(1),
       width: 160,
+    },
+    nextButton: {
+      position: 'absolute',
+      bottom: 0,
     },
   })
 );

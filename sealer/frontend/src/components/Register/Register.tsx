@@ -22,6 +22,7 @@ import { AuthBackend, SealerBackend } from '../../services';
 import { delay } from '../../utils/helper';
 import { LoadSuccess } from '../shared/LoadSuccess';
 import { StepTitle } from '../shared/StepTitle';
+import { StepContentWrapper } from '../Helpers/StepContentWrapper';
 
 interface Props {
   nextStep: () => void;
@@ -112,7 +113,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   };
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Address Registration" />
       <List>
         <ListItem>
@@ -167,7 +168,8 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
             <ListItemText primary={`Please click the button above to submit your public key to the voting authority for registration.`} />
           </ListItem>
         ) : null}
-
+      </List>
+      <List className={classes.nextButton}>
         <ListItem>
           <Button
             className={classes.button}
@@ -180,7 +182,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
           </Button>
         </ListItem>
       </List>
-    </Box>
+    </StepContentWrapper>
   );
 };
 
@@ -188,6 +190,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      minHeight: 700,
     },
     wrapper: {
       display: 'flex',
@@ -203,6 +206,10 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'absolute',
       bottom: 0,
       right: 0,
+    },
+    nextButton: {
+      position: 'absolute',
+      bottom: 0,
     },
   })
 );

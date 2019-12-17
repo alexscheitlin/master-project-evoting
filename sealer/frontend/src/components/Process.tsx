@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme } from '@material-ui/core';
+import { Box, Button, Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
 import { VOTE_LABELS, VOTE_STATES } from '../models/states';
@@ -53,12 +53,14 @@ export const Process: React.FC = () => {
   };
 
   return (
-    <Grid container className={classes.root}>
-      <Grid item xs={2}>
+    <Grid container direction={'row'} justify="center" className={classes.root}>
+      <Grid item xs={3}>
         <Stepper activeStep={activeStep} orientation="vertical">
           {VOTE_LABELS.map(label => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel>
+                <Typography variant="h5">{label}</Typography>
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
@@ -66,14 +68,10 @@ export const Process: React.FC = () => {
       <Grid item>
         <Divider orientation="vertical" />
       </Grid>
-      <Grid item xs>
-        <Grid container>
-          <Grid item xs={6}>
-            <Box className={classes.contentWrapper}>{getStep(activeStep)}</Box>
-          </Grid>
-        </Grid>
+      <Grid item xs={8}>
+        <div className={classes.contentWrapper}>{getStep(activeStep)}</div>
       </Grid>
-      {hasError && <h1>{`${errorMessage}`}</h1>}
+      <Grid item xs></Grid>
     </Grid>
   );
 };
@@ -81,6 +79,7 @@ export const Process: React.FC = () => {
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
+    minHeight: 700,
   },
   contentWrapper: {
     padding: theme.spacing(3, 2),

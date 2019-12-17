@@ -51,6 +51,8 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
             Submit Decrypted Share
           </Button>
         </ListItem>
+      </List>
+      <List className={classes.nextButton}>
         <ListItem>
           <Button variant="contained" color="primary" onClick={nextStep} disabled={!success}>
             Next Step
@@ -66,6 +68,11 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      minHeight: 700,
+    },
+    nextButton: {
+      position: 'absolute',
+      bottom: 0,
     },
   })
 );

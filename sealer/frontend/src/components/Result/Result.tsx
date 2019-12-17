@@ -14,6 +14,9 @@ export const Result: React.FC<Props> = () => {
         <ListItem>
           <Typography variant="h6">You are all done, the process ends here.</Typography>
         </ListItem>
+        <ListItem>
+          <Typography variant="h6">TODO: add result of the vote</Typography>
+        </ListItem>
       </List>
     </Box>
   );
@@ -23,6 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      minHeight: 700,
     },
     wrapper: {
       display: 'flex',
