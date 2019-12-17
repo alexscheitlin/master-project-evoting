@@ -10,6 +10,7 @@
     "@typescript-eslint/ban-ts-ignore": 1,
     "@typescript-eslint/no-inferrable-types": 0,
     "@typescript-eslint/no-var-requires": 0,
-    "prefer-rest-params": 1
+    "prefer-rest-params": 1,
+    "@typescript-eslint/explicit-function-return-type": 2
   }
 }

@@ -9,7 +9,7 @@ const router: express.Router = express.Router()
 
 // http response messages
 const NO_VOTERS: string = 'No voters specified!'
-const INVALID_VOTER = (uuid: string) => `UUID does not exist: ${uuid}`
+const INVALID_VOTER = (uuid: string): string => `UUID does not exist: ${uuid}`
 const SUCCESS_MSG: string = 'Successfully registered voters!'
 const ALREADY_REGISTERED: string = 'The provided voters are already registered!'
 const ACCESS_PROVIDER_NOT_REACHABLE = 'Sorry, the tokens could not be sent to the access provider!'

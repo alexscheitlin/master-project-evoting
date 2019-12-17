@@ -11,7 +11,7 @@ let db: low.LowdbSync<any>
 export const IDENTITIES_TABLE: string = 'identities'
 export const TOKENS_TABLE: string = 'tokens'
 
-export const setupDB = () => {
+export const setupDB = (): void => {
   const adapter: AdapterSync = new FileSync('./src/database/db.json')
   db = low(adapter)
 
@@ -48,7 +48,7 @@ export const getObjectFromDB = (table: string): any => {
   return db.get(table).value()
 }
 
-export const addToList = (table: string, value: any[]) => {
+export const addToList = (table: string, value: any[]): void => {
   // read content from DB + add the new value
   const tableContent: string[] = getListFromDB(table)
   tableContent.push(...value)
@@ -58,7 +58,7 @@ export const addToList = (table: string, value: any[]) => {
   db.write()
 }
 
-export const setValue = (table: string, value: any | any[]) => {
+export const setValue = (table: string, value: any | any[]): void => {
   // write the new value to the field in the DB
   db.set(table, value).value()
   db.write()
