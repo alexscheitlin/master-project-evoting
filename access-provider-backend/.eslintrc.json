@@ -1,0 +1,14 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "prettier/@typescript-eslint"],
+  "env": {
+    "jasmine": true,
+    "node": true
+  },
+  "rules": {
+    "@typescript-eslint/ban-ts-ignore": 1,
+    "@typescript-eslint/no-inferrable-types": 0,
+    "prefer-rest-params": 1
+  }
+}

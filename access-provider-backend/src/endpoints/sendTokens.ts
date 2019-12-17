@@ -1,6 +1,6 @@
-import express from 'express';
+import express from 'express'
 
-import { addToList, VALID_TOKENS_TABLE } from '../database/database';
+import { addToList, VALID_TOKENS_TABLE } from '../database/database'
 
 const router: express.Router = express.Router()
 
