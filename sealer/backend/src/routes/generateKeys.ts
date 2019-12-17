@@ -1,5 +1,5 @@
 import express from 'express'
-import { FFelGamal } from 'mp-crypto'
+import { FFelGamal } from '@meck93/evote-crypto'
 
 import { BALLOT_ADDRESS_TABLE, PRIVATE_KEY_SHARE_TABLE, PUBLIC_KEY_SHARES_TABLE, setValue } from '../database/database'
 import { AuthBackend, BallotManager } from '../services'

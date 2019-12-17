@@ -1,5 +1,5 @@
 import BN = require('bn.js')
-import { FFelGamal } from 'mp-crypto'
+import { FFelGamal } from '@meck93/evote-crypto'
 
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../database/database'
 import { Account } from '../utils'
