@@ -2,8 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import { getValueFromDB, WALLET_TABLE } from '../database/database'
 
-export const getWallet = () => {
-  let storedWallet = getValueFromDB(WALLET_TABLE)
+export const getWallet = (): string => {
+  const storedWallet = getValueFromDB(WALLET_TABLE)
 
   if (storedWallet === '') {
     const wallet = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../wallet/sealer.json'), 'utf8'))
@@ -13,6 +13,6 @@ export const getWallet = () => {
   }
 }
 
-export const getPassword = () => {
+export const getPassword = (): string => {
   return fs.readFileSync(path.resolve(__dirname, '../../wallet/sealer.pwd'), 'utf8')
 }

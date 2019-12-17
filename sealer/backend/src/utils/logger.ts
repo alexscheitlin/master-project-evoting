@@ -1,6 +1,6 @@
 import express from 'express'
 
-const logger = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+const logger = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
   if (request.method === 'POST') {
     console.log(`${request.method} ${request.path} ${JSON.stringify(request.body)}`)
   } else {

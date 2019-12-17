@@ -2,9 +2,10 @@ import axios, { AxiosResponse } from 'axios'
 import fs from 'fs'
 import { VotingState } from '../models/states'
 
-const authBackendUrl = () => `http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
+const authBackendUrl = (): string =>
+  `http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
 
-export const fetchAndStoreChainspec = async () => {
+export const fetchAndStoreChainspec = async (): void => {
   let result
   let chainspec
   try {
@@ -23,22 +24,20 @@ export const fetchAndStoreChainspec = async () => {
   }
 }
 
-export const getBootNodeUrl = async (myUrl: string) => {
-  let bootnode
+export const getBootNodeUrl = async (myUrl: string): Promise<string> => {
   try {
     // get bootnode from auth backend
     const response = await axios.post(authBackendUrl() + '/connectionNode', {
       url: myUrl,
     })
-    bootnode = response.data.connectTo
+    return response.data.connectTo
   } catch (error) {
     console.log(error)
     throw new Error('Could not get the bootnode from the authority backend.')
   }
-  return bootnode
 }
 
-export const registerWallet = async (addressToRegister: string) => {
+export const registerWallet = async (addressToRegister: string): Promise<void> => {
   try {
     await axios.post(authBackendUrl() + '/chainspec', {
       address: addressToRegister,
@@ -49,7 +48,7 @@ export const registerWallet = async (addressToRegister: string) => {
   }
 }
 
-export const getBallotAddress = async () => {
+export const getBallotAddress = async (): Promise<string> => {
   try {
     const response = await axios.get(authBackendUrl() + '/deploy')
     if (response.status === 204) {

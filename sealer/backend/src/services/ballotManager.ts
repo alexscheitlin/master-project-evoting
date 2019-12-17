@@ -9,13 +9,14 @@ import { VotingState } from '../models/states'
 const ballotContract = require('../contract-abis/Ballot.json')
 
 const web3 = getWeb3()
-const toHex = (number: BN) => web3.utils.toHex(number)
+const toHex = (number: BN): string => web3.utils.toHex(number)
 
 /**
  * Returns a Contract object with which one can interface with the Ballot.
  */
-const getContract = () => {
+const getContract = (): any => {
   const web3 = getWeb3()
+
   const contractAddress: string = getValueFromDB(BALLOT_ADDRESS_TABLE)
   const contract = new web3.eth.Contract(ballotContract.abi, contractAddress)
   return contract
@@ -24,7 +25,7 @@ const getContract = () => {
 /**
  * Returns the account unlocked account
  */
-export const getAuthAccount = async () => {
+export const getAuthAccount = async (): Promise<string> => {
   // read out wallet address
   const wallet = Account.getWallet()
   const password = Account.getPassword()
@@ -47,7 +48,7 @@ export const getAuthAccount = async () => {
 /**
  * Get the system parameters
  */
-export const getSystemParameters = async () => {
+export const getSystemParameters = async (): Promise<number[]> => {
   const contract = getContract()
   try {
     return await contract.methods.getParameters().call()
@@ -80,7 +81,7 @@ export const isBallotOpen = async (): Promise<boolean> => {
 export const submitPublicKeyShare = async (
   keyShare: FFelGamal.KeyPair,
   keyGenProof: FFelGamal.Proof.KeyGenerationProof
-) => {
+): Promise<void> => {
   const contract = getContract()
   const account = await getAuthAccount()
   try {
@@ -141,7 +142,7 @@ export const getNumberOfVotes = async (): Promise<number> => {
  *
  * @param index the index of the vote
  */
-export const getVote = async (index: number) => {
+export const getVote = async (index: number): Promise<number> => {
   const contract = getContract()
   const authAcc = await getAuthAccount()
   try {
@@ -215,7 +216,7 @@ export const submitDecryptedShare = async (
   sumCipher: FFelGamal.Cipher,
   decryptedShare: BN,
   decryptedShareProof: FFelGamal.Proof.DecryptionProof
-) => {
+): Promise<void> => {
   const contract = getContract()
   const authAcc = await getAuthAccount()
 

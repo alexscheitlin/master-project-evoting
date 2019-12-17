@@ -16,7 +16,7 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
 
     // TODO: add handling for other cases
     switch (state) {
-      case VotingState.TALLY:
+      case VotingState.TALLY: {
         // TODO: check if decrypted share for this authority has already been submitted
 
         const votesAsStrings = await BallotManager.getAllVotes()
@@ -46,6 +46,7 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
 
         res.status(201).json({ decryptedShareSubmitted: result['0'], msg: result['1'] })
         break
+      }
       default:
         // TODO: improve message
         res.status(400).json({ msg: `Invalid request!` })
