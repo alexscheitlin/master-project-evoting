@@ -5,9 +5,11 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "pre-commit": "lint-staged",
+    "format": "prettier --write \"**/*.+(js|ts|json|md)\"",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "test": "nyc --reporter=text ts-mocha ./**/*.spec.ts",
     "test:watch": "ts-mocha ./**/*.spec.ts -w --watch-extensions ts ",
-    "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
     "ts-mocha": "./node_modules/.bin/ts-mocha",
     "tsc": "./node_modules/.bin/tsc",
     "dev": "./dev.sh",
@@ -37,7 +39,14 @@
     "sinon": "^7.5.0",
     "ts-mocha": "^6.0.0",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.2",
+    "@typescript-eslint/eslint-plugin": "^2.11.0",
+    "@typescript-eslint/parser": "^2.11.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-json": "^2.0.1",
+    "eslint-plugin-prettier": "^3.1.1"
   },
   "dependencies": {
     "@types/dockerode": "^2.5.20",
