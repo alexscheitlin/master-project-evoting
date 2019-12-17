@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { Grid, makeStyles, Theme } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 
+import LoadingPage from './pages/LoadingPage';
 import LoginPage from './pages/LoginPage';
 import VotingPage from './pages/VotingPage';
 import { useVoterStore } from './store';
-import LoadingPage from './pages/LoadingPage';
-import { Grid, makeStyles } from '@material-ui/core';
 
 const AppManager: React.FC = () => {
   const classes = useStyles();
@@ -47,16 +47,19 @@ const AppManager: React.FC = () => {
   // once the user submits her details, the LoginPage shows the LoadingPage
   // once everything is laoded correctly, the VotingPage is displayed
   return (
-    <Grid container alignItems="center" justify="center" className={classes.item}>
-      {getPage()}
+    <Grid container direction={'row'} justify="center" className={classes.root}>
+      <Grid item xs={12}>
+        {getPage()}
+      </Grid>
     </Grid>
   );
 };
 
 export default AppManager;
 
-const useStyles = makeStyles({
-  item: {
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
     flexGrow: 1,
+    minHeight: 700,
   },
-});
+}));

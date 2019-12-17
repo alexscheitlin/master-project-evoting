@@ -24,11 +24,11 @@ function getSteps(): string[] {
 function getStepContent(step: number): string {
   switch (step) {
     case 0:
-      return 'Generating your Wallet';
+      return 'Verifying your Account';
     case 1:
-      return 'Adding Funds to your Wallet';
+      return 'Setting up your Wallet';
     case 2:
-      return 'Connecting you to the blockchain where you can cast your votes';
+      return 'Connecting to the Blockchain';
     default:
       return 'Unknown step';
   }
