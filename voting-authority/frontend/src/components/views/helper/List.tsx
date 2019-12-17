@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 
 interface SealerProps {
-  items: string[];
+  items: string[]
 }
 
 export const List: React.FC<SealerProps> = ({ items }: SealerProps) => (
@@ -14,4 +14,4 @@ export const List: React.FC<SealerProps> = ({ items }: SealerProps) => (
       </ul>
     )}
   </div>
-);
+)

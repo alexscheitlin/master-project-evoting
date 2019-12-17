@@ -1,6 +1,6 @@
-import React from 'react';
-import { FiniteFieldVoting } from '../components/FiniteFieldVoting';
-import { EllipticCurveVoting } from '../components/EllipticCurveVoting';
+import React from 'react'
+import { FiniteFieldVoting } from '../components/FiniteFieldVoting'
+import { EllipticCurveVoting } from '../components/EllipticCurveVoting'
 
 const DemoPage: React.FC = () => {
   return (
@@ -8,7 +8,7 @@ const DemoPage: React.FC = () => {
       <FiniteFieldVoting />
       <EllipticCurveVoting />
     </>
-  );
-};
+  )
+}
 
-export default DemoPage;
+export default DemoPage

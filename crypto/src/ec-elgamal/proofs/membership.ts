@@ -1,14 +1,7 @@
 import BN = require('bn.js')
 
 import { GlobalHelper } from '../../index'
-import {
-  Cipher,
-  Curve,
-  CurvePoint,
-  Helper,
-  SystemParameters,
-  SystemParametersSerialized,
-} from '../index'
+import { Cipher, Curve, CurvePoint, Helper, SystemParameters, SystemParametersSerialized } from '../index'
 import { MembershipProof } from './models'
 import { curveDefinition } from '../curve'
 

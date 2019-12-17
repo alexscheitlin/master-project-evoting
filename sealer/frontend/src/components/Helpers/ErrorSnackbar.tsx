@@ -1,20 +1,20 @@
-import { Snackbar, SnackbarContent, Theme, makeStyles, IconButton } from '@material-ui/core';
-import { Error as ErrorIcon, Close as CloseIcon } from '@material-ui/icons';
-import React, { useState } from 'react';
+import { Snackbar, SnackbarContent, Theme, makeStyles, IconButton } from '@material-ui/core'
+import { Error as ErrorIcon, Close as CloseIcon } from '@material-ui/icons'
+import React, { useState } from 'react'
 
 interface Props {
-  open: boolean;
-  message: string;
+  open: boolean
+  message: string
 }
 
 export const ErrorSnackbar: React.FC<Props> = ({ open, message }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(true)
 
   const close = () => {
-    setIsOpen(false);
-  };
+    setIsOpen(false)
+  }
 
   return (
     <Snackbar
@@ -42,8 +42,8 @@ export const ErrorSnackbar: React.FC<Props> = ({ open, message }) => {
         onClick={close}
       />
     </Snackbar>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   error: {
@@ -60,4 +60,4 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
-}));
+}))

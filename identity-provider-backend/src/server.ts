@@ -26,5 +26,7 @@ setupDB()
 
 // start the Express server
 server.listen(process.env.IDENTITY_PROVIDER_BACKEND_PORT, () => {
-  console.log(`HTTP server started at http://${process.env.IDENTITY_PROVIDER_BACKEND_IP}:${process.env.IDENTITY_PROVIDER_BACKEND_PORT}`)
+  console.log(
+    `HTTP server started at http://${process.env.IDENTITY_PROVIDER_BACKEND_IP}:${process.env.IDENTITY_PROVIDER_BACKEND_PORT}`
+  )
 })

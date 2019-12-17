@@ -29,6 +29,8 @@ export const fundWallet = async (wallet: string): Promise<void> => {
     transaction = { from: serverConfig.accountAddress, to: wallet, value: getWeb3().utils.toWei('0.0000001', 'ether') }
     await getWeb3().eth.sendTransaction(transaction)
   } catch (error) {
-    throw new Error(`Could not fund the voter wallet (web3.eth.sendTransaction(${transaction})). ERROR: ${error.message}`)
+    throw new Error(
+      `Could not fund the voter wallet (web3.eth.sendTransaction(${transaction})). ERROR: ${error.message}`
+    )
   }
 }

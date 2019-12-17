@@ -1,6 +1,6 @@
-import { Box, Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import { Box, Grid, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/styles'
+import React from 'react'
 
 const useStyles = makeStyles(() => ({
   divider: {
@@ -9,14 +9,14 @@ const useStyles = makeStyles(() => ({
   title: {
     margin: '2em auto',
   },
-}));
+}))
 
 interface Props {
-  votingQuestion: string;
+  votingQuestion: string
 }
 
 const Question: React.FC<Props> = ({ votingQuestion }) => {
-  const classes = useStyles();
+  const classes = useStyles()
   return (
     <Grid container direction="column" justify="center">
       <Grid item>
@@ -30,7 +30,7 @@ const Question: React.FC<Props> = ({ votingQuestion }) => {
         </Box>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default Question;
+export default Question

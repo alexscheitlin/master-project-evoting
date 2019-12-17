@@ -1,71 +1,71 @@
-import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core';
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
-import React, { useEffect, useState } from 'react';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core'
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
+import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet'
+import React, { useEffect, useState } from 'react'
 
-import { DEV_URL } from '../../../constants';
-import { useVoteStateStore } from '../../../models/voting';
-import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
-import { StepContentWrapper } from '../../defaults/StepContentWrapper';
-import { StepTitle } from '../../defaults/StepTitle';
-import { LoadSuccess } from '../helper/LoadSuccess';
+import { DEV_URL } from '../../../constants'
+import { useVoteStateStore } from '../../../models/voting'
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
+import { StepContentWrapper } from '../../defaults/StepContentWrapper'
+import { StepTitle } from '../../defaults/StepTitle'
+import { LoadSuccess } from '../helper/LoadSuccess'
 
 interface RegisterProps {
-  requiredSealers: number;
-  handleNext: () => void;
+  requiredSealers: number
+  handleNext: () => void
 }
 
 export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext }: RegisterProps) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const { nextState } = useVoteStateStore();
+  const { nextState } = useVoteStateStore()
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
+  const [success, setSuccess] = useState<boolean>(false)
 
-  const [sealers, setSealers] = useState<string[]>([]);
-  const [listening, setListening] = useState<boolean>(false);
+  const [sealers, setSealers] = useState<string[]>([])
+  const [listening, setListening] = useState<boolean>(false)
 
-  const [allSealersConnected, setAllSealersConnected] = useState(false);
+  const [allSealersConnected, setAllSealersConnected] = useState(false)
 
   useEffect(() => {
     if (sealers.length === requiredSealers) {
-      setAllSealersConnected(true);
+      setAllSealersConnected(true)
     }
-  }, [sealers, requiredSealers]);
+  }, [sealers, requiredSealers])
 
   useEffect(() => {
     if (!listening) {
-      const events = new EventSource(`${DEV_URL}/registered`);
+      const events = new EventSource(`${DEV_URL}/registered`)
       events.onmessage = event => {
-        const parsedData = JSON.parse(event.data);
+        const parsedData = JSON.parse(event.data)
         setSealers(sealers =>
           sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index)
-        );
-      };
+        )
+      }
 
-      setListening(true);
+      setListening(true)
     }
-  }, [listening, sealers]);
+  }, [listening, sealers])
 
   const nextStep = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
 
-      await nextState();
+      await nextState()
 
-      setLoading(false);
-      setSuccess(true);
+      setLoading(false)
+      setSuccess(true)
 
-      handleNext();
+      handleNext()
     } catch (error) {
-      setErrorMessage(error.message);
-      setHasError(true);
+      setErrorMessage(error.message)
+      setHasError(true)
     }
-  };
+  }
 
   return (
     <StepContentWrapper>
@@ -105,7 +105,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
               </ListItemIcon>
               <ListItemText primary={`${sealer}`} />
             </ListItem>
-          );
+          )
         })}
       </List>
 
@@ -125,20 +125,20 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </StepContentWrapper>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: 'relative',
-    minHeight: 700
+    minHeight: 700,
   },
   button: {
     marginRight: theme.spacing(1),
-    width: 160
+    width: 160,
   },
   nextButton: {
     position: 'absolute',
-    bottom: 0
-  }
-}));
+    bottom: 0,
+  },
+}))

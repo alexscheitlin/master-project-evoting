@@ -1,70 +1,70 @@
-import { Button, CircularProgress, makeStyles, Theme, Typography } from '@material-ui/core';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import React, { useState } from 'react';
+import { Button, CircularProgress, makeStyles, Theme, Typography } from '@material-ui/core'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import ToggleButton from '@material-ui/lab/ToggleButton'
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
+import React, { useState } from 'react'
 
-import { SubmissionState, VotingOption } from '../../models/voting';
-import { BallotService } from '../../services';
-import { useVoterStore } from '../../store';
-import { delay } from '../../util/helper';
+import { SubmissionState, VotingOption } from '../../models/voting'
+import { BallotService } from '../../services'
+import { useVoterStore } from '../../store'
+import { delay } from '../../util/helper'
 
 interface Props {
-  votingQuestion: string;
+  votingQuestion: string
 }
 
 const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
-  const [selectedVote, setSelectedVote] = useState<VotingOption>(VotingOption.UNSPEC);
-  const [submissionState, setSubmissionState] = useState(SubmissionState.NOT_CONFIRMED);
-  const [message, setMessage] = useState('Please submit a vote below');
-  const [loading, setLoading] = useState(false);
-  const voterState = useVoterStore();
+  const [selectedVote, setSelectedVote] = useState<VotingOption>(VotingOption.UNSPEC)
+  const [submissionState, setSubmissionState] = useState(SubmissionState.NOT_CONFIRMED)
+  const [message, setMessage] = useState('Please submit a vote below')
+  const [loading, setLoading] = useState(false)
+  const voterState = useVoterStore()
 
   const handleToggle = (event: React.MouseEvent<HTMLElement>, newValue: string): void => {
     if (newValue === VotingOption.YES) {
-      setSelectedVote(VotingOption.YES);
+      setSelectedVote(VotingOption.YES)
     } else if (newValue === VotingOption.NO) {
-      setSelectedVote(VotingOption.NO);
+      setSelectedVote(VotingOption.NO)
     }
-  };
+  }
 
   const submitVote = async (): Promise<any> => {
-    setMessage('Submitting Vote');
-    setSubmissionState(SubmissionState.IN_SUBMISSION);
-    setLoading(true);
-    await delay(1000);
+    setMessage('Submitting Vote')
+    setSubmissionState(SubmissionState.IN_SUBMISSION)
+    setLoading(true)
+    await delay(1000)
     switch (selectedVote) {
       case VotingOption.YES:
         try {
-          await BallotService.castYesVote(voterState.contract, voterState.wallet);
-          setMessage('Your Vote was submitted successfully.');
-          setSubmissionState(SubmissionState.CONFIRMED);
+          await BallotService.castYesVote(voterState.contract, voterState.wallet)
+          setMessage('Your Vote was submitted successfully.')
+          setSubmissionState(SubmissionState.CONFIRMED)
         } catch (error) {
-          setMessage(`Unable to submit your vote.`);
-          setSubmissionState(SubmissionState.NOT_CONFIRMED);
+          setMessage(`Unable to submit your vote.`)
+          setSubmissionState(SubmissionState.NOT_CONFIRMED)
         }
-        break;
+        break
       case VotingOption.NO:
         try {
-          await BallotService.castNoVote(voterState.contract, voterState.wallet);
-          setMessage('Your Vote was submitted successfully');
-          setSubmissionState(SubmissionState.CONFIRMED);
+          await BallotService.castNoVote(voterState.contract, voterState.wallet)
+          setMessage('Your Vote was submitted successfully')
+          setSubmissionState(SubmissionState.CONFIRMED)
         } catch (error) {
-          setMessage(`Unable to submit your vote.`);
-          setSubmissionState(SubmissionState.NOT_CONFIRMED);
+          setMessage(`Unable to submit your vote.`)
+          setSubmissionState(SubmissionState.NOT_CONFIRMED)
         }
-        break;
+        break
       default:
-        setMessage('Please choose YES or NO first');
-        setSubmissionState(SubmissionState.NOT_CONFIRMED);
+        setMessage('Please choose YES or NO first')
+        setSubmissionState(SubmissionState.NOT_CONFIRMED)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
-  const classes = useStyles();
+  const classes = useStyles()
 
   const isButtonDisabled =
-    submissionState === SubmissionState.IN_SUBMISSION || submissionState === SubmissionState.CONFIRMED;
+    submissionState === SubmissionState.IN_SUBMISSION || submissionState === SubmissionState.CONFIRMED
 
   return (
     <div className={classes.root}>
@@ -107,10 +107,10 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default VotingPanel;
+export default VotingPanel
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -145,4 +145,4 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(2, 4),
   },
   proofButton: {},
-}));
+}))

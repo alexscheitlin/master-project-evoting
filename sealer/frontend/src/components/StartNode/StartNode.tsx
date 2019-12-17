@@ -1,73 +1,83 @@
-import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  createStyles,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Theme,
+} from '@material-ui/core'
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
+import GetAppIcon from '@material-ui/icons/GetApp'
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import React, { useState } from 'react'
 
-import { useInterval } from '../../hooks/useInterval';
-import { SealerBackend } from '../../services';
-import { delay } from '../../utils/helper';
-import { LoadSuccess } from '../shared/LoadSuccess';
-import { StepTitle } from '../shared/StepTitle';
-import { StepContentWrapper } from '../Helpers/StepContentWrapper';
+import { useInterval } from '../../hooks/useInterval'
+import { SealerBackend } from '../../services'
+import { delay } from '../../utils/helper'
+import { LoadSuccess } from '../shared/LoadSuccess'
+import { StepTitle } from '../shared/StepTitle'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 interface Props {
-  nextStep: () => void;
+  nextStep: () => void
 }
 
 export const StartNode: React.FC<Props> = ({ nextStep }) => {
-  const REFRESH_INTERVAL_MS: number = 3000;
-  const classes = useStyles();
-  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_SEALER_FRONTEND_PORT);
-  const [loading, setLoading] = useState(false);
+  const REFRESH_INTERVAL_MS = 3000
+  const classes = useStyles()
+  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_SEALER_FRONTEND_PORT)
+  const [loading, setLoading] = useState(false)
 
-  const [chainSpecLoaded, setChainSpecLoaded] = useState(false);
+  const [chainSpecLoaded, setChainSpecLoaded] = useState(false)
 
-  const [isNodeRunning, setIsNodeRunning] = useState(false);
-  const [isBootNode, setIsBootNode] = useState(false);
+  const [isNodeRunning, setIsNodeRunning] = useState(false)
+  const [isBootNode, setIsBootNode] = useState(false)
 
-  const [peers, setPeers] = useState(0);
+  const [peers, setPeers] = useState(0)
 
   const loadConfiguration = async () => {
-    setLoading(true);
-    setChainSpecLoaded(false);
-    await delay(1000);
+    setLoading(true)
+    setChainSpecLoaded(false)
+    await delay(1000)
     try {
-      await SealerBackend.loadConfiguration();
-      setLoading(false);
-      setChainSpecLoaded(true);
+      await SealerBackend.loadConfiguration()
+      setLoading(false)
+      setChainSpecLoaded(true)
     } catch (error) {
-      console.log(error.message);
+      console.log(error.message)
     }
-  };
+  }
 
   const confirmNodeIsRunning = async () => {
     // try to register myself
-    await registerMySealerNode();
+    await registerMySealerNode()
 
-    const nrPeers = await SealerBackend.getNrPeers();
-    setPeers(nrPeers);
+    const nrPeers = await SealerBackend.getNrPeers()
+    setPeers(nrPeers)
 
     // this activates the polling of the peers
-    setIsNodeRunning(true);
-  };
+    setIsNodeRunning(true)
+  }
 
   const registerMySealerNode = async () => {
     try {
-      const response = await SealerBackend.registerMySealerNode();
-      setIsBootNode(response.bootnode);
+      const response = await SealerBackend.registerMySealerNode()
+      setIsBootNode(response.bootnode)
     } catch (error) {
-      console.log(error.message);
+      console.log(error.message)
     }
-  };
+  }
 
   const pollPeers = async () => {
-    const nrPeers = await SealerBackend.getNrPeers();
-    setPeers(nrPeers);
-  };
+    const nrPeers = await SealerBackend.getNrPeers()
+    setPeers(nrPeers)
+  }
 
   // only poll for peers if this node is not the bootnode
-  useInterval(pollPeers, isNodeRunning ? REFRESH_INTERVAL_MS : 0);
+  useInterval(pollPeers, isNodeRunning ? REFRESH_INTERVAL_MS : 0)
 
   return (
     <StepContentWrapper>
@@ -139,7 +149,9 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
                   </ListItemIcon>
                   <ListItemText
                     primary={
-                      isBootNode ? `You are the bootnode. Please wait for other sealers to connect.` : `Looking for peers to connect to..`
+                      isBootNode
+                        ? `You are the bootnode. Please wait for other sealers to connect.`
+                        : `Looking for peers to connect to..`
                     }
                     secondary={`connected to ${peers} peers`}
                   />
@@ -152,14 +164,20 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
 
       <List className={classes.nextButton}>
         <ListItem>
-          <Button className={classes.button} disabled={peers === 0} variant="contained" color="primary" onClick={nextStep}>
+          <Button
+            className={classes.button}
+            disabled={peers === 0}
+            variant="contained"
+            color="primary"
+            onClick={nextStep}
+          >
             Next
           </Button>
         </ListItem>
       </List>
     </StepContentWrapper>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -184,4 +202,4 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
     },
   })
-);
+)

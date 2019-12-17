@@ -1,56 +1,66 @@
-import { Box, Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  createStyles,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Theme,
+} from '@material-ui/core'
+import VpnKeyIcon from '@material-ui/icons/VpnKey'
+import React, { useEffect, useState } from 'react'
 
-import { useInterval } from '../../hooks/useInterval';
-import { SealerBackend } from '../../services';
-import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
-import { LoadSuccess } from '../shared/LoadSuccess';
-import { StepTitle } from '../shared/StepTitle';
-import { StepContentWrapper } from '../Helpers/StepContentWrapper';
+import { useInterval } from '../../hooks/useInterval'
+import { SealerBackend } from '../../services'
+import { ErrorSnackbar } from '../Helpers/ErrorSnackbar'
+import { LoadSuccess } from '../shared/LoadSuccess'
+import { StepTitle } from '../shared/StepTitle'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 interface Props {
-  nextStep: () => void;
+  nextStep: () => void
 }
 
 export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [ballotDeployed, setBallotDeployed] = useState(false);
+  const [ballotDeployed, setBallotDeployed] = useState(false)
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
 
-  const [keysSubmitted, setKeysSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [keysSubmitted, setKeysSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const generateKeys = async () => {
     try {
-      setLoading(true);
-      await SealerBackend.generateKeys();
-      setLoading(false);
-      setKeysSubmitted(true);
+      setLoading(true)
+      await SealerBackend.generateKeys()
+      setLoading(false)
+      setKeysSubmitted(true)
     } catch (error) {
-      setHasError(true);
-      setErrorMessage(error.msg);
-      console.log(error);
+      setHasError(true)
+      setErrorMessage(error.msg)
+      console.log(error)
     }
-  };
+  }
 
   const checkIfBallotDeployed = async () => {
     try {
-      const isDeployed = await SealerBackend.isBallotDeployed();
-      setBallotDeployed(isDeployed);
+      const isDeployed = await SealerBackend.isBallotDeployed()
+      setBallotDeployed(isDeployed)
     } catch (error) {
-      throw new Error('could not determine if ballot is deployed already');
+      throw new Error('could not determine if ballot is deployed already')
     }
-  };
+  }
 
   useEffect(() => {
-    checkIfBallotDeployed();
-  }, []);
+    checkIfBallotDeployed()
+  }, [])
 
-  useInterval(checkIfBallotDeployed, !ballotDeployed ? 4000 : 0);
+  useInterval(checkIfBallotDeployed, !ballotDeployed ? 4000 : 0)
 
   return (
     <StepContentWrapper>
@@ -94,15 +104,21 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
 
       <List className={classes.nextButton}>
         <ListItem>
-          <Button className={classes.button} variant="contained" color="primary" disabled={!keysSubmitted} onClick={nextStep}>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            disabled={!keysSubmitted}
+            onClick={nextStep}
+          >
             Next
           </Button>
         </ListItem>
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </StepContentWrapper>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -119,4 +135,4 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
     },
   })
-);
+)

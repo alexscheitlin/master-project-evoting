@@ -1,11 +1,11 @@
-import { AppBar, Grid, IconButton, makeStyles, MobileStepper, Theme, Toolbar, Typography } from '@material-ui/core';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import React from 'react';
-import { useActiveStepStore } from '../../store/store';
+import { AppBar, Grid, IconButton, makeStyles, MobileStepper, Theme, Toolbar, Typography } from '@material-ui/core'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import React from 'react'
+import { useActiveStepStore } from '../../store/store'
 
 export const Header: React.FC = () => {
-  const classes = useStyles();
-  const { activeStep } = useActiveStepStore();
+  const classes = useStyles()
+  const { activeStep } = useActiveStepStore()
 
   return (
     <Grid item component="header">
@@ -14,7 +14,10 @@ export const Header: React.FC = () => {
           <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
             {`Sealer Nr: ${process.env.REACT_APP_SEALER_FRONTEND_PORT}`}
           </Typography>
-          <IconButton color="inherit" onClick={() => window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')}>
+          <IconButton
+            color="inherit"
+            onClick={() => window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')}
+          >
             <GitHubIcon />
           </IconButton>
         </Toolbar>
@@ -30,8 +33,8 @@ export const Header: React.FC = () => {
         />
       </AppBar>
     </Grid>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -47,4 +50,4 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     padding: 0,
   },
-}));
+}))

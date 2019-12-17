@@ -49,12 +49,7 @@ export const generate = (
 // 2. recompute the challenge c
 // 3. verify that the challenge is correct
 // 4. verify that: g^d == b * h^c
-export const verify = (
-  params: SystemParameters,
-  proof: KeyGenerationProof,
-  h: BN,
-  id: string
-): boolean => {
+export const verify = (params: SystemParameters, proof: KeyGenerationProof, h: BN, id: string): boolean => {
   const { p, q, g } = params
   const { c, d } = proof
 

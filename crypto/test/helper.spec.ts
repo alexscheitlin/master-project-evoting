@@ -73,17 +73,7 @@ describe('Global Helper Test', () => {
       const result = GlobalHelper.addBN(a, b, new BN(modulus, base))
 
       const log = false
-      log &&
-        console.log(
-          'a:',
-          a.toNumber(),
-          ', b:',
-          b.toNumber(),
-          ', c:',
-          c.toNumber(),
-          'res:',
-          result.toNumber()
-        )
+      log && console.log('a:', a.toNumber(), ', b:', b.toNumber(), ', c:', c.toNumber(), 'res:', result.toNumber())
       expect(result.eq(c)).to.be.true
     }
   })
@@ -122,17 +112,7 @@ describe('Global Helper Test', () => {
       const result = GlobalHelper.subBN(a, b, new BN(modulus, base))
 
       const log = false
-      log &&
-        console.log(
-          'a:',
-          a.toNumber(),
-          ', b:',
-          b.toNumber(),
-          ', c:',
-          c.toNumber(),
-          'res:',
-          result.toNumber()
-        )
+      log && console.log('a:', a.toNumber(), ', b:', b.toNumber(), ', c:', c.toNumber(), 'res:', result.toNumber())
       expect(result.eq(c)).to.be.true
     }
   })
@@ -171,17 +151,7 @@ describe('Global Helper Test', () => {
       const result = GlobalHelper.mulBN(a, b, new BN(modulus, base))
 
       const log = false
-      log &&
-        console.log(
-          'a:',
-          a.toNumber(),
-          ', b:',
-          b.toNumber(),
-          ', c:',
-          c.toNumber(),
-          'res:',
-          result.toNumber()
-        )
+      log && console.log('a:', a.toNumber(), ', b:', b.toNumber(), ', c:', c.toNumber(), 'res:', result.toNumber())
       expect(result.eq(c)).to.be.true
     }
   })
@@ -220,17 +190,7 @@ describe('Global Helper Test', () => {
       const result = GlobalHelper.divBN(a, b, new BN(modulus, base))
 
       const log = false
-      log &&
-        console.log(
-          'a:',
-          a.toNumber(),
-          ', b:',
-          b.toNumber(),
-          ', c:',
-          c.toNumber(),
-          'res:',
-          result.toNumber()
-        )
+      log && console.log('a:', a.toNumber(), ', b:', b.toNumber(), ', c:', c.toNumber(), 'res:', result.toNumber())
       expect(result.eq(c)).to.be.true
     }
   })
@@ -269,17 +229,7 @@ describe('Global Helper Test', () => {
       const result = GlobalHelper.powBN(a, b, new BN(modulus, base))
 
       const log = false
-      log &&
-        console.log(
-          'a:',
-          a.toNumber(),
-          ', b:',
-          b.toNumber(),
-          ', c:',
-          c.toNumber(),
-          'res:',
-          result.toNumber()
-        )
+      log && console.log('a:', a.toNumber(), ', b:', b.toNumber(), ', c:', c.toNumber(), 'res:', result.toNumber())
       expect(result.eq(c)).to.be.true
     }
   })
@@ -367,9 +317,7 @@ describe('Global Helper Test', () => {
     return diff
   }
 
-  const benchmark = (
-    equalityCheck: (a: Buffer, b: Buffer, equalInputs: boolean) => number
-  ): number => {
+  const benchmark = (equalityCheck: (a: Buffer, b: Buffer, equalInputs: boolean) => number): number => {
     const numberOfTrials = 10000
     const bufferSize = 64
 

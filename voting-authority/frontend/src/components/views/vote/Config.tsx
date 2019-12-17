@@ -1,124 +1,124 @@
-import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
-import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import axios, { AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
+import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
+import PriorityHighIcon from '@material-ui/icons/PriorityHigh'
+import VpnKeyIcon from '@material-ui/icons/VpnKey'
+import axios, { AxiosResponse } from 'axios'
+import React, { useEffect, useState } from 'react'
 
-import { DEV_URL } from '../../../constants';
-import { useVoteStateStore, VotingState } from '../../../models/voting';
-import { fetchState } from '../../../services/authBackend';
-import { ErrorSnackbar } from '../../defaults/ErrorSnackbar';
-import { StepContentWrapper } from '../../defaults/StepContentWrapper';
-import { StepTitle } from '../../defaults/StepTitle';
-import { LoadSuccess } from '../helper/LoadSuccess';
-import { useInterval } from '../helper/UseInterval';
+import { DEV_URL } from '../../../constants'
+import { useVoteStateStore, VotingState } from '../../../models/voting'
+import { fetchState } from '../../../services/authBackend'
+import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
+import { StepContentWrapper } from '../../defaults/StepContentWrapper'
+import { StepTitle } from '../../defaults/StepTitle'
+import { LoadSuccess } from '../helper/LoadSuccess'
+import { useInterval } from '../helper/UseInterval'
 
 // simulates a delay like an asyc call would
-const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
+const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
 interface ConfigProps {
-  handleNext: () => void;
+  handleNext: () => void
 }
 
 interface ConfigStateReponse {
-  state: VotingState;
-  submittedKeyShares: number;
-  requiredKeyShares: number;
-  publicKey: number;
+  state: VotingState
+  submittedKeyShares: number
+  requiredKeyShares: number
+  publicKey: number
 }
 
 interface PublicKeyPostResponse {
-  msg: string;
-  publicKey: number;
+  msg: string
+  publicKey: number
 }
 
 export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
-  const classes = useStyles();
-  const REFRESH_INTERVAL_MS = 4000;
+  const classes = useStyles()
+  const REFRESH_INTERVAL_MS = 4000
 
-  const { nextState } = useVoteStateStore();
+  const { nextState } = useVoteStateStore()
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
 
-  const [requiredKeyShares, setRequiredKeyShares] = useState<number>(1000);
-  const [submittedKeyShares, setSubmittedKeyShares] = useState<number>(0);
+  const [requiredKeyShares, setRequiredKeyShares] = useState<number>(1000)
+  const [submittedKeyShares, setSubmittedKeyShares] = useState<number>(0)
 
-  const [allKeySharesSubmitted, setAllKeySharesSubmitted] = useState(false);
+  const [allKeySharesSubmitted, setAllKeySharesSubmitted] = useState(false)
 
-  const [publicKey, setPublicKey] = useState<number>(0);
-  const [publicKeyGenerated, setPublicKeyGenerated] = useState<boolean>(false);
+  const [publicKey, setPublicKey] = useState<number>(0)
+  const [publicKeyGenerated, setPublicKeyGenerated] = useState<boolean>(false)
 
-  const [inKeyGeneration, setInKeyGeneration] = useState(false);
-  const [inOpeningVote, setInOpeningVote] = useState(false);
+  const [inKeyGeneration, setInKeyGeneration] = useState(false)
+  const [inOpeningVote, setInOpeningVote] = useState(false)
 
   useEffect(() => {
-    checkNumberOfSubmittedPublicKeyShares();
-  }, []);
+    checkNumberOfSubmittedPublicKeyShares()
+  }, [])
 
   useEffect(() => {
     if (requiredKeyShares === submittedKeyShares) {
-      setAllKeySharesSubmitted(true);
+      setAllKeySharesSubmitted(true)
     }
-  }, [requiredKeyShares, submittedKeyShares]);
+  }, [requiredKeyShares, submittedKeyShares])
 
   const generatePublicKey = async () => {
     try {
-      setInKeyGeneration(true);
-      const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {});
+      setInKeyGeneration(true)
+      const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {})
 
       if (response.status === 201) {
-        setPublicKey(response.data.publicKey);
-        setPublicKeyGenerated(true);
-        await delay(500);
-        setInKeyGeneration(false);
+        setPublicKey(response.data.publicKey)
+        setPublicKeyGenerated(true)
+        await delay(500)
+        setInKeyGeneration(false)
       } else {
-        throw new Error(`GET /state. Status Code: ${response.status} -> not what was expected.`);
+        throw new Error(`GET /state. Status Code: ${response.status} -> not what was expected.`)
       }
     } catch (error) {
-      setInKeyGeneration(false);
-      console.error(error);
-      setErrorMessage(error.msg);
-      setHasError(true);
+      setInKeyGeneration(false)
+      console.error(error)
+      setErrorMessage(error.msg)
+      setHasError(true)
     }
-  };
+  }
 
   const checkNumberOfSubmittedPublicKeyShares = async () => {
     try {
-      const data: ConfigStateReponse = (await fetchState()) as ConfigStateReponse;
-      setRequiredKeyShares(data.requiredKeyShares);
-      setSubmittedKeyShares(data.submittedKeyShares);
+      const data: ConfigStateReponse = (await fetchState()) as ConfigStateReponse
+      setRequiredKeyShares(data.requiredKeyShares)
+      setSubmittedKeyShares(data.submittedKeyShares)
 
       if (data.publicKey > 0) {
-        setPublicKey(data.publicKey);
-        setPublicKeyGenerated(true);
+        setPublicKey(data.publicKey)
+        setPublicKeyGenerated(true)
       }
     } catch (error) {
-      setErrorMessage(error.msg);
-      setHasError(true);
+      setErrorMessage(error.msg)
+      setHasError(true)
     }
-  };
+  }
 
   const nextStep = async () => {
-    setInOpeningVote(true);
-    await delay(2000);
+    setInOpeningVote(true)
+    await delay(2000)
     try {
-      await nextState();
-      setInOpeningVote(false);
-      handleNext();
+      await nextState()
+      setInOpeningVote(false)
+      handleNext()
     } catch (error) {
-      setInOpeningVote(false);
-      setErrorMessage(error.msg);
-      setHasError(true);
+      setInOpeningVote(false)
+      setErrorMessage(error.msg)
+      setHasError(true)
     }
-  };
+  }
 
   useInterval(
     () => {
-      checkNumberOfSubmittedPublicKeyShares();
+      checkNumberOfSubmittedPublicKeyShares()
     },
     !allKeySharesSubmitted ? REFRESH_INTERVAL_MS : 0
-  );
+  )
 
   return (
     <StepContentWrapper>
@@ -193,31 +193,31 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </StepContentWrapper>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     padding: '1em',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   button: {
     marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
   },
   voteButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 160,
-    height: 36
+    height: 36,
   },
   actionsContainer: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   nextButton: {
     position: 'absolute',
-    bottom: 0
-  }
-}));
+    bottom: 0,
+  },
+}))

@@ -1,28 +1,28 @@
-import { AppBar, Grid, IconButton, makeStyles, MobileStepper, Theme, Toolbar, Typography } from '@material-ui/core';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import React from 'react';
+import { AppBar, Grid, IconButton, makeStyles, MobileStepper, Theme, Toolbar, Typography } from '@material-ui/core'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import React from 'react'
 
-import { useActiveStepStore } from '../../models/voting';
+import { useActiveStepStore } from '../../models/voting'
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`
+    borderBottom: `1px solid ${theme.palette.divider}`,
   },
   toolbar: {
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   toolbarTitle: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   bar: {
     width: '100%',
-    padding: 0
-  }
-}));
+    padding: 0,
+  },
+}))
 
 export const Header: React.FC = () => {
-  const classes = useStyles();
-  const { activeStep } = useActiveStepStore();
+  const classes = useStyles()
+  const { activeStep } = useActiveStepStore()
 
   return (
     <Grid item component="header">
@@ -50,5 +50,5 @@ export const Header: React.FC = () => {
         />
       </AppBar>
     </Grid>
-  );
-};
+  )
+}

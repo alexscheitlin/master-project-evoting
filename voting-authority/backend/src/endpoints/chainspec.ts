@@ -1,5 +1,13 @@
 import express from 'express'
-import { addToList, AUTHORITIES_TABLE, CHAINSPEC_TABLE, getObjectFromDB, getValueFromDB, setValue, STATE_TABLE } from '../database/database'
+import {
+  addToList,
+  AUTHORITIES_TABLE,
+  CHAINSPEC_TABLE,
+  getObjectFromDB,
+  getValueFromDB,
+  setValue,
+  STATE_TABLE,
+} from '../database/database'
 import { verifyAddress } from '../utils/addressVerification'
 import { parityConfig } from '../config'
 

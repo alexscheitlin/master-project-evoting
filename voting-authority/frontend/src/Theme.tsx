@@ -1,25 +1,25 @@
-import red from '@material-ui/core/colors/red';
-import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
+import red from '@material-ui/core/colors/red'
+import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles'
 
 // A custom theme for this app
 const mainTheme = createMuiTheme({
   palette: {
     primary: {
-      main: '#557C9B'
+      main: '#557C9B',
     },
     secondary: {
-      main: '#19857b'
+      main: '#19857b',
     },
     error: {
-      main: red.A400
+      main: red.A400,
     },
     background: {
-      default: '#fff'
-    }
+      default: '#fff',
+    },
   },
   typography: {
-    fontSize: 16
-  }
-});
+    fontSize: 16,
+  },
+})
 
-export default responsiveFontSizes(mainTheme);
+export default responsiveFontSizes(mainTheme)

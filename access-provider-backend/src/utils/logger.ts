@@ -1,6 +1,10 @@
 import express from 'express'
 
-export const requestLogger = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+export const requestLogger = (
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
+): void => {
   console.log('---')
   if (request.method === 'POST') {
     console.log('req', request.method, request.path, '   ', JSON.stringify(request.body))
@@ -10,7 +14,11 @@ export const requestLogger = (request: express.Request, response: express.Respon
   next()
 }
 
-export const responseLogger = (request: express.Request, response: express.Response, next: express.NextFunction): void => {
+export const responseLogger = (
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
+): void => {
   const oldWrite = response.write
   const oldEnd = response.end
 

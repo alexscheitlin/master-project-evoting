@@ -24,13 +24,7 @@ describe('ElGamal Finite Field NIZKP for Plaintext Membership', () => {
         const yesEnc = FFelGamal.Encryption.encrypt(yesVote, sp, pk, log)
         const yesProof = FFelGamal.Proof.Membership.generateYesProof(yesEnc, sp, pk, uniqueID)
 
-        const verifiedYesProof = FFelGamal.Proof.Membership.verify(
-          yesEnc,
-          yesProof,
-          sp,
-          pk,
-          uniqueID
-        )
+        const verifiedYesProof = FFelGamal.Proof.Membership.verify(yesEnc, yesProof, sp, pk, uniqueID)
         expect(verifiedYesProof).to.be.true
 
         // no vote

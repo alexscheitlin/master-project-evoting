@@ -27,10 +27,7 @@ export const generateKeyPair = (sp: SystemParameters): KeyPair => {
 }
 
 // generate system parameters p,q,g and a key pair h,sk given p,g
-export const generateSystemParametersAndKeys = (
-  p: number,
-  g: number
-): [SystemParameters, KeyPair] => {
+export const generateSystemParametersAndKeys = (p: number, g: number): [SystemParameters, KeyPair] => {
   const sysParams = generateSystemParameters(p, g)
   const keyPair = generateKeyPair(sysParams)
   return [sysParams, keyPair]
@@ -38,27 +35,20 @@ export const generateSystemParametersAndKeys = (
 
 // generate system parameters p,q,g and a key pair h,sk given p,g
 // these parameters can be used for zero-knowledge proofs
-export const generateSystemParametersAndKeysZKP = (
-  p: number,
-  g: number
-): [SystemParameters, KeyPair] => {
+export const generateSystemParametersAndKeysZKP = (p: number, g: number): [SystemParameters, KeyPair] => {
   const sysParams = generateSystemParameters(p, g)
   const keyPair = generateKeyPair(sysParams)
 
   // verify that g^q mod p == 1 (this means: gcd(q,p) == 1)
   const test1 = GlobalHelper.powBN(sysParams.g, sysParams.q, sysParams.p)
   if (!test1.eq(GlobalHelper.newBN(1))) {
-    throw new Error(
-      `g^q mod p != 1 (== ${test1.toNumber()}. for p: ${p}, q: ${sysParams.q.toNumber()} and g: ${g}`
-    )
+    throw new Error(`g^q mod p != 1 (== ${test1.toNumber()}. for p: ${p}, q: ${sysParams.q.toNumber()} and g: ${g}`)
   }
 
   // verify that h^q mod p == 1 (this means: gcd(h,p) == 1)
   const test2 = GlobalHelper.powBN(keyPair.h, sysParams.q, sysParams.p)
   if (!test2.eq(GlobalHelper.newBN(1))) {
-    throw new Error(
-      `h^q mod p != 1 (== ${test2.toNumber()}. for p: ${p}, q: ${sysParams.q.toNumber()} and g: ${g}`
-    )
+    throw new Error(`h^q mod p != 1 (== ${test2.toNumber()}. for p: ${p}, q: ${sysParams.q.toNumber()} and g: ${g}`)
   }
 
   // verify that the public key h is not 1

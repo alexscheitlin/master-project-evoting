@@ -19,10 +19,7 @@ export const generateBaseVote = (pk: string | CurvePoint): Cipher => {
 } // encrypt with m=noVote, r=1
 
 export const addVotes = (votes: Cipher[], pk: string | CurvePoint): Cipher => {
-  return votes.reduce(
-    (previous, current) => Encryption.homomorphicAdd(previous, current),
-    generateBaseVote(pk)
-  )
+  return votes.reduce((previous, current) => Encryption.homomorphicAdd(previous, current), generateBaseVote(pk))
 }
 
 export const findPoint = (point: CurvePoint): number => {

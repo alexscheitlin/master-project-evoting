@@ -7,7 +7,8 @@ import { BallotManager } from '../utils/ballotManager'
 import { VotingState } from './state'
 
 const TOO_EARLY_MSG: string = 'You are too early to create the public key. Please wait for the CONFIG stage.'
-const TOO_LATE_MSG: string = 'You are too late to create the public key. You should have done that during the CONFIG stage.'
+const TOO_LATE_MSG: string =
+  'You are too late to create the public key. You should have done that during the CONFIG stage.'
 const KEYSHARE_GENERATION_ONGOING: string = 'The key share generation is ongoing. Please wait until it is finished.'
 const PUBLIC_KEY_ALREADY_GENERATED: string = 'The public key was already generated.'
 const SUCCESSFUL: string = 'The public key generation was successful!'

@@ -69,9 +69,12 @@ router.post('/registerVoters', async (req, res) => {
     })
   } else {
     try {
-      await axios.post(`http://${process.env.ACCESS_PROVIDER_BACKEND_IP}:${process.env.ACCESS_PROVIDER_BACKEND_PORT}/sendTokens`, {
-        tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
-      })
+      await axios.post(
+        `http://${process.env.ACCESS_PROVIDER_BACKEND_IP}:${process.env.ACCESS_PROVIDER_BACKEND_PORT}/sendTokens`,
+        {
+          tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
+        }
+      )
     } catch (error) {
       res.status(400).json({ success: false, msg: ACCESS_PROVIDER_NOT_REACHABLE, error: error.message })
       return

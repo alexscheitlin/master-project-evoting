@@ -21,11 +21,7 @@ describe('ElGamal Finite Field NIZKP for Key Generation', () => {
 
       // generate the key share generation proof
       const uniqueId = 'IamReallyUnique;-)'
-      const proof: FFelGamal.Proof.KeyGenerationProof = FFelGamal.Proof.KeyGeneration.generate(
-        sp,
-        share,
-        uniqueId
-      )
+      const proof: FFelGamal.Proof.KeyGenerationProof = FFelGamal.Proof.KeyGeneration.generate(sp, share, uniqueId)
       const { c: c1, d: d1 } = proof
 
       log && console.log('Proof Parts')
@@ -34,12 +30,7 @@ describe('ElGamal Finite Field NIZKP for Key Generation', () => {
       log && console.log()
 
       // verify that the key share has been generated truthfully
-      const verifiedProof: boolean = FFelGamal.Proof.KeyGeneration.verify(
-        sp,
-        proof,
-        share.h,
-        uniqueId
-      )
+      const verifiedProof: boolean = FFelGamal.Proof.KeyGeneration.verify(sp, proof, share.h, uniqueId)
 
       expect(verifiedProof).to.be.true
     }
@@ -54,22 +45,14 @@ describe('ElGamal Finite Field NIZKP for Key Generation', () => {
     // generate the public and private key share and the key generation proof
     const share1: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(sp)
     const uniqueId1 = 'IamReallyUnique;-)'
-    const proof1: FFelGamal.Proof.KeyGenerationProof = FFelGamal.Proof.KeyGeneration.generate(
-      sp,
-      share1,
-      uniqueId1
-    )
+    const proof1: FFelGamal.Proof.KeyGenerationProof = FFelGamal.Proof.KeyGeneration.generate(sp, share1, uniqueId1)
     expect(FFelGamal.Proof.KeyGeneration.verify(sp, proof1, share1.h, uniqueId1)).to.be.true
 
     // second authority
     // generate the public and private key share and the key generation proof
     const share2: FFelGamal.KeyPair = FFelGamal.SystemSetup.generateKeyPair(sp)
     const uniqueId2 = 'IamMuchMoreUnique_o.o'
-    const proof2: FFelGamal.Proof.KeyGenerationProof = FFelGamal.Proof.KeyGeneration.generate(
-      sp,
-      share2,
-      uniqueId2
-    )
+    const proof2: FFelGamal.Proof.KeyGenerationProof = FFelGamal.Proof.KeyGeneration.generate(sp, share2, uniqueId2)
     expect(FFelGamal.Proof.KeyGeneration.verify(sp, proof2, share2.h, uniqueId2)).to.be.true
 
     log && console.log('1: pk, sk', share1.h.toNumber(), share1.sk.toNumber())
@@ -97,43 +80,18 @@ describe('ElGamal Finite Field NIZKP for Key Generation', () => {
     log && console.log('ds2', decShare2.toNumber())
 
     // create proofs
-    const decryptionProof1 = FFelGamal.Proof.Decryption.generate(
-      cipherText,
-      sp,
-      share1.sk,
-      uniqueId1
-    )
+    const decryptionProof1 = FFelGamal.Proof.Decryption.generate(cipherText, sp, share1.sk, uniqueId1)
 
-    const decryptionProof2 = FFelGamal.Proof.Decryption.generate(
-      cipherText,
-      sp,
-      share2.sk,
-      uniqueId2
-    )
+    const decryptionProof2 = FFelGamal.Proof.Decryption.generate(cipherText, sp, share2.sk, uniqueId2)
 
     // verify proofs
-    const verifiedProof1 = FFelGamal.Proof.Decryption.verify(
-      cipherText,
-      decryptionProof1,
-      sp,
-      share1.h,
-      uniqueId1
-    )
-    const verifiedProof2 = FFelGamal.Proof.Decryption.verify(
-      cipherText,
-      decryptionProof2,
-      sp,
-      share2.h,
-      uniqueId2
-    )
+    const verifiedProof1 = FFelGamal.Proof.Decryption.verify(cipherText, decryptionProof1, sp, share1.h, uniqueId1)
+    const verifiedProof2 = FFelGamal.Proof.Decryption.verify(cipherText, decryptionProof2, sp, share2.h, uniqueId2)
     expect(verifiedProof1).to.be.true
     expect(verifiedProof2).to.be.true
 
     // finish decryption by combining decrypted shares
-    const decFinal = FFelGamal.Encryption.combineDecryptedShares(sp, cipherText, [
-      decShare1,
-      decShare2,
-    ])
+    const decFinal = FFelGamal.Encryption.combineDecryptedShares(sp, cipherText, [decShare1, decShare2])
 
     // decrypt with combined private key
     const d2 = FFelGamal.Encryption.decrypt2(cipherText, privateKey, sp)

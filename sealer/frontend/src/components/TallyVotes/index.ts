@@ -1,1 +1,1 @@
-export { TallyVotes } from "./TallyVotes";
+export { TallyVotes } from './TallyVotes'

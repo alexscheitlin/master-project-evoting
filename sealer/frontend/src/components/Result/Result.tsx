@@ -1,12 +1,10 @@
-import React from 'react';
-import { Box, Theme, createStyles, ListItem, List, Typography } from '@material-ui/core';
-import { StepTitle } from '../shared/StepTitle';
-import { makeStyles } from '@material-ui/styles';
+import React from 'react'
+import { Box, Theme, createStyles, ListItem, List, Typography } from '@material-ui/core'
+import { StepTitle } from '../shared/StepTitle'
+import { makeStyles } from '@material-ui/styles'
 
-interface Props {}
-
-export const Result: React.FC<Props> = () => {
-  const classes = useStyles();
+export const Result: React.FC = () => {
+  const classes = useStyles()
   return (
     <Box className={classes.root}>
       <StepTitle title="Result" />
@@ -19,8 +17,8 @@ export const Result: React.FC<Props> = () => {
         </ListItem>
       </List>
     </Box>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,4 +42,4 @@ const useStyles = makeStyles((theme: Theme) =>
       right: 0,
     },
   })
-);
+)

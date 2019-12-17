@@ -1,1 +1,1 @@
-export { KeyGeneration } from "./KeyGeneration";
+export { KeyGeneration } from './KeyGeneration'

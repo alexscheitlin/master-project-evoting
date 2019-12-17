@@ -73,7 +73,11 @@ router.post('/register', async (req, res) => {
   if (!getListFromDB(DOES_ACCOUNT_EXIST)) {
     let accountAddress: string = ''
     try {
-      accountAddress = await createAccount(serverConfig.nodeUrl, serverConfig.accountPassword, serverConfig.accountPassword)
+      accountAddress = await createAccount(
+        serverConfig.nodeUrl,
+        serverConfig.accountPassword,
+        serverConfig.accountPassword
+      )
     } catch (error) {
       res.status(500).json({ msg: ACCOUNT_CREATION_FAILED, error: error.message })
       return

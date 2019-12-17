@@ -28,9 +28,7 @@ export interface Cipher {
 }
 
 // TODO: test me
-export const instanceOfSystemParametersSerialized = (
-  object: any
-): object is SystemParametersSerialized => {
+export const instanceOfSystemParametersSerialized = (object: any): object is SystemParametersSerialized => {
   /*const test = (field: string, type: string): boolean => {
     return field in object && typeof object[field] === type
   }*/

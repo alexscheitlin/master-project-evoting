@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
-import axios from 'axios';
+import axios from 'axios'
 
 const getAccessProviderUrl = () =>
-  `http://${process.env.REACT_APP_ACCESS_PROVIDER_IP}:${process.env.REACT_APP_ACCESS_PROVIDER_PORT}`;
+  `http://${process.env.REACT_APP_ACCESS_PROVIDER_IP}:${process.env.REACT_APP_ACCESS_PROVIDER_PORT}`
 
 /**
  * Sends an ETH address and a token to the access provider, which will send Ether to the
@@ -14,26 +14,26 @@ export const fundWallet = async (token: string, wallet: string): Promise<string>
   const requestBody = {
     token: token,
     address: wallet,
-  };
+  }
   try {
-    const res = await axios.post(getAccessProviderUrl() + '/register', requestBody);
+    const res = await axios.post(getAccessProviderUrl() + '/register', requestBody)
     // return the ballot contract address
-    return res.data.ballot;
+    return res.data.ballot
   } catch (error) {
     throw new Error(
-      `Something went wrong when sending ${wallet} to access provider to get the wallet funded. ${error.response.data.msg}`,
-    );
+      `Something went wrong when sending ${wallet} to access provider to get the wallet funded. ${error.response.data.msg}`
+    )
   }
-};
+}
 
 /**
  * Get the url at which the blockchain can be reached
  */
 export const getConnectionNodeUrl = async () => {
   try {
-    const res = await axios.get(getAccessProviderUrl() + '/getNodeURL');
-    return res.data.node;
+    const res = await axios.get(getAccessProviderUrl() + '/getNodeURL')
+    return res.data.node
   } catch (error) {
-    throw new Error(`Could not get connection node from the access provider: ${error.response.data.msg}`);
+    throw new Error(`Could not get connection node from the access provider: ${error.response.data.msg}`)
   }
-};
+}
