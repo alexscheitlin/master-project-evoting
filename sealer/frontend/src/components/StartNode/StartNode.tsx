@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  createStyles,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-} from '@material-ui/core'
+import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
@@ -17,9 +7,9 @@ import React, { useState } from 'react'
 import { useInterval } from '../../hooks/useInterval'
 import { SealerBackend } from '../../services'
 import { delay } from '../../utils/helper'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
-import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 interface Props {
   nextStep: () => void
@@ -28,7 +18,9 @@ interface Props {
 export const StartNode: React.FC<Props> = ({ nextStep }) => {
   const REFRESH_INTERVAL_MS = 3000
   const classes = useStyles()
-  const [frontendPort, setFrontendPort] = useState(process.env.REACT_APP_SEALER_FRONTEND_PORT)
+
+  const frontendPort = process.env.REACT_APP_SEALER_FRONTEND_PORT
+
   const [loading, setLoading] = useState(false)
 
   const [chainSpecLoaded, setChainSpecLoaded] = useState(false)
@@ -38,7 +30,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
 
   const [peers, setPeers] = useState(0)
 
-  const loadConfiguration = async () => {
+  const loadConfiguration = async (): Promise<void> => {
     setLoading(true)
     setChainSpecLoaded(false)
     await delay(1000)
@@ -51,7 +43,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
     }
   }
 
-  const confirmNodeIsRunning = async () => {
+  const confirmNodeIsRunning = async (): Promise<void> => {
     // try to register myself
     await registerMySealerNode()
 
@@ -62,7 +54,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
     setIsNodeRunning(true)
   }
 
-  const registerMySealerNode = async () => {
+  const registerMySealerNode = async (): Promise<void> => {
     try {
       const response = await SealerBackend.registerMySealerNode()
       setIsBootNode(response.bootnode)
@@ -71,7 +63,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
     }
   }
 
-  const pollPeers = async () => {
+  const pollPeers = async (): Promise<void> => {
     const nrPeers = await SealerBackend.getNrPeers()
     setPeers(nrPeers)
   }

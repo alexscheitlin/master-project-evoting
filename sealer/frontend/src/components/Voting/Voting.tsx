@@ -1,22 +1,12 @@
-import {
-  Box,
-  Button,
-  createStyles,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-} from '@material-ui/core'
+import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
 import React, { useState } from 'react'
 
+import { useInterval } from '../../hooks/useInterval'
+import { VotingState } from '../../models/states'
+import { SealerBackend } from '../../services'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
-import { useInterval } from '../../hooks/useInterval'
-import { AuthBackend } from '../../services'
-import { VotingState } from '../../models/states'
-import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 interface Props {
   nextStep: () => void
@@ -26,8 +16,8 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
   const [readyForTally, setReadyForTally] = useState(false)
   const classes = useStyles()
 
-  const getState = async () => {
-    const state = await AuthBackend.getState()
+  const getState = async (): Promise<void> => {
+    const state = await SealerBackend.getState()
     setReadyForTally(state.state === VotingState.TALLY)
   }
 
