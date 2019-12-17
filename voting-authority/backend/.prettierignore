@@ -1,0 +1,5 @@
+/.vscode
+/mp-crypto
+/node_modules
+/solidity/toDeploy
+/src/database/db.json
