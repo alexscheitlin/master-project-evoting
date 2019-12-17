@@ -1,47 +1,47 @@
-import { Grid, makeStyles, Theme } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { Grid, makeStyles, Theme } from '@material-ui/core'
+import React, { useEffect, useState } from 'react'
 
-import LoadingPage from './pages/LoadingPage';
-import LoginPage from './pages/LoginPage';
-import VotingPage from './pages/VotingPage';
-import { useVoterStore } from './store';
+import LoadingPage from './pages/LoadingPage'
+import LoginPage from './pages/LoginPage'
+import VotingPage from './pages/VotingPage'
+import { useVoterStore } from './store'
 
 const AppManager: React.FC = () => {
-  const classes = useStyles();
-  const state = useVoterStore();
+  const classes = useStyles()
+  const state = useVoterStore()
 
   const setupDone = () => {
-    return state.isAuthenticated() && state.isTokenSet() && state.isWalletSet() && state.isBallotContractAddressSet();
-  };
+    return state.isAuthenticated() && state.isTokenSet() && state.isWalletSet() && state.isBallotContractAddressSet()
+  }
 
   // check what values are already in local storage
   useEffect(() => {
     if (state.isAuthenticated()) {
-      state.setAuthenicated(true);
+      state.setAuthenicated(true)
     }
 
     if (state.isTokenSet()) {
-      state.setToken(state.getToken());
+      state.setToken(state.getToken())
     }
 
     if (state.isWalletSet()) {
-      state.setWallet(state.getWallet());
+      state.setWallet(state.getWallet())
     }
 
     if (state.isBallotContractAddressSet()) {
-      state.setBallotContractAddress(state.getBallotContractAddress());
+      state.setBallotContractAddress(state.getBallotContractAddress())
     }
-  }, []);
+  }, [])
 
   const getPage = () => {
     if (!state.authenticated) {
-      return <LoginPage />;
+      return <LoginPage />
     } else if (!setupDone()) {
-      return <LoadingPage />;
+      return <LoadingPage />
     } else {
-      return <VotingPage />;
+      return <VotingPage />
     }
-  };
+  }
 
   // LoginPage displays the login form per default
   // once the user submits her details, the LoginPage shows the LoadingPage
@@ -52,14 +52,14 @@ const AppManager: React.FC = () => {
         {getPage()}
       </Grid>
     </Grid>
-  );
-};
+  )
+}
 
-export default AppManager;
+export default AppManager
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
     minHeight: 700,
   },
-}));
+}))

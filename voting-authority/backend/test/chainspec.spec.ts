@@ -48,7 +48,10 @@ describe('Chainspec Tests', () => {
       const oldChainspec: any = null
 
       // needs a lambda function so that expect can call the function itself
-      expect(() => Chainspec.addValidatorToChainspec(oldChainspec, address)).to.throw(TypeError, 'Cannot read chainspec since it is null.')
+      expect(() => Chainspec.addValidatorToChainspec(oldChainspec, address)).to.throw(
+        TypeError,
+        'Cannot read chainspec since it is null.'
+      )
     })
 
     it('should throw Error -> random part in JSON is null', () => {

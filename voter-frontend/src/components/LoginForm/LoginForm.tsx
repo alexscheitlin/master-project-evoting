@@ -1,23 +1,23 @@
-import { CircularProgress, Paper } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import React, { useState } from 'react';
+import { CircularProgress, Paper } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
+import Container from '@material-ui/core/Container'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { makeStyles } from '@material-ui/core/styles'
+import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+import React, { useState } from 'react'
 
 interface Props {
-  onLogin: (username: string, password: string) => void;
-  loading: boolean;
-  error: boolean;
-  msg: string;
+  onLogin: (username: string, password: string) => void
+  loading: boolean
+  error: boolean
+  msg: string
 }
 
 const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const classes = useStyles();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const classes = useStyles()
 
   return (
     <Container component="main" maxWidth="xs">
@@ -66,10 +66,10 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
         {error && <Typography>{msg}</Typography>}
       </Paper>
     </Container>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -85,4 +85,4 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}));
+}))

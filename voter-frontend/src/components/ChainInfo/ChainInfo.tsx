@@ -1,18 +1,18 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Grid, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Grid, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
+import React from 'react'
 
-import mainTheme from '../../Theme';
+import mainTheme from '../../Theme'
 
 interface Props {
-  contractAddress: string;
-  walletAddress: string;
-  balance: string;
+  contractAddress: string
+  walletAddress: string
+  balance: string
 }
 
 const ChainInfo: React.FC<Props> = ({ contractAddress, walletAddress, balance }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <div className={classes.root}>
@@ -39,10 +39,10 @@ const ChainInfo: React.FC<Props> = ({ contractAddress, walletAddress, balance })
         </Grid>
       </Grid>
     </div>
-  );
-};
+  )
+}
 
-export default ChainInfo;
+export default ChainInfo
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -50,4 +50,4 @@ const useStyles = makeStyles((theme: Theme) => ({
     bottom: 0,
     padding: theme.spacing(1),
   },
-}));
+}))

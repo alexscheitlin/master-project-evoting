@@ -66,10 +66,7 @@ export const decryptShare = (cipher: Cipher, secretKeyShare: BN): CurvePoint => 
 }
 
 // combine decrypted shares
-export const combineDecryptedShares = (
-  cipher: Cipher,
-  decryptedShares: CurvePoint[]
-): CurvePoint => {
+export const combineDecryptedShares = (cipher: Cipher, decryptedShares: CurvePoint[]): CurvePoint => {
   const mh = Helper.ECdiv(
     cipher.b,
     decryptedShares.reduce((product, share) => Helper.ECmul(product, share))

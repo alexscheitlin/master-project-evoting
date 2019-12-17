@@ -1,21 +1,21 @@
-import { Container, CssBaseline, Grid, makeStyles, Paper } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
-import React from 'react';
+import { Container, CssBaseline, Grid, makeStyles, Paper } from '@material-ui/core'
+import { ThemeProvider } from '@material-ui/core/styles'
+import React from 'react'
 
-import { Footer } from './components/defaults/Footer';
-import { Header } from './components/defaults/Header';
-import { Process } from './components/views/Process';
-import mainTheme from './Theme';
+import { Footer } from './components/defaults/Footer'
+import { Header } from './components/defaults/Header'
+import { Process } from './components/views/Process'
+import mainTheme from './Theme'
 
 const useStyles = makeStyles({
   wrapper: {
     display: 'flex',
-    height: '100vh'
-  }
-});
+    height: '100vh',
+  },
+})
 
 const App: React.FC = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <ThemeProvider theme={mainTheme}>
@@ -32,7 +32,7 @@ const App: React.FC = () => {
         </Grid>
       </Container>
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App

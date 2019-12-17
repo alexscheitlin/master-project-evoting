@@ -25,16 +25,7 @@ const div = (a: BN, b: BN, sp: SystemParameters): BN => GlobalHelper.divBN(a, b,
 const pow = (a: BN, b: BN, sp: SystemParameters): BN => GlobalHelper.powBN(a, b, sp.p)
 
 // TODO: check paper https://eprint.iacr.org/2016/771.pdf why we should not hash a and b
-const generateChallenge = (
-  q: BN,
-  uniqueID: string,
-  a: BN,
-  b: BN,
-  a0: BN,
-  b0: BN,
-  a1: BN,
-  b1: BN
-): BN => {
+const generateChallenge = (q: BN, uniqueID: string, a: BN, b: BN, a0: BN, b0: BN, a1: BN, b1: BN): BN => {
   let c = web3.utils.soliditySha3(uniqueID, a, b, a0, b0, a1, b1)
   c = web3.utils.toBN(c)
   c = c.mod(q)
@@ -55,12 +46,7 @@ const generateChallenge = (
 // 4. generate the challenge c
 // 5. compute c1 = c - c0
 // 6. compute f1 = x + c1 * r (NOTE: mod q!)
-export const generateYesProof = (
-  cipher: Cipher,
-  sp: SystemParameters,
-  pk: BN,
-  uniqueID: string
-): MembershipProof => {
+export const generateYesProof = (cipher: Cipher, sp: SystemParameters, pk: BN, uniqueID: string): MembershipProof => {
   const { a, b, r } = cipher
 
   const c0 = GlobalHelper.getSecureRandomValue(sp.q)
@@ -108,12 +94,7 @@ export const generateYesProof = (
 // 5. generate the challenge c
 // 6. compute c0 = c - c1
 // 7. compute f0 = x + c0 * r (NOTE: mod q! = mod n!)
-export const generateNoProof = (
-  cipher: Cipher,
-  sp: SystemParameters,
-  pk: BN,
-  uniqueID: string
-): MembershipProof => {
+export const generateNoProof = (cipher: Cipher, sp: SystemParameters, pk: BN, uniqueID: string): MembershipProof => {
   const { a, b, r } = cipher
 
   const c1 = GlobalHelper.getSecureRandomValue(sp.q)

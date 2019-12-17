@@ -48,12 +48,7 @@ export const decodeMessage = (mh: number | BN, sysParams: SystemParameters): BN 
 // 3. compute s = h^r
 // 4. compute mh = g^message (encode it to make it "homomorphic")
 // 5. compute c2 = s*mh
-export const encrypt = (
-  message: number | BN,
-  sysParams: SystemParameters,
-  publicKey: BN,
-  log = false
-): Cipher => {
+export const encrypt = (message: number | BN, sysParams: SystemParameters, publicKey: BN, log = false): Cipher => {
   const m = typeof message === 'number' ? GlobalHelper.newBN(message) : message
 
   const r = GlobalHelper.getSecureRandomValue(sysParams.q)
@@ -85,12 +80,7 @@ export const encrypt = (
 // 2. compute s^-1 = multiplicative inverse of s
 // 3. compute mh = c2 * s^-1
 // 4. compute m (decode mh using brute force)
-export const decrypt1 = (
-  cipherText: Cipher,
-  sk: BN,
-  sysParams: SystemParameters,
-  log = false
-): BN => {
+export const decrypt1 = (cipherText: Cipher, sk: BN, sysParams: SystemParameters, log = false): BN => {
   const { a: c1, b: c2 } = cipherText
 
   const s = GlobalHelper.powBN(c1, sk, sysParams.p)
@@ -121,12 +111,7 @@ export const decrypt1 = (
 // 3. compute s^(p-2)
 // 4. compute mh = c2 * s^(p-2)
 // 5. compute m (decode mh using brute force)
-export const decrypt2 = (
-  cipherText: Cipher,
-  sk: BN,
-  sysParams: SystemParameters,
-  log = false
-): BN => {
+export const decrypt2 = (cipherText: Cipher, sk: BN, sysParams: SystemParameters, log = false): BN => {
   const { a: c1, b: c2 } = cipherText
 
   const s = GlobalHelper.powBN(c1, sk, sysParams.p)
@@ -157,11 +142,7 @@ export const decryptShare = (params: SystemParameters, cipher: Cipher, secretKey
 }
 
 // combine decrypted shares
-export const combineDecryptedShares = (
-  params: SystemParameters,
-  cipher: Cipher,
-  decryptedShares: BN[]
-): BN => {
+export const combineDecryptedShares = (params: SystemParameters, cipher: Cipher, decryptedShares: BN[]): BN => {
   const mh = GlobalHelper.divBN(
     cipher.b,
     decryptedShares.reduce((product, share) => GlobalHelper.mulBN(product, share, params.p)),

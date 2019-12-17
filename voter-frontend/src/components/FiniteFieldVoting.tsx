@@ -1,81 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-import { FFelGamal, Summary } from 'mp-crypto';
+import { FFelGamal, Summary } from 'mp-crypto'
 
-import { getRandomWalletAddress } from '../util/helper';
+import { getRandomWalletAddress } from '../util/helper'
 
-const { SystemSetup, Encryption, Voting } = FFelGamal;
+const { SystemSetup, Encryption, Voting } = FFelGamal
 
-const [sp, { h: pk, sk }] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32);
+const [sp, { h: pk, sk }] = SystemSetup.generateSystemParametersAndKeysZKP(359, 32)
 
 export const FiniteFieldVoting: React.FC = () => {
-  const [voterAddresses, setVoterAddresses] = useState<string[]>([]);
-  const [votes, setVotes] = useState<FFelGamal.Cipher[]>([]);
-  const [voteProofs, setVoteProofs] = useState<FFelGamal.Proof.MembershipProof[]>([]);
-  const [sum, setSum] = useState<FFelGamal.Cipher>();
-  const [sumProof, setSumProof] = useState<FFelGamal.Proof.DecryptionProof>();
-  const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 });
+  const [voterAddresses, setVoterAddresses] = useState<string[]>([])
+  const [votes, setVotes] = useState<FFelGamal.Cipher[]>([])
+  const [voteProofs, setVoteProofs] = useState<FFelGamal.Proof.MembershipProof[]>([])
+  const [sum, setSum] = useState<FFelGamal.Cipher>()
+  const [sumProof, setSumProof] = useState<FFelGamal.Proof.DecryptionProof>()
+  const [summary, setSummary] = useState<Summary>({ total: 0, yes: 0, no: 0 })
 
   const getResult = (votes: any[]) => {
-    const sum = Voting.addVotes(votes, sp);
-    const randomWalletAddress = getRandomWalletAddress();
-    const proof = FFelGamal.Proof.Decryption.generate(sum, sp, sk, randomWalletAddress);
-    const verifiedProof = FFelGamal.Proof.Decryption.verify(sum, proof, sp, pk, randomWalletAddress);
+    const sum = Voting.addVotes(votes, sp)
+    const randomWalletAddress = getRandomWalletAddress()
+    const proof = FFelGamal.Proof.Decryption.generate(sum, sp, sk, randomWalletAddress)
+    const verifiedProof = FFelGamal.Proof.Decryption.verify(sum, proof, sp, pk, randomWalletAddress)
 
     if (!verifiedProof) {
-      window.alert('Sum Proof Failed!');
-      return;
+      window.alert('Sum Proof Failed!')
+      return
     }
 
     // store sum and proof
-    setSum(sum);
-    setSumProof(proof);
+    setSum(sum)
+    setSumProof(proof)
 
-    const summary = Voting.getSummary(votes.length, Encryption.decrypt1(sum, sk, sp).toNumber());
-    setSummary(summary);
-  };
+    const summary = Voting.getSummary(votes.length, Encryption.decrypt1(sum, sk, sp).toNumber())
+    setSummary(summary)
+  }
 
   const addYesVote = async () => {
-    const vote = Voting.generateYesVote(sp, pk);
-    const randomWalletAddress = getRandomWalletAddress();
-    const proof = FFelGamal.Proof.Membership.generateYesProof(vote, sp, pk, randomWalletAddress);
-    const verifiedProof = FFelGamal.Proof.Membership.verify(vote, proof, sp, pk, randomWalletAddress);
+    const vote = Voting.generateYesVote(sp, pk)
+    const randomWalletAddress = getRandomWalletAddress()
+    const proof = FFelGamal.Proof.Membership.generateYesProof(vote, sp, pk, randomWalletAddress)
+    const verifiedProof = FFelGamal.Proof.Membership.verify(vote, proof, sp, pk, randomWalletAddress)
 
     if (!verifiedProof) {
-      window.alert('Vote Proof Failed!');
-      return;
+      window.alert('Vote Proof Failed!')
+      return
     }
 
     // store vote, proof and voter address
-    const newVotes = [...votes, vote];
-    setVotes(newVotes);
-    setVoteProofs([...voteProofs, proof]);
-    setVoterAddresses([...voterAddresses, randomWalletAddress]);
+    const newVotes = [...votes, vote]
+    setVotes(newVotes)
+    setVoteProofs([...voteProofs, proof])
+    setVoterAddresses([...voterAddresses, randomWalletAddress])
 
     // update voting results
-    getResult(newVotes);
-  };
+    getResult(newVotes)
+  }
 
   const addNoVote = () => {
-    const vote = Voting.generateNoVote(sp, pk);
-    const randomWalletAddress = getRandomWalletAddress();
-    const proof = FFelGamal.Proof.Membership.generateNoProof(vote, sp, pk, randomWalletAddress);
-    const verifiedProof = FFelGamal.Proof.Membership.verify(vote, proof, sp, pk, randomWalletAddress);
+    const vote = Voting.generateNoVote(sp, pk)
+    const randomWalletAddress = getRandomWalletAddress()
+    const proof = FFelGamal.Proof.Membership.generateNoProof(vote, sp, pk, randomWalletAddress)
+    const verifiedProof = FFelGamal.Proof.Membership.verify(vote, proof, sp, pk, randomWalletAddress)
 
     if (!verifiedProof) {
-      window.alert('Vote Proof Failed!');
-      return;
+      window.alert('Vote Proof Failed!')
+      return
     }
 
     // store vote, proof and voter address
-    const newVotes = [...votes, vote];
-    setVotes(newVotes);
-    setVoteProofs([...voteProofs, proof]);
-    setVoterAddresses([...voterAddresses, randomWalletAddress]);
+    const newVotes = [...votes, vote]
+    setVotes(newVotes)
+    setVoteProofs([...voteProofs, proof])
+    setVoterAddresses([...voterAddresses, randomWalletAddress])
 
     // update voting results
-    getResult(newVotes);
-  };
+    getResult(newVotes)
+  }
 
   return (
     <div>
@@ -125,5 +125,5 @@ export const FiniteFieldVoting: React.FC = () => {
         ))}
       </ul>
     </div>
-  );
-};
+  )
+}

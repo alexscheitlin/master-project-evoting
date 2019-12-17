@@ -1,9 +1,9 @@
-import { Box, Typography } from '@material-ui/core';
-import React from 'react';
+import { Box, Typography } from '@material-ui/core'
+import React from 'react'
 
 interface Props {
-  title: string;
-  subtitle?: string;
+  title: string
+  subtitle?: string
 }
 
 export const StepTitle: React.FC<Props> = ({ title, subtitle }) => {
@@ -14,5 +14,5 @@ export const StepTitle: React.FC<Props> = ({ title, subtitle }) => {
       </Typography>
       {subtitle && <Typography variant="h5">{subtitle}</Typography>}
     </Box>
-  );
-};
+  )
+}

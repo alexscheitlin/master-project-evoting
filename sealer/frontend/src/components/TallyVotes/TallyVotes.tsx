@@ -1,36 +1,36 @@
-import { Box, Button, createStyles, List, ListItem, ListItemIcon, makeStyles, Theme } from '@material-ui/core';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import React, { useState } from 'react';
+import { Box, Button, createStyles, List, ListItem, ListItemIcon, makeStyles, Theme } from '@material-ui/core'
+import VpnKeyIcon from '@material-ui/icons/VpnKey'
+import React, { useState } from 'react'
 
-import { SealerBackend } from '../../services';
-import { ErrorSnackbar } from '../Helpers/ErrorSnackbar';
-import { LoadSuccess } from '../shared/LoadSuccess';
-import { StepTitle } from '../shared/StepTitle';
+import { SealerBackend } from '../../services'
+import { ErrorSnackbar } from '../Helpers/ErrorSnackbar'
+import { LoadSuccess } from '../shared/LoadSuccess'
+import { StepTitle } from '../shared/StepTitle'
 
 interface Props {
-  nextStep: () => void;
+  nextStep: () => void
 }
 
 export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
+  const [success, setSuccess] = useState<boolean>(false)
 
   const submitDecryptedShare = async () => {
     try {
-      setLoading(true);
-      const response = await SealerBackend.decryptShare();
-      setLoading(false);
-      setSuccess(true);
+      setLoading(true)
+      const response = await SealerBackend.decryptShare()
+      setLoading(false)
+      setSuccess(true)
     } catch (error) {
-      setHasError(true);
-      setErrorMessage(error.msg);
+      setHasError(true)
+      setErrorMessage(error.msg)
     }
-  };
+  }
 
   return (
     <Box className={classes.root}>
@@ -61,8 +61,8 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </Box>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,4 +75,4 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
     },
   })
-);
+)

@@ -21,10 +21,7 @@ describe('Elliptic Curve ElGamal Vote ZKP', () => {
 
     // encrypted yes vote + generate proof
     log && console.log('YES PROOF\n')
-    const encryptedYesVote: ECelGamal.Cipher = ECelGamal.Encryption.encrypt(
-      ECelGamal.Voting.yesVote,
-      publicKey
-    )
+    const encryptedYesVote: ECelGamal.Cipher = ECelGamal.Encryption.encrypt(ECelGamal.Voting.yesVote, publicKey)
     const yesProof: ECelGamal.Proof.MembershipProof = ECelGamal.Proof.Membership.generateYesProof(
       encryptedYesVote,
       params,
@@ -55,16 +52,8 @@ describe('Elliptic Curve ElGamal Vote ZKP', () => {
 
     // encrypt no vote + generate proof
     log && console.log('NO PROOF\n')
-    const encryptedNoVote: ECelGamal.Cipher = ECelGamal.Encryption.encrypt(
-      ECelGamal.Voting.noVote,
-      publicKey
-    )
-    const noProof = ECelGamal.Proof.Membership.generateNoProof(
-      encryptedNoVote,
-      params,
-      publicKey,
-      uniqueID
-    )
+    const encryptedNoVote: ECelGamal.Cipher = ECelGamal.Encryption.encrypt(ECelGamal.Voting.noVote, publicKey)
+    const noProof = ECelGamal.Proof.Membership.generateNoProof(encryptedNoVote, params, publicKey, uniqueID)
 
     // verify no vote proof
     const verifiedNoProof: boolean = ECelGamal.Proof.Membership.verify(

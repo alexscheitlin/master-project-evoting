@@ -1,16 +1,16 @@
-import { Box, Grid, Link, makeStyles, Typography, Theme } from '@material-ui/core';
-import React from 'react';
+import { Box, Grid, Link, makeStyles, Typography, Theme } from '@material-ui/core'
+import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) => ({
   footer: {
     borderTop: `1px solid ${theme.palette.divider}`,
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(2)
-  }
-}));
+    paddingBottom: theme.spacing(2),
+  },
+}))
 
 export const Footer: React.FC = () => {
-  const classes = useStyles();
+  const classes = useStyles()
   return (
     <Grid item component="footer" className={classes.footer}>
       <Box mt={1}>
@@ -30,5 +30,5 @@ export const Footer: React.FC = () => {
         </Typography>
       </Box>
     </Grid>
-  );
-};
+  )
+}

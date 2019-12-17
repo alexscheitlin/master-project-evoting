@@ -46,10 +46,7 @@ defineCurve('p192', {
   n: 'ffffffff ffffffff ffffffff 99def836 146bc9b1 b4d22831',
   hash: hash.sha256,
   gRed: false,
-  g: [
-    '188da80e b03090f6 7cbf20eb 43a18800 f4ff0afd 82ff1012',
-    '07192b95 ffc8da78 631011ed 6b24cdd5 73f977a1 1e794811',
-  ],
+  g: ['188da80e b03090f6 7cbf20eb 43a18800 f4ff0afd 82ff1012', '07192b95 ffc8da78 631011ed 6b24cdd5 73f977a1 1e794811'],
 })
 
 defineCurve('p224', {
@@ -85,25 +82,15 @@ defineCurve('p256', {
 defineCurve('p384', {
   type: 'short',
   prime: null,
-  p:
-    'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ' +
-    'fffffffe ffffffff 00000000 00000000 ffffffff',
-  a:
-    'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ' +
-    'fffffffe ffffffff 00000000 00000000 fffffffc',
-  b:
-    'b3312fa7 e23ee7e4 988e056b e3f82d19 181d9c6e fe814112 0314088f ' +
-    '5013875a c656398d 8a2ed19d 2a85c8ed d3ec2aef',
-  n:
-    'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff c7634d81 ' +
-    'f4372ddf 581a0db2 48b0a77a ecec196a ccc52973',
+  p: 'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ' + 'fffffffe ffffffff 00000000 00000000 ffffffff',
+  a: 'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ' + 'fffffffe ffffffff 00000000 00000000 fffffffc',
+  b: 'b3312fa7 e23ee7e4 988e056b e3f82d19 181d9c6e fe814112 0314088f ' + '5013875a c656398d 8a2ed19d 2a85c8ed d3ec2aef',
+  n: 'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff c7634d81 ' + 'f4372ddf 581a0db2 48b0a77a ecec196a ccc52973',
   hash: hash.sha384,
   gRed: false,
   g: [
-    'aa87ca22 be8b0537 8eb1c71e f320ad74 6e1d3b62 8ba79b98 59f741e0 82542a38 ' +
-      '5502f25d bf55296c 3a545e38 72760ab7',
-    '3617de4a 96262c6f 5d9e98bf 9292dc29 f8f41dbd 289a147c e9da3113 b5f0b8c0 ' +
-      '0a60b1ce 1d7e819d 7a431d7c 90ea0e5f',
+    'aa87ca22 be8b0537 8eb1c71e f320ad74 6e1d3b62 8ba79b98 59f741e0 82542a38 ' + '5502f25d bf55296c 3a545e38 72760ab7',
+    '3617de4a 96262c6f 5d9e98bf 9292dc29 f8f41dbd 289a147c e9da3113 b5f0b8c0 ' + '0a60b1ce 1d7e819d 7a431d7c 90ea0e5f',
   ],
 })
 

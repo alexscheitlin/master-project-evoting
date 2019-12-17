@@ -14,6 +14,7 @@
     "jest": true
   },
   "rules": {
+    "@typescript-eslint/no-empty-function": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/no-use-before-define": "off",

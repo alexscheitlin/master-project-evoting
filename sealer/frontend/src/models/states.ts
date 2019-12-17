@@ -14,7 +14,7 @@ export const VOTE_STATES: string[] = [
   VotingState.VOTING,
   VotingState.TALLY,
   VotingState.RESULT,
-];
+]
 
 export enum VoteLabels {
   REGISTER = 'REGISTER',
@@ -32,4 +32,4 @@ export const VOTE_LABELS: string[] = [
   VoteLabels.VOTING,
   VoteLabels.TALLY,
   VoteLabels.RESULT,
-];
+]

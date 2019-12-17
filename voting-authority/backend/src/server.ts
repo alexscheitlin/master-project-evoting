@@ -54,6 +54,11 @@ setupDB()
 
 // start the Express server
 server.listen({ port: process.env.VOTING_AUTH_BACKEND_PORT }, () => {
-  console.log(`HTTP server started at http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`)
-  console.log('FRONTEND RUNS ON:', `http://${process.env.VOTING_AUTH_FRONTEND_IP}:${process.env.VOTING_AUTH_FRONTEND_PORT}`)
+  console.log(
+    `HTTP server started at http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
+  )
+  console.log(
+    'FRONTEND RUNS ON:',
+    `http://${process.env.VOTING_AUTH_FRONTEND_IP}:${process.env.VOTING_AUTH_FRONTEND_PORT}`
+  )
 })

@@ -59,17 +59,7 @@ describe('ElGamal Finite Field E2E Test', () => {
       // decrypt the sum
       const decryptedSum = FFelGamal.Encryption.decrypt1(encryptedSum, sk, sp)
       const summary = FFelGamal.Voting.getSummary(votes.length, decryptedSum.toNumber())
-      log &&
-        console.log(
-          _result,
-          _votes,
-          'Total:',
-          summary.total,
-          '| Yes:',
-          summary.yes,
-          '| No:',
-          summary.no
-        )
+      log && console.log(_result, _votes, 'Total:', summary.total, '| Yes:', summary.yes, '| No:', summary.no)
 
       expect(decryptedSum.toNumber()).to.equal(_result)
       expect(summary.yes).to.equal(_votes.filter(v => v === 1).length)

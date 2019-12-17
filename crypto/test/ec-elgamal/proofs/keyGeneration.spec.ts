@@ -31,11 +31,7 @@ describe('Elliptic Curve ElGamal Distributed Key Generation', () => {
 
       // generate the key share generation proof
       const uniqueId = 'IamReallyUnique;-)'
-      const proof: ECelGamal.Proof.KeyGenerationProof = ECelGamal.Proof.KeyGeneration.generate(
-        params,
-        share,
-        uniqueId
-      )
+      const proof: ECelGamal.Proof.KeyGenerationProof = ECelGamal.Proof.KeyGeneration.generate(params, share, uniqueId)
       const { c: c1, d: d1 } = proof
 
       log && console.log('Proof Parts')
@@ -44,12 +40,7 @@ describe('Elliptic Curve ElGamal Distributed Key Generation', () => {
       log && console.log()
 
       // verify that the key share has been generated truthfully
-      const verifiedProof: boolean = ECelGamal.Proof.KeyGeneration.verify(
-        params,
-        proof,
-        h1,
-        uniqueId
-      )
+      const verifiedProof: boolean = ECelGamal.Proof.KeyGeneration.verify(params, proof, h1, uniqueId)
 
       expect(verifiedProof).to.be.true
     }
@@ -84,34 +75,16 @@ describe('Elliptic Curve ElGamal Distributed Key Generation', () => {
     // generate the public and private key share and the key generation proof
     const share1: ECelGamal.KeyPair = ECelGamal.SystemSetup.generateKeyPair()
     const uniqueId1 = 'IamReallyUnique;-)'
-    const proof1: ECelGamal.Proof.KeyGenerationProof = ECelGamal.Proof.KeyGeneration.generate(
-      params,
-      share1,
-      uniqueId1
-    )
-    const verified1: boolean = ECelGamal.Proof.KeyGeneration.verify(
-      params,
-      proof1,
-      share1.h,
-      uniqueId1
-    )
+    const proof1: ECelGamal.Proof.KeyGenerationProof = ECelGamal.Proof.KeyGeneration.generate(params, share1, uniqueId1)
+    const verified1: boolean = ECelGamal.Proof.KeyGeneration.verify(params, proof1, share1.h, uniqueId1)
     expect(verified1).to.be.true
 
     // second authority
     // generate the public and private key share and the key generation proof
     const share2: ECelGamal.KeyPair = ECelGamal.SystemSetup.generateKeyPair()
     const uniqueId2 = 'IamMuchMoreUnique_o.o'
-    const proof2: ECelGamal.Proof.KeyGenerationProof = ECelGamal.Proof.KeyGeneration.generate(
-      params,
-      share2,
-      uniqueId2
-    )
-    const verified2: boolean = ECelGamal.Proof.KeyGeneration.verify(
-      params,
-      proof2,
-      share2.h,
-      uniqueId2
-    )
+    const proof2: ECelGamal.Proof.KeyGenerationProof = ECelGamal.Proof.KeyGeneration.generate(params, share2, uniqueId2)
+    const verified2: boolean = ECelGamal.Proof.KeyGeneration.verify(params, proof2, share2.h, uniqueId2)
     expect(verified2).to.be.true
 
     log && console.log('1: pk, sk', share1.h, share1.sk)

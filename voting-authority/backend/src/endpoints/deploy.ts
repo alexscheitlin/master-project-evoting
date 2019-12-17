@@ -90,7 +90,11 @@ router.post('/deploy', async (req, res) => {
   // create voting auth account
   let accountAddress: string = ''
   try {
-    accountAddress = await createAccount(parityConfig.nodeUrl, parityConfig.accountPassword, parityConfig.accountPassword)
+    accountAddress = await createAccount(
+      parityConfig.nodeUrl,
+      parityConfig.accountPassword,
+      parityConfig.accountPassword
+    )
   } catch (error) {
     res.status(400).json({ msg: ACCOUNT_CREATION_FAILED, error: error.message })
     return

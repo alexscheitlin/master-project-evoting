@@ -1,1 +1,1 @@
-export { useVoterStore } from './store';
+export { useVoterStore } from './store'

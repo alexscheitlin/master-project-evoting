@@ -17,11 +17,7 @@ export const generateChallenge = (n: BN, uniqueID: string, h_: CurvePoint, b: Cu
 // 1. generate a "second" key pair (a,b)
 // 2. compute challenge
 // 3. compute d = a + c*sk
-export const generate = (
-  params: SystemParameters,
-  share: KeyPair,
-  id: string
-): KeyGenerationProof => {
+export const generate = (params: SystemParameters, share: KeyPair, id: string): KeyGenerationProof => {
   const { n } = params
   const { h, sk } = share
 
@@ -39,12 +35,7 @@ export const generate = (
 // 2. recompute the challenge c
 // 3. verify that the challenge is correct
 // 4. verify that: g^d == b * h^c
-export const verify = (
-  params: SystemParameters,
-  proof: KeyGenerationProof,
-  h_: CurvePoint,
-  id: string
-): boolean => {
+export const verify = (params: SystemParameters, proof: KeyGenerationProof, h_: CurvePoint, id: string): boolean => {
   const log = false
   const { n, g } = params
   const { c, d } = proof

@@ -1,56 +1,56 @@
-import { Box, Button, Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { Box, Button, Divider, Grid, makeStyles, Step, StepLabel, Stepper, Theme, Typography } from '@material-ui/core'
+import React, { useEffect, useState } from 'react'
 
-import { VOTE_LABELS, VOTE_STATES } from '../models/states';
-import { AuthBackend } from '../services';
-import { Store } from '../store';
-import { KeyGeneration } from './KeyGeneration';
-import { Register } from './Register';
-import { StartNode } from './StartNode';
-import { TallyVotes } from './TallyVotes';
-import { Voting } from './Voting/Voting';
-import { Result } from './Result/Result';
+import { VOTE_LABELS, VOTE_STATES } from '../models/states'
+import { AuthBackend } from '../services'
+import { Store } from '../store'
+import { KeyGeneration } from './KeyGeneration'
+import { Register } from './Register'
+import { StartNode } from './StartNode'
+import { TallyVotes } from './TallyVotes'
+import { Voting } from './Voting/Voting'
+import { Result } from './Result/Result'
 
 export const Process: React.FC = () => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
 
-  const { activeStep, setActiveStep, nextStep, reset } = Store.useActiveStepStore();
+  const { activeStep, setActiveStep, nextStep, reset } = Store.useActiveStepStore()
 
   useEffect(() => {
     const getRequiredValidators = async () => {
       try {
-        const data = await AuthBackend.getState();
-        setActiveStep(VOTE_STATES.indexOf(data.state));
+        const data = await AuthBackend.getState()
+        setActiveStep(VOTE_STATES.indexOf(data.state))
       } catch (error) {
-        setErrorMessage(error.message);
-        setHasError(true);
+        setErrorMessage(error.message)
+        setHasError(true)
       }
-    };
+    }
 
-    getRequiredValidators();
-  }, []);
+    getRequiredValidators()
+  }, [])
 
   const getStep = (step: number): any => {
     switch (step) {
       case 0:
-        return <Register nextStep={nextStep} />;
+        return <Register nextStep={nextStep} />
       case 1:
-        return <StartNode nextStep={nextStep} />;
+        return <StartNode nextStep={nextStep} />
       case 2:
-        return <KeyGeneration nextStep={nextStep} />;
+        return <KeyGeneration nextStep={nextStep} />
       case 3:
-        return <Voting nextStep={nextStep} />;
+        return <Voting nextStep={nextStep} />
       case 4:
-        return <TallyVotes nextStep={nextStep} />;
+        return <TallyVotes nextStep={nextStep} />
       case 5:
-        return <Result />;
+        return <Result />
       default:
-        reset();
+        reset()
     }
-  };
+  }
 
   return (
     <Grid container direction={'row'} justify="center" className={classes.root}>
@@ -73,8 +73,8 @@ export const Process: React.FC = () => {
       </Grid>
       <Grid item xs></Grid>
     </Grid>
-  );
-};
+  )
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -84,4 +84,4 @@ const useStyles = makeStyles((theme: Theme) => ({
   contentWrapper: {
     padding: theme.spacing(3, 2),
   },
-}));
+}))

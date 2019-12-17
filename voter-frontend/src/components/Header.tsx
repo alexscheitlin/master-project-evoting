@@ -1,8 +1,8 @@
-import { AppBar, Button, Grid, IconButton, makeStyles, Theme, Toolbar, Typography } from '@material-ui/core';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import React from 'react';
+import { AppBar, Button, Grid, IconButton, makeStyles, Theme, Toolbar, Typography } from '@material-ui/core'
+import GitHubIcon from '@material-ui/icons/GitHub'
+import React from 'react'
 
-import { useVoterStore } from '../store';
+import { useVoterStore } from '../store'
 
 const useStyles = makeStyles((theme: Theme) => ({
   appBar: {
@@ -18,11 +18,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: 4,
     backgroundColor: theme.palette.primary.main,
   },
-}));
+}))
 
 export const Header: React.FC = () => {
-  const classes = useStyles();
-  const state = useVoterStore();
+  const classes = useStyles()
+  const state = useVoterStore()
 
   return (
     <Grid item component="header">
@@ -46,5 +46,5 @@ export const Header: React.FC = () => {
         <div className={classes.colorBar}></div>
       </AppBar>
     </Grid>
-  );
-};
+  )
+}

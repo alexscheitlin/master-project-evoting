@@ -50,9 +50,7 @@ export const serializeSystemParameters = (params: SystemParameters): SystemParam
   }
 }
 
-export const deserializeParams = (
-  params: SystemParameters | SystemParametersSerialized
-): SystemParameters => {
+export const deserializeParams = (params: SystemParameters | SystemParametersSerialized): SystemParameters => {
   if (!instanceOfSystemParametersSerialized(params)) {
     return params
   }
