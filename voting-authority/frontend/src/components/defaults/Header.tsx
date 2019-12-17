@@ -33,7 +33,9 @@ export const Header: React.FC = () => {
           </Typography>
           <IconButton
             color="inherit"
-            onClick={() => window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')}
+            onClick={(): Window | null =>
+              window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')
+            }
           >
             <GitHubIcon />
           </IconButton>

@@ -38,7 +38,7 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
     getState()
   }, [])
 
-  const getState = async () => {
+  const getState = async (): Promise<void> => {
     try {
       const data: VotingStateResponse = (await fetchState()) as VotingStateResponse
       setQuestion(data.question)
@@ -54,7 +54,7 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
     getState()
   }, 4000)
 
-  const nextStep = async () => {
+  const nextStep = async (): Promise<void> => {
     try {
       setInTransition(true)
       await nextState()

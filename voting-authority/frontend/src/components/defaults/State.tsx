@@ -1,7 +1,8 @@
 import { Button, FormLabel, Grid, makeStyles } from '@material-ui/core'
 import axios, { AxiosResponse } from 'axios'
 import https from 'https'
-import React, { useState } from 'react'
+import React from 'react'
+
 import { DEV_URL } from '../../constants'
 import { useVoteStateStore, VOTE_STATES } from '../../models/voting'
 
@@ -14,7 +15,7 @@ export const State: React.FC = () => {
   const classes = useStyles()
   const { state, nextState } = useVoteStateStore()
 
-  const changeVoteState = async () => {
+  const changeVoteState = async (): Promise<void> => {
     // avoids ssl error with certificate
     const agent = new https.Agent({
       rejectUnauthorized: false,
@@ -23,7 +24,6 @@ export const State: React.FC = () => {
     const response: AxiosResponse = await axios.post(`${DEV_URL}/state`, {}, { httpsAgent: agent })
 
     if (response.status === 201) {
-      const res: StateResult = response.data
       nextState()
     } else {
       console.error(`Status: ${response.status}\nMessage: ${JSON.stringify(response.data)}`)

@@ -40,7 +40,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
   useEffect(() => {
     if (!listening) {
       const events = new EventSource(`${DEV_URL}/registered`)
-      events.onmessage = event => {
+      events.onmessage = (event): void => {
         const parsedData = JSON.parse(event.data)
         setSealers(sealers =>
           sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index)
@@ -51,7 +51,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
     }
   }, [listening, sealers])
 
-  const nextStep = async () => {
+  const nextStep = async (): Promise<void> => {
     try {
       setLoading(true)
 

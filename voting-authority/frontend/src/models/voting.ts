@@ -41,16 +41,11 @@ export const VOTE_LABELS: string[] = [
 
 export const [useVoteStateStore] = create((set, get) => ({
   state: VotingState.REGISTER,
-  setState: (newState: VotingState) =>
+  setState: (newState: VotingState): void =>
     set({
       state: newState,
     }),
-  syncState: async () => {
-    const currentState = get().state
-    const newState: VotingState = await tryToUpdateState(currentState)
-    set({ state: newState })
-  },
-  nextState: async () => {
+  nextState: async (): Promise<void> => {
     try {
       // avoids ssl error with certificate
       const agent = new https.Agent({
@@ -74,27 +69,6 @@ export const [useVoteStateStore] = create((set, get) => ({
   },
 }))
 
-const tryToUpdateState = async (currentState: VotingState): Promise<VotingState> => {
-  try {
-    // avoids ssl error with certificate
-    const agent = new https.Agent({
-      rejectUnauthorized: false,
-    })
-
-    // there is no error handling here on purpose -> handle in calling component
-    const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`, { httpsAgent: agent })
-    if (response.status === 200) {
-      const newState: VotingState = response.data.state
-      return newState
-    } else {
-      throw new Error(`State cannot be updated. ${response.status}, ${JSON.stringify(response.data)}`)
-    }
-  } catch (error) {
-    // if we cannot retrieve the state from the BE, we return the old state
-    return currentState
-  }
-}
-
 interface StateResponse {
   state: VotingState
   registeredSealers: number
@@ -103,14 +77,14 @@ interface StateResponse {
 
 export const [useVoteQuestionStore] = create(set => ({
   question: '',
-  setQuestion: (question: string) => set({ question: question }),
+  setQuestion: (question: string): void => set({ question: question }),
 }))
 
 export const [useActiveStepStore] = create(set => ({
   activeStep: 0,
-  setActiveStep: (step: number) => {
+  setActiveStep: (step: number): void => {
     set({ activeStep: step })
   },
-  nextStep: () => set(prevState => ({ activeStep: prevState.activeStep + 1 })),
-  reset: () => set({ activeStep: 0 }),
+  nextStep: (): void => set(prevState => ({ activeStep: prevState.activeStep + 1 })),
+  reset: (): void => set({ activeStep: 0 }),
 }))
