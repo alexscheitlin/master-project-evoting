@@ -9,7 +9,7 @@ export const getWeb3 = (): Web3 => {
 }
 
 // unlock the access provider account and return its address
-export const unlockAuthAccount = async () => {
+export const unlockAuthAccount = async (): Promise<string> => {
   try {
     // ignore the unlockAccount call as it expects a number but parity does only work with hex numbers
     // null => 300 seconds (default)
@@ -22,7 +22,7 @@ export const unlockAuthAccount = async () => {
 }
 
 // fund voter wallet from access provider wallet
-export const fundWallet = async (wallet: string) => {
+export const fundWallet = async (wallet: string): Promise<void> => {
   let transaction = {}
   try {
     // TODO: change amount of ether to send

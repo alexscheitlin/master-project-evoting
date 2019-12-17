@@ -11,7 +11,7 @@ export const createAccount = async (url: string, password: string, passphrase: s
   }
   const response = await axios.post(url, body, config)
 
-  if (!!response.data.error) {
+  if (response.data.error) {
     throw new Error(response.data.error.message)
   }
   return response.data.result
