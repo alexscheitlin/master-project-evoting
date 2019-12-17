@@ -43,7 +43,7 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
     }
   }, [submittedDecryptedShares, requiredDecryptedShares])
 
-  const getState = async () => {
+  const getState = async (): Promise<void> => {
     try {
       const data: TallyStateResponse = (await fetchState()) as TallyStateResponse
       setSubmittedDecryptedShares(data.submittedDecryptedShares)
@@ -59,7 +59,7 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
     getState()
   }, 4000)
 
-  const nextStep = async () => {
+  const nextStep = async (): Promise<void> => {
     try {
       setInTransition(true)
       await nextState()

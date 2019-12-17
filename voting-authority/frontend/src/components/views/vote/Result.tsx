@@ -14,7 +14,7 @@ import { StepTitle } from '../../defaults/StepTitle'
 import { LoadSuccess } from '../helper/LoadSuccess'
 
 // simulates a delay like an asyc call would
-const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
+const delay = (t: number): Promise<void> => new Promise(resolve => setTimeout(resolve, t))
 
 interface ResultProps {
   handleNext: () => void
@@ -41,7 +41,7 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
 
   const [inTransition, setInTransition] = useState(false)
 
-  const getState = async () => {
+  const getState = async (): Promise<void> => {
     try {
       const data: ResultStateResponse = (await fetchState()) as ResultStateResponse
       setYesVotes(data.yesVotes)
@@ -54,14 +54,12 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
     }
   }
 
-  const getInfo = async () => {}
-
   // fetch state once at the beginning
   useEffect(() => {
     getState()
   })
 
-  const reset = async () => {
+  const reset = async (): Promise<void> => {
     try {
       setInTransition(true)
       await delay(2000)

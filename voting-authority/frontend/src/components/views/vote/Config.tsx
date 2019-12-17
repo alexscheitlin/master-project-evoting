@@ -14,7 +14,7 @@ import { LoadSuccess } from '../helper/LoadSuccess'
 import { useInterval } from '../helper/UseInterval'
 
 // simulates a delay like an asyc call would
-const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
+const delay = (t: number): Promise<void> => new Promise(resolve => setTimeout(resolve, t))
 
 interface ConfigProps {
   handleNext: () => void
@@ -62,7 +62,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
     }
   }, [requiredKeyShares, submittedKeyShares])
 
-  const generatePublicKey = async () => {
+  const generatePublicKey = async (): Promise<void> => {
     try {
       setInKeyGeneration(true)
       const response: AxiosResponse<PublicKeyPostResponse> = await axios.post(`${DEV_URL}/publickey`, {})
@@ -83,7 +83,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
     }
   }
 
-  const checkNumberOfSubmittedPublicKeyShares = async () => {
+  const checkNumberOfSubmittedPublicKeyShares = async (): Promise<void> => {
     try {
       const data: ConfigStateReponse = (await fetchState()) as ConfigStateReponse
       setRequiredKeyShares(data.requiredKeyShares)
@@ -99,7 +99,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
     }
   }
 
-  const nextStep = async () => {
+  const nextStep = async (): Promise<void> => {
     setInOpeningVote(true)
     await delay(2000)
     try {

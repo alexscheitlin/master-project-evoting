@@ -53,7 +53,6 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [hasError, setHasError] = useState<boolean>(false)
 
   const [loading, setLoading] = useState<boolean>(false)
-  const [success, setSuccess] = useState<boolean>(false)
 
   const [connectedSealers, setConnectedSealers] = useState<number>(0)
   const [signedUpSealers, setSignedUpSealers] = useState<number>(0)
@@ -63,7 +62,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [voteQuestionDeployed, setVoteQuestionDeployed] = useState<boolean>(false)
   const [address, setAddress] = useState<string>('')
 
-  const checkIfContractDeployed = async () => {
+  const checkIfContractDeployed = async (): Promise<void> => {
     try {
       const response = await axios.get(`${DEV_URL}/deploy`)
       if (response.status === 200 && response.data.address !== '') {
@@ -77,7 +76,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   }
 
-  const checkNumberOfAuthoritiesOnline = async () => {
+  const checkNumberOfAuthoritiesOnline = async (): Promise<void> => {
     try {
       const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`)
 
@@ -102,11 +101,11 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   }
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setQuestion(event.currentTarget.value)
   }
 
-  const createVote = async () => {
+  const createVote = async (): Promise<void> => {
     try {
       setLoading(true)
       const response: AxiosResponse<VoteDeployResponse> = await axios.post(`${DEV_URL}/deploy`, { question: question })
@@ -127,7 +126,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     }
   }
 
-  const nextStep = async () => {
+  const nextStep = async (): Promise<void> => {
     try {
       await nextState()
       handleNext()
@@ -185,7 +184,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
             <TextField fullWidth label="Enter Vote Question" variant="outlined" required onChange={handleInputChange} />
             {loading ? (
               <IconButton disabled={true}>
-                <LoadSuccess success={success} loading={loading} />
+                <LoadSuccess success={false} loading={loading} />
               </IconButton>
             ) : (
               <IconButton onClick={createVote} disabled={!(readyForDeployment && question.length > 5)}>

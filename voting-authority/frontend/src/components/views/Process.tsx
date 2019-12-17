@@ -23,10 +23,10 @@ export const Process: React.FC = () => {
   const [hasError, setHasError] = useState<boolean>(false)
 
   const { setState } = useVoteStateStore()
-  const { activeStep, setActiveStep, nextStep, reset } = useActiveStepStore()
+  const { activeStep, setActiveStep, nextStep } = useActiveStepStore()
 
   useEffect(() => {
-    const getRequiredValidators = async () => {
+    const getRequiredValidators = async (): Promise<void> => {
       try {
         const response: AxiosResponse<StateResponse> = await axios.get(`${DEV_URL}/state`)
 
@@ -48,7 +48,7 @@ export const Process: React.FC = () => {
     // => should be the same since we only want to run this hook once at the beginning of the component rendering
   }, [])
 
-  const getStep = (step: number): any => {
+  const getStep = (step: number): React.ReactNode => {
     switch (step) {
       case 0:
         return <Register handleNext={nextStep} requiredSealers={requiredSealers} />

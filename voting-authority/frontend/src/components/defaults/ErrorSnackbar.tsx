@@ -12,7 +12,7 @@ export const ErrorSnackbar: React.FC<Props> = ({ open, message }) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(true)
 
-  const close = () => {
+  const close = (): void => {
     setIsOpen(false)
   }
 
