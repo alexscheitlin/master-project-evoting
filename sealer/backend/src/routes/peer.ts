@@ -6,7 +6,8 @@ import { urlUtil } from '../utils'
 const router: express.Router = express.Router()
 
 const PEER_SUCCESS_MSG: string = 'Successfully peered with network'
-const PEER_BOOTNODE_MSG: string = 'Successfully contacted authority. You are the bootnode. Please wait for other peers to connect to you.'
+const PEER_BOOTNODE_MSG: string =
+  'Successfully contacted authority. You are the bootnode. Please wait for other peers to connect to you.'
 const PEER_FAIL_MSG: string = 'Seems like you are not connected to any peers. Try peering again.'
 
 router.post('/peer', async (req, res) => {
@@ -44,7 +45,9 @@ router.post('/peer', async (req, res) => {
       res.status(200).json({ msg: PEER_SUCCESS_MSG, bootnode: false })
       return
     } catch (error) {
-      res.status(400).json({ msg: `Unable to send enode to bootnode on port ${process.env.SEALER_NODE_PORT}.`, bootnode: false })
+      res
+        .status(400)
+        .json({ msg: `Unable to send enode to bootnode on port ${process.env.SEALER_NODE_PORT}.`, bootnode: false })
       return
     }
   }

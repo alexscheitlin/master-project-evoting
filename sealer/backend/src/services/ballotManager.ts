@@ -77,11 +77,16 @@ export const isBallotOpen = async (): Promise<boolean> => {
  * @param keyShare the sealers public key share
  * @param keyGenProof the sealers proof for the key generation
  */
-export const submitPublicKeyShare = async (keyShare: FFelGamal.KeyPair, keyGenProof: FFelGamal.Proof.KeyGenerationProof) => {
+export const submitPublicKeyShare = async (
+  keyShare: FFelGamal.KeyPair,
+  keyGenProof: FFelGamal.Proof.KeyGenerationProof
+) => {
   const contract = getContract()
   const account = await getAuthAccount()
   try {
-    await contract.methods.submitPublicKeyShare(toHex(keyShare.h), toHex(keyGenProof.c), toHex(keyGenProof.d)).send({ from: account })
+    await contract.methods
+      .submitPublicKeyShare(toHex(keyShare.h), toHex(keyGenProof.c), toHex(keyGenProof.d))
+      .send({ from: account })
   } catch (error) {
     console.log(error)
     throw new Error('The public key share could not be submitted.')
@@ -111,7 +116,9 @@ export const getVoteResult = async (): Promise<number> => {
     return await contract.methods.getVoteResult().call({ from: authAcc })
   } catch (error) {
     console.log(error)
-    throw new Error('The final voting result could not be fetched. Maybe the voting is still ongoing or something went wrong.')
+    throw new Error(
+      'The final voting result could not be fetched. Maybe the voting is still ongoing or something went wrong.'
+    )
   }
 }
 
@@ -168,13 +175,20 @@ export const getAllVotes = async (): Promise<FFelGamal.Cipher[]> => {
 }
 
 // TODO: move all local crypto operations out of the BallotManager and into a different service
-export const homomorphicallyAddVotes = (votes: FFelGamal.Cipher[], systemParameters: FFelGamal.SystemParameters): FFelGamal.Cipher => {
+export const homomorphicallyAddVotes = (
+  votes: FFelGamal.Cipher[],
+  systemParameters: FFelGamal.SystemParameters
+): FFelGamal.Cipher => {
   // homomorphically add votes
   return FFelGamal.Voting.addVotes(votes, systemParameters)
 }
 
 // TODO: move all local crypto operations out of the BallotManager and into a different service
-export const decryptShare = (sumCipher: FFelGamal.Cipher, systemParameters: FFelGamal.SystemParameters, privateKeyShare: BN): BN => {
+export const decryptShare = (
+  sumCipher: FFelGamal.Cipher,
+  systemParameters: FFelGamal.SystemParameters,
+  privateKeyShare: BN
+): BN => {
   // create decrypted share
   return FFelGamal.Encryption.decryptShare(systemParameters, sumCipher, privateKeyShare)
 }

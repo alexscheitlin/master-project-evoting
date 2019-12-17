@@ -42,7 +42,11 @@ setupDB()
 
 server.listen({ port: process.env.SEALER_BACKEND_PORT }, () => {
   console.log(`HTTP server started at http://${process.env.SEALER_BACKEND_IP}:${process.env.SEALER_BACKEND_PORT}.`)
-  console.log(`The sealer frontend runs here: http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`)
-  console.log(`This sealer's parity node will be running on http://${process.env.PARITY_NODE_IP}:${process.env.PARITY_NODE_PORT}.`)
+  console.log(
+    `The sealer frontend runs here: http://${process.env.SEALER_FRONTEND_IP}:${process.env.SEALER_FRONTEND_PORT}`
+  )
+  console.log(
+    `This sealer's parity node will be running on http://${process.env.PARITY_NODE_IP}:${process.env.PARITY_NODE_PORT}.`
+  )
   console.log()
 })
