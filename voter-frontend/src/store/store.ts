@@ -11,7 +11,7 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // LOGOUT
   // -----------------------------------
-  logout: () => {
+  logout: (): void => {
     localStorage.clear()
     set({ authenticated: false })
   },
@@ -19,7 +19,7 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // AUTHENTICATION
   // -----------------------------------
-  isAuthenticated: () => {
+  isAuthenticated: (): boolean => {
     const isAuth = localStorage.getItem('authenticated')
     if (isAuth === 'true') {
       return true
@@ -27,7 +27,7 @@ export const [useVoterStore] = create((set, get) => ({
       return false
     }
   },
-  setAuthenicated: (auth: boolean) => {
+  setAuthenicated: (auth: boolean): void => {
     set({ authenticated: auth })
     localStorage.setItem('authenticated', auth.toString())
   },
@@ -35,7 +35,7 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // TOKEN
   // -----------------------------------
-  isTokenSet: () => {
+  isTokenSet: (): boolean => {
     const token = localStorage.getItem('token')
     if (token === null || token === '') {
       return false
@@ -43,12 +43,12 @@ export const [useVoterStore] = create((set, get) => ({
       return true
     }
   },
-  getToken: () => {
+  getToken: (): string | undefined | null => {
     if (get().isTokenSet()) {
       return localStorage.getItem('token')
     }
   },
-  setToken: (token: string) => {
+  setToken: (token: string): void => {
     set({ token: token })
     localStorage.setItem('token', token)
   },
@@ -56,7 +56,7 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // WALLET
   // -----------------------------------
-  isWalletSet: () => {
+  isWalletSet: (): boolean => {
     const wallet = localStorage.getItem('wallet')
     if (wallet === null || wallet === '') {
       return false
@@ -64,12 +64,12 @@ export const [useVoterStore] = create((set, get) => ({
       return true
     }
   },
-  getWallet: () => {
+  getWallet: (): string | undefined | null => {
     if (get().isWalletSet()) {
       return localStorage.getItem('wallet')
     }
   },
-  setWallet: (wallet: string) => {
+  setWallet: (wallet: string): void => {
     set({ wallet: wallet })
     localStorage.setItem('wallet', wallet)
   },
@@ -77,14 +77,14 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // CONTRACT
   // -----------------------------------
-  setContract: (contract: any) => {
+  setContract: (contract: any): void => {
     set({ contract: contract })
   },
 
   // -----------------------------------
   // BALLOT CONTRACT ADDRESS
   // -----------------------------------
-  isBallotContractAddressSet: () => {
+  isBallotContractAddressSet: (): boolean => {
     const address = localStorage.getItem('contractAddress')
     if (address === null || address === '') {
       return false
@@ -92,12 +92,12 @@ export const [useVoterStore] = create((set, get) => ({
       return true
     }
   },
-  getBallotContractAddress: () => {
+  getBallotContractAddress: (): string | undefined | null => {
     if (get().isBallotContractAddressSet()) {
       return localStorage.getItem('contractAddress')
     }
   },
-  setBallotContractAddress: (address: string) => {
+  setBallotContractAddress: (address: string): void => {
     set({ contractAddress: address })
     localStorage.setItem('contractAddress', address)
   },
@@ -105,7 +105,7 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // CONNECTION NODE
   // -----------------------------------
-  isConnectionNodeUrlSet: () => {
+  isConnectionNodeUrlSet: (): boolean => {
     const url = localStorage.getItem('connectionNodeUrl')
     if (url === null || url === '') {
       return false
@@ -113,12 +113,12 @@ export const [useVoterStore] = create((set, get) => ({
       return true
     }
   },
-  getConnectionNodeUrl: () => {
+  getConnectionNodeUrl: (): string | undefined | null => {
     if (get().isConnectionNodeUrlSet()) {
       return localStorage.getItem('connectionNodeUrl')
     }
   },
-  setConnectionNodeUrl: (url: string) => {
+  setConnectionNodeUrl: (url: string): void => {
     set({ connectionNodeUrl: url })
     localStorage.setItem('connectionNodeUrl', url)
   },

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import axios from 'axios'
 
-const getIdentityProviderUrl = () =>
+const getIdentityProviderUrl = (): string =>
   `http://${process.env.REACT_APP_IDENTITY_PROVIDER_IP}:${process.env.REACT_APP_IDENTITY_PROVIDER_PORT}`
 
 /**

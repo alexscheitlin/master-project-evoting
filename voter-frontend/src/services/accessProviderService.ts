@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import axios from 'axios'
 
-const getAccessProviderUrl = () =>
+const getAccessProviderUrl = (): string =>
   `http://${process.env.REACT_APP_ACCESS_PROVIDER_IP}:${process.env.REACT_APP_ACCESS_PROVIDER_PORT}`
 
 /**
@@ -29,7 +29,7 @@ export const fundWallet = async (token: string, wallet: string): Promise<string>
 /**
  * Get the url at which the blockchain can be reached
  */
-export const getConnectionNodeUrl = async () => {
+export const getConnectionNodeUrl = async (): Promise<string> => {
   try {
     const res = await axios.get(getAccessProviderUrl() + '/getNodeURL')
     return res.data.node

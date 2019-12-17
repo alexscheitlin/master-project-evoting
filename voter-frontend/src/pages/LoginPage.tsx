@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState(false)
   const [msg, setMsg] = useState('')
 
-  const handleLogin = async (username: string, password: string) => {
+  const handleLogin = async (username: string, password: string): Promise<void> => {
     try {
       setLoading(true)
       setError(false)

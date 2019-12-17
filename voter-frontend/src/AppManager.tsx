@@ -1,5 +1,5 @@
 import { Grid, makeStyles, Theme } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import LoadingPage from './pages/LoadingPage'
 import LoginPage from './pages/LoginPage'
@@ -10,7 +10,7 @@ const AppManager: React.FC = () => {
   const classes = useStyles()
   const state = useVoterStore()
 
-  const setupDone = () => {
+  const setupDone = (): boolean => {
     return state.isAuthenticated() && state.isTokenSet() && state.isWalletSet() && state.isBallotContractAddressSet()
   }
 
@@ -33,7 +33,7 @@ const AppManager: React.FC = () => {
     }
   }, [])
 
-  const getPage = () => {
+  const getPage = (): React.ReactNode => {
     if (!state.authenticated) {
       return <LoginPage />
     } else if (!setupDone()) {

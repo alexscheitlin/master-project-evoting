@@ -18,7 +18,7 @@ const VotingPage: React.FC = () => {
   const [votingQuestion, setVotingQuestion] = useState('')
   const state = useVoterStore()
 
-  const initializePage = async () => {
+  const initializePage = async (): Promise<void> => {
     // get web3 context and the ballot contract
     const web3: Web3 = await getWeb3(state.getConnectionNodeUrl())
     //@ts-ignore
