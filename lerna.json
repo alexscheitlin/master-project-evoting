@@ -4,6 +4,7 @@
     "access-provider-backend/",
     "crypto/**",
     "identity-provider-backend/",
+    "sealer/frontend/",
     "voter-frontend/",
     "voting-authority/backend/",
     "voting-authority/frontend/"
