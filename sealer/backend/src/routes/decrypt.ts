@@ -20,7 +20,9 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
         // TODO: check if decrypted share for this authority has already been submitted
 
         const votesAsStrings = await BallotManager.getAllVotes()
-        const votes: FFelGamal.Cipher[] = votesAsStrings.map(vote => ({ a: new BN(vote.a), b: new BN(vote.b) } as FFelGamal.Cipher))
+        const votes: FFelGamal.Cipher[] = votesAsStrings.map(
+          vote => ({ a: new BN(vote.a), b: new BN(vote.b) } as FFelGamal.Cipher)
+        )
 
         // TODO: maybe this can be fetched from somewhere else or done more intelligently
         const systemParamsString: string[] = await BallotManager.getSystemParameters()
