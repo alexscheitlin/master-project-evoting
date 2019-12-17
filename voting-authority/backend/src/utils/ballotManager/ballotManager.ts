@@ -1,12 +1,13 @@
 import BN = require('bn.js')
-import { FFelGamal } from 'mp-crypto'
 import { Contract } from 'web3-eth-contract'
+import { FFelGamal } from '@meck93/evote-crypto'
+import path from 'path'
 
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database'
 import { VotingState } from '../../endpoints/state'
 import { getWeb3, unlockAuthAccount } from '../web3'
 
-const ballotContract = require('../../../solidity/toDeploy/Ballot.json')
+const ballotContract = require(path.join(__dirname, '/../../../solidity/toDeploy/Ballot.json'))
 const web3 = getWeb3()
 const GAS_LIMIT = 6000000
 const toHex = (number: BN): string => web3.utils.toHex(number)

@@ -23,6 +23,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@meck93/evote-crypto": "^0.1.7",
     "axios": "^0.19.0",
     "bn.js": "^5.0.0",
     "cors": "^2.8.5",
@@ -59,6 +60,24 @@
     "ts-mocha": "^6.0.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.2"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.tsx": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "nyc": {
     "extension": [
