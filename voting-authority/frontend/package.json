@@ -7,6 +7,7 @@
     "@material-ui/icons": "^4.5.1",
     "axios": "^0.19.0",
     "lint-staged": "^9.4.3",
+    "prettier": "^1.19.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
@@ -36,21 +37,8 @@
     "eject": "react-scripts eject",
     "pre-commit": "lint-staged",
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
-    "lint": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet",
-    "lint:fix": "./node_modules/.bin/eslint --ext .js,.ts,.tsx \"src/**/*\" --quiet --fix"
-  },
-  "lint-staged": {
-    "*.+(js|jsx|ts|tsx)": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.+(json|css|md)": [
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "lint": "eslint . --ext .js,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix"
   },
   "browserslist": {
     "production": [

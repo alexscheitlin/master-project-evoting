@@ -44,7 +44,7 @@ interface VoteDeployResponse {
 
 export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }: StartupProps) => {
   const classes = useStyles();
-  const REFRESH_INTERVAL_MS: number = 4000;
+  const REFRESH_INTERVAL_MS = 4000;
 
   const { nextState } = useVoteStateStore();
   const { question, setQuestion } = useVoteQuestionStore();
@@ -63,17 +63,6 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
   const [voteQuestionDeployed, setVoteQuestionDeployed] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
 
-  useEffect(() => {
-    // load page data on component mount
-    checkNumberOfAuthoritiesOnline();
-  }, []);
-
-  useEffect(() => {
-    // check if the contract is already deployed
-    // if yes, get the needed information for the UI
-    checkIfContractDeployed();
-  }, []);
-
   const checkIfContractDeployed = async () => {
     try {
       const response = await axios.get(`${DEV_URL}/deploy`);
@@ -83,7 +72,9 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
         const state: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`);
         setQuestion(state.data.question);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const checkNumberOfAuthoritiesOnline = async () => {
@@ -152,6 +143,17 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     },
     connectedSealers !== requiredSealers || signedUpSealers !== requiredSealers ? REFRESH_INTERVAL_MS : 10000000
   );
+
+  useEffect(() => {
+    // load page data on component mount
+    checkNumberOfAuthoritiesOnline();
+  }, []);
+
+  useEffect(() => {
+    // check if the contract is already deployed
+    // if yes, get the needed information for the UI
+    checkIfContractDeployed();
+  }, []);
 
   return (
     <StepContentWrapper>
