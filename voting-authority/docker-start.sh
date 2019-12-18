@@ -32,7 +32,6 @@ fi
 rm -f $dir/backend/.env
 rm -f $dir/frontend/.env
 rm -f $dir/.env
-rm -rf $dir/backend/node_modules
 
 ###########################################
 # ENV variables
