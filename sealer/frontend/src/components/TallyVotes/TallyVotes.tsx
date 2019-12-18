@@ -2,12 +2,14 @@ import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeS
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import React, { useState } from 'react'
 
-import { SealerBackend } from '../../services'
+import { SealerBackend, BallotService } from '../../services'
 import { stepDescriptions } from '../../utils/descriptions'
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
+import { VotingState } from '../../models/states'
+import { useInterval } from '../../hooks/useInterval'
 
 interface Props {
   nextStep: () => void
@@ -34,6 +36,19 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
     }
   }
 
+  const isStateChange = async (): Promise<void> => {
+    try {
+      const response = await BallotService.getBallotState()
+      if (response === VotingState.RESULT) {
+        nextStep()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useInterval(isStateChange, 4000)
+
   return (
     <StepContentWrapper>
       <StepTitle title="Tally Votes" />
@@ -57,12 +72,15 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
           </Button>
         </ListItem>
       </List>
-      <List className={classes.nextButton}>
-        <ListItem>
-          <Button variant="contained" color="primary" onClick={nextStep} disabled={!success}>
-            Next Step
-          </Button>
-        </ListItem>
+      <List className={classes.next}>
+        {success && (
+          <ListItem>
+            <ListItemIcon>
+              <LoadSuccess loading={true} />
+            </ListItemIcon>
+            <ListItemText primary={`Waiting for the results of the vote`} />
+          </ListItem>
+        )}
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </StepContentWrapper>
@@ -75,7 +93,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: 'relative',
       minHeight: 700,
     },
-    nextButton: {
+    next: {
       position: 'absolute',
       bottom: 0,
     },
