@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from 'axios'
-import { VotingState } from '../models/states'
 
 const sealerBackendUrl = (): string =>
   `http://${process.env.REACT_APP_SEALER_BACKEND_IP}:${process.env.REACT_APP_SEALER_BACKEND_PORT}`
@@ -9,7 +8,7 @@ const sealerBackendUrl = (): string =>
  */
 export const getBallotState = async () => {
   try {
-    const response = await axios.get(sealerBackendUrl() + '/ballotState')
+    const response: AxiosResponse = await axios.get(sealerBackendUrl() + '/ballotState')
     return response.data
   } catch (error) {
     console.log(error)

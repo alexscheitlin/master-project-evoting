@@ -51,17 +51,15 @@ router.post('/peer', async (req, res) => {
       return
     }
   }
-  res.status(200).json({ msg: PEER_BOOTNODE_MSG, bootnode: true })
+  res.status(201).json({ msg: PEER_BOOTNODE_MSG, bootnode: true })
 })
 
 router.get('/peer', async (req, res) => {
   try {
     const connectedAuthorities = await ChainService.getPeerCount()
     res.status(200).json({ msg: PEER_SUCCESS_MSG, nrOfPeers: connectedAuthorities })
-    return
   } catch (error) {
     res.status(400).json({ msg: PEER_FAIL_MSG })
-    return
   }
 })
 

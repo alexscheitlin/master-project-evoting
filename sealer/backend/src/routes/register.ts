@@ -14,12 +14,10 @@ router.post('/register', async (req, res) => {
 
   // Send wallet address to authority backend to register
   try {
-    AuthBackend.registerWallet(addressToRegister)
-    res.status(200).json({ msg: WALLET_REGISTERED_MSG, address: addressToRegister })
-    return
+    await AuthBackend.registerWallet(addressToRegister)
+    res.status(201).json({ msg: WALLET_REGISTERED_MSG, address: addressToRegister })
   } catch (error) {
     res.status(400).json({ msg: WALLET_NOT_REGISTERED_MSG })
-    return
   }
 })
 
