@@ -67,6 +67,19 @@ Use `./docker-up.sh` and `./docker-down.sh` to start/stop all docker containers.
 - one access provider backend
 - three sealer/parity nodes
 
+### Voter Frontend
+
+**Mode=Development (`localhost`)**
+
+The frontend is **not dockerized** and will always be served on `localhost`.
+
+```bash
+cd voter-frontend
+npm run start:localhost
+
+# frontend will run on localhost:3000
+```
+
 ### Voting Authority
 
 **Mode=Development (`localhost`)**
@@ -228,10 +241,6 @@ sealer/docker-start.sh <sealerNr>
 ```
 
 the only thing that is different to starting all sealers on their own, is that `./dev-chain-parity-nodes.sh` will also connect the nodes for you directly
-
-### Voter Frontend
-
-TODO
 
 ### Solidity Contracts
 
