@@ -6,6 +6,7 @@ import ThumbDownIcon from '@material-ui/icons/ThumbDown'
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import React, { useEffect, useState } from 'react'
 
+import { stepDescriptions } from '../../../descriptions'
 import { useVoteStateStore, VotingState } from '../../../models/voting'
 import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
@@ -76,6 +77,9 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
     <StepContentWrapper>
       <StepTitle title="Voting Result" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.result}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <QuestionAnswerIcon />

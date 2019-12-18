@@ -3,6 +3,7 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
 import ReceiptIcon from '@material-ui/icons/Receipt'
 import React, { useEffect, useState } from 'react'
 
+import { stepDescriptions } from '../../../descriptions'
 import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting'
 import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
@@ -69,8 +70,11 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Voting Phase" subtitle={'the vote is currently open'} />
+      <StepTitle title="Voting Phase" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.voting}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <QuestionAnswerIcon />

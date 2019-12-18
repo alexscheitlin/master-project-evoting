@@ -4,6 +4,7 @@ import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet'
 import React, { useEffect, useState } from 'react'
 
 import { DEV_URL } from '../../../constants'
+import { stepDescriptions } from '../../../descriptions'
 import { useVoteStateStore } from '../../../models/voting'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
 import { StepContentWrapper } from '../../defaults/StepContentWrapper'
@@ -71,6 +72,9 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
     <StepContentWrapper>
       <StepTitle title="Address Registration" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.register}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <SettingsEthernetIcon />
