@@ -100,10 +100,10 @@ router.get('/state', async (req, res) => {
       let publicKey: BN = new BN(0)
       try {
         publicKey = await BallotManager.getPublicKey()
+        publicKey = new BN(publicKey)
       } catch (error) {
         // ignore
       }
-
       const requiredKeyShares: number = requiredAuthorities
       res.status(200).json({
         state: currentState,
