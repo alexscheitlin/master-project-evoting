@@ -201,12 +201,6 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    padding: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
   button: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
@@ -216,9 +210,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: theme.spacing(1),
     width: 160,
     height: 36,
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2),
   },
   nextButton: {
     position: 'absolute',

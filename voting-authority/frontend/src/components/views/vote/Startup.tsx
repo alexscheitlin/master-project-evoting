@@ -250,10 +250,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
-  questionContainer: {
-    padding: '0.5rem',
-    elevation: 2,
-  },
   button: {
     marginRight: theme.spacing(1),
     width: 160,

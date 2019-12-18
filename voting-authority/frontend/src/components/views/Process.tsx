@@ -104,8 +104,4 @@ const useStyles = makeStyles((theme: Theme) => ({
   contentWrapper: {
     padding: theme.spacing(3, 2),
   },
-  button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1),
-  },
 }))

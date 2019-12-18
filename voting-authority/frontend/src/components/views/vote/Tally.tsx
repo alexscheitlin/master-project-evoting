@@ -118,20 +118,11 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    padding: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
   summaryButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 215,
     height: 36,
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2),
   },
   nextButton: {
     position: 'absolute',
