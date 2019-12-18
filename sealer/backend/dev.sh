@@ -26,6 +26,13 @@ echo "The mode is: $mode"
 # - the config file with all IPs and ports
 ###########################################
 globalConfig=$parentParentDir/system.json
+githubConfig=$parentParentDir/github.json
+
+# check if the github config json exists -> if not we stop the process
+if [ ! -f "$githubConfig" ]; then
+    echo "$githubConfig doesn't exist! Please create it!"
+    exit
+fi
 
 ###########################################
 # Set Sealer Number
@@ -59,6 +66,10 @@ PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_1.port)
 PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_1.ip.$mode | tr -d \")
 # - Specify NODE_ENV
 NODE_ENV=$mode
+# - Specify the Github credentials
+GITHUB_TOKEN=$(cat $githubConfig | jq .github.token | tr -d \")
+GITHUB_EMAIL=$(cat $githubConfig | jq .github.email | tr -d \")
+GITHUB_USER=$(cat $githubConfig | jq .github.user | tr -d \")
 
 ###########################################
 # write ENV variables into .env
@@ -72,6 +83,9 @@ echo SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP} >> $dir/.env
 echo PARITY_NODE_PORT=${PARITY_NODE_PORT} >> $dir/.env
 echo PARITY_NODE_IP=${PARITY_NODE_IP} >> $dir/.env
 echo NODE_ENV=${NODE_ENV} >> $dir/.env
+echo GITHUB_TOKEN=$GITHUB_TOKEN >> $dir/.env
+echo GITHUB_USER=$GITHUB_USER >> $dir/.env
+echo GITHUB_EMAIL=$GITHUB_EMAIL >> $dir/.env
 
 ###########################################
 # installing packages
