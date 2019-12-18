@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 
 import { useInterval } from '../../hooks/useInterval'
 import { SealerBackend } from '../../services'
+import { stepDescriptions } from '../../utils/descriptions'
 import { delay } from '../../utils/helper'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
@@ -75,6 +76,9 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
     <StepContentWrapper>
       <StepTitle title="Start Node" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.startup}</ListItemText>
+        </ListItem>
         <ListItem>
           {!loading && !chainSpecLoaded ? (
             <ListItemIcon>

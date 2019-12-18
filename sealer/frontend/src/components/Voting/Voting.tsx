@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { SealerBackend } from '../../services'
+import { stepDescriptions } from '../../utils/descriptions'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
@@ -29,6 +30,9 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
       <StepTitle title="Voting" />
       <List>
         <ListItem>
+          <ListItemText>{stepDescriptions.voting}</ListItemText>
+        </ListItem>
+        <ListItem>
           <ListItemIcon>
             <LoadSuccess loading={!readyForTally} success={readyForTally} />
           </ListItemIcon>
@@ -36,7 +40,7 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
           <ListItemText
             primary={
               !readyForTally
-                ? `The vote is currently open and still ongoing. Please wait until the Voting Authority closes the vote.`
+                ? `Please wait until the Voting Authority closes the vote.`
                 : `The Voting Authority has closed the vote. Please proceed to the next step.`
             }
           />

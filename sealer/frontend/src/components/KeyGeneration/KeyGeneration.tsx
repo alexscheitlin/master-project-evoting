@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react'
 
 import { useInterval } from '../../hooks/useInterval'
 import { SealerBackend } from '../../services'
+import { stepDescriptions } from '../../utils/descriptions'
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
-import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 interface Props {
   nextStep: () => void
@@ -58,9 +59,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
 
       <List>
         <ListItem>
-          <ListItemText
-            primary={`Take part in the distributed key generation for the e-Voting system. By clicking the button below a key pair will be generated. The public part will be submitted to the Ballot Smart Contract.`}
-          />
+          <ListItemText>{stepDescriptions.config}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>

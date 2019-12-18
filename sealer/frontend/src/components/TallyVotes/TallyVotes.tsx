@@ -1,9 +1,11 @@
-import { Box, Button, createStyles, List, ListItem, ListItemIcon, makeStyles, Theme } from '@material-ui/core'
+import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import React, { useState } from 'react'
 
 import { SealerBackend } from '../../services'
+import { stepDescriptions } from '../../utils/descriptions'
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
 import { StepTitle } from '../shared/StepTitle'
 
@@ -33,9 +35,12 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
   }
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Tally Votes" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.tally}</ListItemText>
+        </ListItem>
         <ListItem>
           {!loading && !success ? (
             <ListItemIcon>
@@ -60,7 +65,7 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
         </ListItem>
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
-    </Box>
+    </StepContentWrapper>
   )
 }
 
