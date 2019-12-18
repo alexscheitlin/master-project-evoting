@@ -51,14 +51,6 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      position: 'relative',
-      minHeight: 700,
-    },
-    button: {
-      marginRight: theme.spacing(1),
-      width: 160,
-    },
     next: {
       position: 'absolute',
       bottom: 0,
