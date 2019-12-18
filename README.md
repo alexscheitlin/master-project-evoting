@@ -1,5 +1,9 @@
 # Master Project: eVoting
 
+|          Voter          |          Authority          |          Sealer          |
+| :---------------------: | :-------------------------: | :----------------------: |
+| ![](./assets/voter.png) | ![](./assets/authority.png) | ![](./assets/sealer.png) |
+
 ## What to do initially
 
 `npm run lerna:install` to link packages in order for the husky hook to work
