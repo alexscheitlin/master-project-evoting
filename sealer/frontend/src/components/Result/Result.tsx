@@ -1,7 +1,9 @@
-import React from 'react'
-import { Box, Theme, createStyles, ListItem, List, Typography } from '@material-ui/core'
-import { StepTitle } from '../shared/StepTitle'
+import { Box, createStyles, List, ListItem, ListItemText, Theme, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
+import React from 'react'
+
+import { stepDescriptions } from '../../utils/descriptions'
+import { StepTitle } from '../shared/StepTitle'
 
 export const Result: React.FC = () => {
   const classes = useStyles()
@@ -10,8 +12,9 @@ export const Result: React.FC = () => {
       <StepTitle title="Result" />
       <List>
         <ListItem>
-          <Typography variant="h6">You are all done, the process ends here.</Typography>
+          <ListItemText>{stepDescriptions.result}</ListItemText>
         </ListItem>
+
         <ListItem>
           <Typography variant="h6">TODO: add result of the vote</Typography>
         </ListItem>

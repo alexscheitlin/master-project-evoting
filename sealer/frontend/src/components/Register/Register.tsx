@@ -18,6 +18,7 @@ import { config } from '../../config'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { SealerBackend } from '../../services'
+import { stepDescriptions } from '../../utils/descriptions'
 import { delay } from '../../utils/helper'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
@@ -35,7 +36,6 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   const [chainspecReady, setChainSpecReady] = useState(false)
 
-  // TODO replace dynamically with a backend call
   const [requiredSealers, setRequiredSealers] = useState<number>()
   const [sealers, setSealers] = useState<string[]>([])
   const [listening, setListening] = useState<boolean>(false)
@@ -112,6 +112,9 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
     <StepContentWrapper>
       <StepTitle title="Address Registration" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.register}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <SettingsEthernetIcon />

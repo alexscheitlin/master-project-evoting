@@ -6,10 +6,10 @@ import { SealerBackend } from '../services'
 import { Store } from '../store'
 import { KeyGeneration } from './KeyGeneration'
 import { Register } from './Register'
+import { Result } from './Result/Result'
 import { StartNode } from './StartNode'
 import { TallyVotes } from './TallyVotes'
 import { Voting } from './Voting/Voting'
-import { Result } from './Result/Result'
 
 export const Process: React.FC = () => {
   const classes = useStyles()
