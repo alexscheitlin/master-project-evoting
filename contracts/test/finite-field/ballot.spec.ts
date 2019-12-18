@@ -5,6 +5,7 @@ import {assert} from 'chai'
 import {FFelGamal} from 'mp-crypto'
 import BN from 'bn.js'
 import {toSystemParams, toHex, unlockedAddresses} from '../helper'
+import {fail} from 'assert'
 
 //@ts-ignore
 contract('Ballot.sol', () => {
@@ -17,7 +18,8 @@ contract('Ballot.sol', () => {
      * Bund initialized the whole voting process by creating the system parameters, deploying the contract
      * and setting the parameters int the contract
      */
-    const ballotContract = await Ballot.new('Is the dress blue or gold?', 2)
+    const priviledgedAddresses = [unlockedAddresses.bund, unlockedAddresses.auth1, unlockedAddresses.auth2]
+    const ballotContract = await Ballot.new('Is the dress blue or gold?', 2, priviledgedAddresses)
     const votingQuestion = await ballotContract.getVotingQuestion()
     assert(votingQuestion === 'Is the dress blue or gold?', 'voting question not correct')
 
@@ -104,14 +106,34 @@ contract('Ballot.sol', () => {
       client_publicKey,
       client_uniqueID
     )
-    await ballotContract.vote(
-      [yesVote.a, yesVote.b],
-      [yesProof.a0, yesProof.a1],
-      [yesProof.b0, yesProof.b1],
-      [yesProof.c0, yesProof.c1],
-      [yesProof.f0, yesProof.f1],
-      {from: client_uniqueID}
-    )
+
+    // test that auth account is not allowed to vote
+    try {
+      await ballotContract.vote(
+        [yesVote.a, yesVote.b],
+        [yesProof.a0, yesProof.a1],
+        [yesProof.b0, yesProof.b1],
+        [yesProof.c0, yesProof.c1],
+        [yesProof.f0, yesProof.f1],
+        {from: unlockedAddresses.auth1}
+      )
+    } catch (error) {
+      assert(error.reason === 'Address not allowed to vote.')
+    }
+
+    // vote normally with client account
+    try {
+      await ballotContract.vote(
+        [yesVote.a, yesVote.b],
+        [yesProof.a0, yesProof.a1],
+        [yesProof.b0, yesProof.b1],
+        [yesProof.c0, yesProof.c1],
+        [yesProof.f0, yesProof.f1],
+        {from: client_uniqueID}
+      )
+    } catch (error) {
+      fail('client address should be able to vote')
+    }
 
     // assert that contract saved the votes correctly
     let nrVotes = await ballotContract.getNumberOfVotes()
