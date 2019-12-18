@@ -18,32 +18,24 @@ echo "The mode is: $mode"
 # - the config file with all IPs and ports
 ###########################################
 globalConfig=$parentDir/system.json
+githubConfig=$parentDir/github.json
+
+# check if the github config json exists -> if not we stop the process
+if [ ! -f "$githubConfig" ]; then
+    echo "$githubConfig doesn't exist! Please create it!"
+    exit
+fi
 
 ###########################################
 # Cleanup
 ###########################################
 rm -f $dir/.env
-
-###########################################
-# Unlink mp-crypto as we don't want the 
-# symbolic link inside the container
-# the build will fail otherwise
-###########################################
-npm unlink --no-save mp-crypto
 rm -rf $dir/backend/node_modules
 
 ###########################################
 # Set Sealer Number
 ###########################################
 sealerNr=$1
-
-########################################
-# mp-crypto library
-#######################################
-cryptoPath=$parentDir/crypto
-cp -r $cryptoPath $dir/backend/mp-crypto
-rm -rf $dir/backend/mp-crypto/node_modules
-rm -rf $dir/backend/mp-crypto/dist
 
 ########################################
 # copy keys (key store file)
@@ -72,6 +64,10 @@ PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.port
 PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.ip.$mode | tr -d \")
 # - Specify NODE_ENV
 NODE_ENV=$mode
+# - Specify the Github credentials
+GITHUB_TOKEN=$(cat $githubConfig | jq .github.token | tr -d \")
+GITHUB_EMAIL=$(cat $githubConfig | jq .github.email | tr -d \")
+GITHUB_USER=$(cat $githubConfig | jq .github.user | tr -d \")
 
 ###########################################
 # write ENV variables into .env
@@ -85,6 +81,9 @@ echo SEALER_FRONTEND_IP=$SEALER_FRONTEND_IP >> $dir/.env
 echo PARITY_NODE_PORT=$PARITY_NODE_PORT >> $dir/.env
 echo PARITY_NODE_IP=$PARITY_NODE_IP >> $dir/.env
 echo NODE_ENV=$NODE_ENV >> $dir/.env
+echo GITHUB_TOKEN=$GITHUB_TOKEN >> $dir/.env
+echo GITHUB_USER=$GITHUB_USER >> $dir/.env
+echo GITHUB_EMAIL=$GITHUB_EMAIL >> $dir/.env
 
 ###########################################
 # docker network
@@ -98,10 +97,9 @@ $parentDir/docker-network.sh $network_name
 cd $dir
 
 # start docker containers
-docker-compose -p controller_$sealerNr -f docker-compose.yml up  --detach
+docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
 
 # remove all temp files
 rm -f $dir/backend/wallet/sealer.json
 rm -f $dir/backend/wallet/sealer.pwd
-rm -rf $dir/backend/mp-crypto
 rm -f $dir/.env
