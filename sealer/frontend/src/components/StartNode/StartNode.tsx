@@ -189,10 +189,6 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      position: 'relative',
-      minHeight: 700,
-    },
     instructions: {
       borderRadius: 4,
       background: '#212121',
@@ -200,10 +196,6 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(1),
       fontSize: '1.1em',
       width: '50%',
-    },
-    button: {
-      marginRight: theme.spacing(1),
-      width: 160,
     },
     next: {
       position: 'absolute',

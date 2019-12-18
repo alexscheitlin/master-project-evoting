@@ -53,7 +53,6 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   return (
     <StepContentWrapper>
       <StepTitle title="Key Generation" />
-
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.config}</ListItemText>
@@ -75,7 +74,6 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
               <LoadSuccess loading={loading} success={keysSubmitted} />
             </ListItemIcon>
           ) : null}
-
           <Button variant="outlined" onClick={generateKeys} disabled={keysSubmitted}>
             Generate and submit keyshare
           </Button>
@@ -99,10 +97,6 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      position: 'relative',
-      minHeight: 700,
-    },
     button: {
       marginRight: theme.spacing(1),
       width: 160,

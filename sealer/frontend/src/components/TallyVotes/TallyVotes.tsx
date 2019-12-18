@@ -89,10 +89,6 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      position: 'relative',
-      minHeight: 700,
-    },
     next: {
       position: 'absolute',
       bottom: 0,

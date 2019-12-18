@@ -11,6 +11,7 @@ import { stepDescriptions } from '../../utils/descriptions'
 import { StepTitle } from '../shared/StepTitle'
 import { BallotService } from '../../services'
 import { green, red } from '@material-ui/core/colors'
+import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 
 export const Result: React.FC = () => {
   const classes = useStyles()
@@ -32,7 +33,7 @@ export const Result: React.FC = () => {
   }, [])
 
   return (
-    <Box className={classes.root}>
+    <StepContentWrapper>
       <StepTitle title="Result" />
       <List>
         <ListItem>
@@ -72,7 +73,7 @@ export const Result: React.FC = () => {
           </ListItemText>
         </ListItem>
       </List>
-    </Box>
+    </StepContentWrapper>
   )
 }
 
