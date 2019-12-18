@@ -75,7 +75,7 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Voting Result" />
+      <StepTitle title="Result" />
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.result}</ListItemText>
@@ -84,13 +84,15 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
           <ListItemIcon>
             <QuestionAnswerIcon />
           </ListItemIcon>
-          <ListItemText primary={`"${votingQuestion}"`} />
+          <ListItemText>
+            <Typography variant="h5">{votingQuestion}</Typography>
+          </ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>
             <EqualizerIcon />
           </ListItemIcon>
-          <ListItemText primary={`Toal Number of Votes: ${yesVotes + noVotes} `} />
+          <ListItemText primary={`Total Number of Votes: ${yesVotes + noVotes} `} />
         </ListItem>
         <ListItem>
           <ListItemIcon>
