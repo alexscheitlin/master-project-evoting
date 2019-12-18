@@ -32,7 +32,7 @@ export const validateVoteQuestion = (question: string): boolean => {
   return false
 }
 
-router.post('/deploy', async (req, res) => {
+router.post('/deploy', async (req: express.Request, res: express.Response) => {
   const currentState: string = getValueFromDB(STATE_TABLE) as string
   if (currentState === VotingState.REGISTER) {
     res.status(400).json({ msg: TOO_EARLY })
@@ -110,6 +110,7 @@ router.post('/deploy', async (req, res) => {
   }
 
   // deploy contracts
+  // TODO: change to try/catch with await
   Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes)
     .then(address => {
       setValue(BALLOT_ADDRESS_TABLE, address)
@@ -117,13 +118,14 @@ router.post('/deploy', async (req, res) => {
       setValue(VOTING_QUESTION_TABLE, voteQuestion)
 
       // initialize the parameters of the system
-      BallotManager.setSystemParameters()
-      res.status(201).json({ address: address, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
+      BallotManager.setSystemParameters().then(() => {
+        res.status(201).json({ address: address, msg: BALLOT_DEPLOYED_SUCCESS_MESSAGE })
+      })
     })
     .catch((error: Error) => res.status(500).json({ msg: error.message }))
 })
 
-router.get('/deploy', (req, res) => {
+router.get('/deploy', (req: express.Request, res: express.Response) => {
   const isDeployed: boolean = getValueFromDB(BALLOT_DEPLOYED_TABLE) as boolean
 
   if (isDeployed) {
