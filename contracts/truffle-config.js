@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/camelcase */
-const path = require('path');
+const path = require('path')
 
 // this allows to use import from statements in tests
-require('ts-node/register');
+require('ts-node/register')
 
 module.exports = {
   contracts_build_directory: path.join(__dirname, 'compiled'),
@@ -33,4 +33,4 @@ module.exports = {
       version: '0.5.3', // ex:  "0.4.20". (Default: Truffle's installed solc)
     },
   },
-};
+}

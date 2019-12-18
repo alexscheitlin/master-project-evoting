@@ -1,42 +1,42 @@
 //@ts-ignore
-const VoteProofVerifier = artifacts.require('./Elliptic/VoteProofVerifierEC');
+const VoteProofVerifier = artifacts.require('./Elliptic/VoteProofVerifierEC')
 
-import {assert} from 'chai';
-import {ECelGamal} from 'mp-crypto';
-import {unlockedAddresses} from '../helper';
+import {assert} from 'chai'
+import {ECelGamal} from 'mp-crypto'
+import {unlockedAddresses} from '../helper'
 
 // @ts-ignore
 contract('VoteProofVerifierEC.sol', () => {
   xit(`should run test with VoteProofVerifierEC`, async () => {
-    const voteProofVerifier = await VoteProofVerifier.new();
+    const voteProofVerifier = await VoteProofVerifier.new()
 
     // system params
-    const systemParams = ECelGamal.SystemSetup.generateSystemParameters();
+    const systemParams = ECelGamal.SystemSetup.generateSystemParameters()
 
     // create publicKey
-    const keys = ECelGamal.SystemSetup.generateKeyPair();
+    const keys = ECelGamal.SystemSetup.generateKeyPair()
 
     // initialize Verifier with publicKey
-    await voteProofVerifier.initialize(keys.h.getX(), keys.h.getY());
+    await voteProofVerifier.initialize(keys.h.getX(), keys.h.getY())
 
     // create vote
-    const yesVote = ECelGamal.Voting.generateYesVote(keys.h);
+    const yesVote = ECelGamal.Voting.generateYesVote(keys.h)
 
     // create proof for vote
     const yesVoteProof = ECelGamal.Proof.Membership.generateYesProof(
       yesVote,
       systemParams,
       keys.h,
-      unlockedAddresses.client,
-    );
+      unlockedAddresses.client
+    )
 
     const localVerify = ECelGamal.Proof.Membership.verify(
       yesVote,
       yesVoteProof,
       systemParams,
       keys.h,
-      unlockedAddresses.client,
-    );
+      unlockedAddresses.client
+    )
 
     // verify vote & proof on chain
     const verified = await voteProofVerifier.verifyProof(
@@ -50,8 +50,8 @@ contract('VoteProofVerifierEC.sol', () => {
       yesVoteProof.c1,
       yesVoteProof.f0,
       yesVoteProof.f1,
-      {from: unlockedAddresses.client},
-    );
+      {from: unlockedAddresses.client}
+    )
 
     // console.log('localVerify', localVerify);
     // console.log(verified)
@@ -68,6 +68,6 @@ contract('VoteProofVerifierEC.sol', () => {
      */
 
     // assert true
-    assert.isTrue(verified, 'not true');
-  });
-});
+    assert.isTrue(verified, 'not true')
+  })
+})
