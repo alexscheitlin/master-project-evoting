@@ -2,7 +2,7 @@
 const VoteProofVerifier = artifacts.require('./FiniteField/VoteProofVerifier')
 
 import {assert} from 'chai'
-import {FFelGamal} from 'mp-crypto'
+import {FFelGamal} from '@meck93/evote-crypto'
 import {unlockedAddresses} from '../helper'
 import BN = require('bn.js')
 

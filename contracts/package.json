@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@meck93/evote-crypto": "latest",
     "@types/mocha": "^5.2.7",
     "mocha": "^6.2.2",
     "solhint": "^2.3.0",
@@ -13,6 +14,7 @@
     "@truffle/contract": "^4.0.38",
     "@types/bn.js": "^4.11.5",
     "@types/chai": "^4.2.4",
+    "@types/elliptic": "^6.4.10",
     "@types/node": "12.12.6",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",

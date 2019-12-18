@@ -2,12 +2,15 @@
 const VoteProofVerifier = artifacts.require('./Elliptic/VoteProofVerifierEC')
 
 import {assert} from 'chai'
-import {ECelGamal} from 'mp-crypto'
 import {unlockedAddresses} from '../helper'
+import {ECelGamal} from '@meck93/evote-crypto'
+import {curve} from 'elliptic'
 
 // @ts-ignore
 contract('VoteProofVerifierEC.sol', () => {
   xit(`should run test with VoteProofVerifierEC`, async () => {
+    // FIXME: has problems somehow with the evote-crypto library
+
     const voteProofVerifier = await VoteProofVerifier.new()
 
     // system params
@@ -16,8 +19,10 @@ contract('VoteProofVerifierEC.sol', () => {
     // create publicKey
     const keys = ECelGamal.SystemSetup.generateKeyPair()
 
+    const keysPoint = keys.h as curve.short.ShortPoint
+
     // initialize Verifier with publicKey
-    await voteProofVerifier.initialize(keys.h.getX(), keys.h.getY())
+    await voteProofVerifier.initialize(keysPoint.getX(), keysPoint.getY())
 
     // create vote
     const yesVote = ECelGamal.Voting.generateYesVote(keys.h)
@@ -38,14 +43,21 @@ contract('VoteProofVerifierEC.sol', () => {
       unlockedAddresses.client
     )
 
+    const yesVote_a = yesVote.a as curve.short.ShortPoint
+    const yesVote_b = yesVote.b as curve.short.ShortPoint
+    const yesVoteProof_a0 = yesVoteProof.a0 as curve.short.ShortPoint
+    const yesVoteProof_a1 = yesVoteProof.a1 as curve.short.ShortPoint
+    const yesVoteProof_b0 = yesVoteProof.b0 as curve.short.ShortPoint
+    const yesVoteProof_b1 = yesVoteProof.b1 as curve.short.ShortPoint
+
     // verify vote & proof on chain
     const verified = await voteProofVerifier.verifyProof(
-      [yesVote.a.getX(), yesVote.a.getY()],
-      [yesVote.b.getX(), yesVote.b.getY()],
-      [yesVoteProof.a0.getX(), yesVoteProof.a0.getY()],
-      [yesVoteProof.a1.getX(), yesVoteProof.a1.getY()],
-      [yesVoteProof.b0.getX(), yesVoteProof.b0.getY()],
-      [yesVoteProof.b1.getX(), yesVoteProof.b1.getY()],
+      [yesVote_a.getX(), yesVote_a.getY()],
+      [yesVote_b.getX(), yesVote_b.getY()],
+      [yesVoteProof_a0.getX(), yesVoteProof_a0.getY()],
+      [yesVoteProof_a1.getX(), yesVoteProof_a1.getY()],
+      [yesVoteProof_b0.getX(), yesVoteProof_b0.getY()],
+      [yesVoteProof_b1.getX(), yesVoteProof_b1.getY()],
       yesVoteProof.c0,
       yesVoteProof.c1,
       yesVoteProof.f0,
