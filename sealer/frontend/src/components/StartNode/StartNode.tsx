@@ -117,13 +117,9 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
               <LoadSuccess loading={loading} success={chainSpecLoaded} />
             </ListItemIcon>
           ) : null}
-
-          <ListItemText primary={'Load Blockchain Configuration'} />
-          {!chainSpecLoaded && (
-            <Button disabled={chainSpecLoaded} onClick={loadConfiguration}>
-              <GetAppIcon />
-            </Button>
-          )}
+          <Button variant="outlined" disabled={chainSpecLoaded} onClick={loadConfiguration}>
+            Load Blockchain Configuration
+          </Button>
         </ListItem>
         {chainSpecLoaded && (
           <>

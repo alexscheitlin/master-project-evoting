@@ -1,9 +1,11 @@
 import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import React, { useEffect, useState } from 'react'
 
 import { useInterval } from '../../hooks/useInterval'
-import { SealerBackend } from '../../services'
+import { VotingState } from '../../models/states'
+import { BallotService, SealerBackend } from '../../services'
 import { stepDescriptions } from '../../utils/descriptions'
 import { ErrorSnackbar } from '../Helpers/ErrorSnackbar'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
@@ -16,8 +18,6 @@ interface Props {
 
 export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles()
-
-  const [ballotDeployed, setBallotDeployed] = useState(false)
 
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
@@ -37,21 +37,18 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
       console.log(error)
     }
   }
-
-  const checkIfBallotDeployed = async (): Promise<void> => {
+  const isStateChange = async (): Promise<void> => {
     try {
-      const isDeployed = await SealerBackend.isBallotDeployed()
-      setBallotDeployed(isDeployed)
+      const response = await BallotService.getBallotState()
+      if (response === VotingState.VOTING) {
+        nextStep()
+      }
     } catch (error) {
-      throw new Error('could not determine if ballot is deployed already')
+      console.log(error)
     }
   }
 
-  useEffect(() => {
-    checkIfBallotDeployed()
-  }, [])
-
-  useInterval(checkIfBallotDeployed, !ballotDeployed ? 4000 : 0)
+  useInterval(isStateChange, keysSubmitted ? 4000 : 0)
 
   return (
     <StepContentWrapper>
@@ -63,15 +60,9 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
         </ListItem>
         <ListItem>
           <ListItemIcon>
-            <LoadSuccess loading={!ballotDeployed} success={ballotDeployed} />
+            <KeyboardArrowRightIcon />
           </ListItemIcon>
-          <ListItemText
-            primary={
-              !ballotDeployed
-                ? `Waiting for the Voting Authority to deploy the Smart Contract`
-                : `The Smart Contract was deployed. You can submit your key share now.`
-            }
-          />
+          <ListItemText primary={`The Smart Contract is deployed. Please submit your key share.`} />
         </ListItem>
         <ListItem>
           {!loading && !keysSubmitted ? (
@@ -85,24 +76,21 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
             </ListItemIcon>
           ) : null}
 
-          <Button variant="outlined" onClick={generateKeys} disabled={keysSubmitted || !ballotDeployed}>
+          <Button variant="outlined" onClick={generateKeys} disabled={keysSubmitted}>
             Generate and submit keyshare
           </Button>
         </ListItem>
       </List>
 
-      <List className={classes.nextButton}>
-        <ListItem>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            disabled={!keysSubmitted}
-            onClick={nextStep}
-          >
-            Next
-          </Button>
-        </ListItem>
+      <List className={classes.next}>
+        {keysSubmitted && (
+          <ListItem>
+            <ListItemIcon>
+              <LoadSuccess loading={true} />
+            </ListItemIcon>
+            <ListItemText primary={`Waiting for the Ballot Smart Contract to open the vote.`} />
+          </ListItem>
+        )}
       </List>
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </StepContentWrapper>
@@ -119,7 +107,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
       width: 160,
     },
-    nextButton: {
+    next: {
       position: 'absolute',
       bottom: 0,
     },

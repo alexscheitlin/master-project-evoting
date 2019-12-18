@@ -10,6 +10,7 @@ import register from './routes/register'
 import state from './routes/state'
 import decrypt from './routes/decrypt'
 import deploy from './routes/deploy'
+import ballotState from './routes/ballotState'
 import logger from './utils/logger'
 
 config()
@@ -36,6 +37,7 @@ server.use('/', peer)
 server.use('/', state)
 server.use('/', decrypt)
 server.use('/', deploy)
+server.use('/', ballotState)
 
 // setup the database
 setupDB()
