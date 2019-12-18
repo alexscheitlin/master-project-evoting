@@ -7,9 +7,16 @@ const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
 
 const web3 = getWeb3()
 
-const deploy = async (abi: any, bytecode: string, question?: string, numberOfAuthNodes?: number): Promise<string> => {
+const deploy = async (
+  abi: any,
+  bytecode: string,
+  question?: string,
+  numberOfAuthNodes?: number,
+  addresses?: string[]
+): Promise<string> => {
   const hasVotingQuestion = question !== undefined
   const hasNumberOfAuthNodes = numberOfAuthNodes !== undefined
+  const hasAddresses = addresses !== undefined
 
   const authAccount = await unlockAuthAccount()
 
@@ -18,7 +25,11 @@ const deploy = async (abi: any, bytecode: string, question?: string, numberOfAut
     deployedContract = await new web3.eth.Contract(abi)
       .deploy({
         data: bytecode,
-        arguments: [hasVotingQuestion ? question : undefined, hasNumberOfAuthNodes ? numberOfAuthNodes : undefined],
+        arguments: [
+          hasVotingQuestion ? question : undefined,
+          hasNumberOfAuthNodes ? numberOfAuthNodes : undefined,
+          hasAddresses ? addresses : undefined,
+        ],
       })
       .send({ from: authAccount, gas: 6000000 })
   } catch (error) {
@@ -28,7 +39,7 @@ const deploy = async (abi: any, bytecode: string, question?: string, numberOfAut
   return deployedContract.options.address
 }
 
-export const init = async (votingQuestion: string, numberOfAuthNodes: number): Promise<string> => {
+export const init = async (votingQuestion: string, numberOfAuthNodes: number, addresses: string[]): Promise<string> => {
   try {
     // deploy the modulo math library contract
     const libAddress = await deploy(moduloLibrary.abi, moduloLibrary.bytecode)
@@ -47,7 +58,13 @@ export const init = async (votingQuestion: string, numberOfAuthNodes: number): P
     )
     const Ballot = { ...ballotContract }
     Ballot.bytecode = ballotBytecode
-    const ballotAddress: string = await deploy(Ballot.abi, Ballot.bytecode, votingQuestion, numberOfAuthNodes)
+    const ballotAddress: string = await deploy(
+      Ballot.abi,
+      Ballot.bytecode,
+      votingQuestion,
+      numberOfAuthNodes,
+      addresses
+    )
     console.log(`Ballot deployed at address: ${ballotAddress}`)
 
     return ballotAddress

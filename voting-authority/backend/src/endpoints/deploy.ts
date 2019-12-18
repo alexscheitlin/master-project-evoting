@@ -1,7 +1,7 @@
 import express from 'express'
 
 import * as Deploy from '../../solidity/scripts/deploy'
-import { parityConfig } from '../config'
+import { parityConfig, priviledgedAddresses } from '../config'
 import {
   BALLOT_ADDRESS_TABLE,
   BALLOT_DEPLOYED_TABLE,
@@ -111,7 +111,7 @@ router.post('/deploy', async (req: express.Request, res: express.Response) => {
 
   // deploy contracts
   // TODO: change to try/catch with await
-  Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes)
+  Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes, priviledgedAddresses)
     .then(address => {
       setValue(BALLOT_ADDRESS_TABLE, address)
       setValue(BALLOT_DEPLOYED_TABLE, true)
