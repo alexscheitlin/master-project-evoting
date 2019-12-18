@@ -2,6 +2,7 @@ import cors from 'cors'
 import { config } from 'dotenv'
 import express from 'express'
 import path from 'path'
+import fs from 'fs'
 
 import { setupDB } from './database/database'
 import chainspec from './endpoints/chainspec'
@@ -50,11 +51,27 @@ server.use('/', deploy)
 server.use('/', publicKey)
 server.use('/', state)
 
-server.use(express.static(path.join(__dirname, '/../../frontend/build/')))
+// static serving of frontend
+const localPath: string = '/../../frontend/build/'
+const dockerPath: string = '/../../../frontend/build/'
 
-server.get('/', (req: express.Request, res: express.Response) => {
-  res.sendFile(path.join(__dirname, '/../../frontend/build/', 'index.html'))
-})
+if (fs.existsSync(path.join(__dirname, localPath))) {
+  console.log(path.join(__dirname, localPath), 'exists!')
+  server.use(express.static(path.join(__dirname, localPath)))
+
+  server.get('/', (req: express.Request, res: express.Response) => {
+    res.sendFile(path.join(__dirname, localPath, 'index.html'))
+  })
+} else if (fs.existsSync(path.join(__dirname, dockerPath))) {
+  console.log(path.join(__dirname, dockerPath), 'exists!')
+  server.use(express.static(path.join(__dirname, dockerPath)))
+
+  server.get('/', (req: express.Request, res: express.Response) => {
+    res.sendFile(path.join(__dirname, dockerPath, 'index.html'))
+  })
+} else {
+  console.log("No path exists! -> check the 'build' folder of the frontend.")
+}
 
 // setup the database
 setupDB()
