@@ -23,11 +23,6 @@ contract Ballot {
         uint256 g; // generator
     }
 
-    // the public key used in the elgamal crypto system
-    struct PublicKey {
-        uint256 h;
-    }
-
     // represents one part of the public key (distributed key generation)
     // this struct also records a proof along with the public key share
     struct PublicKeyShare {
@@ -93,6 +88,48 @@ contract Ballot {
     event SystemStatusEvent(address indexed from, bool success, string reason);
 
     // /////////////////////////////////
+    // function modifiers
+    // - call internal functions
+    // - otherwise Solidity would duplicate 
+    //   and inline the functions, which costs way more gas
+    // /////////////////////////////////
+    modifier onlyOwner {
+        isOwner();
+        _;
+    }
+
+    modifier onlyIfPubKeySet {
+        isPubKeySet();
+        _;
+    }
+
+    modifier onlyIfSysParamsSet {
+        isSysParamsSet();
+        _;
+    }
+
+    function isOwner() internal view {
+        require(
+            msg.sender == owner,
+            "Only owner can call this function."
+        );
+    }
+
+    function isPubKeySet() internal view {
+        require(
+            IS_PUBKEY_SET == true,
+            "Public Key no set."
+        );
+    }
+
+    function isSysParamsSet() internal view {
+        require(
+            IS_PARAMETERS_SET == true,
+            "System Parameters not set."
+        );
+    }
+
+    // /////////////////////////////////
     // variables
     // /////////////////////////////////
     VotingState private votingState = VotingState.CONFIG;
@@ -102,11 +139,15 @@ contract Ballot {
     KeyGenProofVerifier private keyGenProofVerifier;
 
     SystemParameters private systemParameters;
-    PublicKey private publicKey;
+    uint256 private publicKey;
     Election private election;
     bool private IS_PARAMETERS_SET;
     bool private IS_PUBKEY_SET;
-    address private _owner;
+
+    address public owner = msg.sender;
+
+    // array of addresses that are not allowed to vote (authority, sealers and access provider)
+    address[] private priviledgedAddresses; 
 
     // The number of PublicKeyShare needed to create the publicKey (# of authorities)
     uint256 private NR_OF_AUTHORITY_NODES;
@@ -118,20 +159,7 @@ contract Ballot {
         voteVerifier = new VoteProofVerifier();
         sumVerifier = new SumProofVerifier();
         keyGenProofVerifier = new KeyGenProofVerifier();
-
-        IS_PARAMETERS_SET = false;
-        IS_PUBKEY_SET = false;
-
-        // set the owner of the contract
-        // needed for guarding certain functionalites
-        _owner = msg.sender;
-
-        // initialize empty Election struct
-        election.nrOfVoters = 0;
-        election.voters.length = 0;
         election.votingQuestion = votingQuestion;
-        election.yesVotes = 0;
-
         NR_OF_AUTHORITY_NODES = numberOfAuthNodes;
     }
 
@@ -142,9 +170,8 @@ contract Ballot {
     // set the parameters of the elgamal crypto system
     // can only be done by the owner (authority) and should
     // be set after contract deployment
-    function setParameters(uint256[3] calldata params) external {
-        require(msg.sender == _owner);
-        require(!IS_PARAMETERS_SET);
+    function setParameters(uint256[3] calldata params) external onlyOwner {
+        require(!IS_PARAMETERS_SET, "System parmeters already set!");
         systemParameters = SystemParameters(params[0], params[1], params[2]);
         keyGenProofVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g);
         IS_PARAMETERS_SET = true;
@@ -153,11 +180,9 @@ contract Ballot {
     // generates the public key of the elgamal crypto system
     // - the public key is generated from all submitted public key shares by the sealer nodes
     // - their product forms the public key
-    function generatePublicKey() external {
-        require(msg.sender == _owner);
-
+    function generatePublicKey() external onlyOwner {
         // public key can only be generated once
-        require(!IS_PUBKEY_SET);
+        require(!IS_PUBKEY_SET, "The public key is already set.");
 
         // every sealer needs to have published it's public key share
         require(election.publicKeyShareWallet.length == NR_OF_AUTHORITY_NODES);
@@ -173,7 +198,7 @@ contract Ballot {
         }
 
         // set the public key
-        publicKey = PublicKey(key);
+        publicKey = key;
 
         IS_PUBKEY_SET = true;
         
@@ -184,30 +209,20 @@ contract Ballot {
     }
 
     // create proof verifiers
-    function createVerifiers() private {
-        require(msg.sender == _owner);
-        require(IS_PUBKEY_SET == true);
-        require(IS_PARAMETERS_SET == true);
-        voteVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
-        sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey.h);
+    function createVerifiers() private onlyOwner onlyIfPubKeySet onlyIfSysParamsSet {
+        voteVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey);
+        sumVerifier.initialize(systemParameters.p, systemParameters.q, systemParameters.g, publicKey);
     }
 
     // open the Ballot and change into state VOTING
-    function openBallot() public {
-        require(msg.sender == _owner);
-        require(IS_PUBKEY_SET == true);
-        require(IS_PARAMETERS_SET == true);
-        require(votingState == VotingState.CONFIG);
-        
+    function openBallot() public onlyOwner onlyIfPubKeySet onlyIfSysParamsSet { 
+        require(votingState == VotingState.CONFIG, "Need state CONFIG.");
         votingState = VotingState.VOTING;
     }
 
     // close the Ballot and change into state TALLY
-    function closeBallot() public {
-        require(msg.sender == _owner);
-        require(IS_PUBKEY_SET == true);
-        require(IS_PARAMETERS_SET == true);
-        require(votingState == VotingState.VOTING);
+    function closeBallot() public onlyOwner onlyIfPubKeySet onlyIfSysParamsSet {
+        require(votingState == VotingState.VOTING, "Need state VOTING.");
 
         votingState = VotingState.TALLY;
     }
@@ -216,8 +231,8 @@ contract Ballot {
     // each sealer has to first submit it's decrypted share
     // the product of all decrypted shares will form the final result (nr of yes-votes) 
     function combineDecryptedShares() public {
-        require(votingState == VotingState.TALLY);
-        require(election.decryptedShareWallet.length == NR_OF_AUTHORITY_NODES);
+        require(votingState == VotingState.TALLY, "Need state TALLY.");
+        require(election.decryptedShareWallet.length == NR_OF_AUTHORITY_NODES, "Nr of shares !== nr of sealers.");
 
         // define starting value (here, we take the share of the first address)
         address firstSealerAddress = election.decryptedShareWallet[0];
@@ -258,8 +273,8 @@ contract Ballot {
     {
         // accept key shares only if state is CONFIG
         // and the public key does not yet exist
-        require(votingState == VotingState.CONFIG);
-        require(IS_PUBKEY_SET == false);
+        require(votingState == VotingState.CONFIG, "Need state CONFIG.");
+        require(!IS_PUBKEY_SET, "Public key shares can only be submitted if the public key is not yet set.");
 
         // don't accept if proof not valid
         bool proofValid = keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender);
@@ -296,7 +311,7 @@ contract Ballot {
         returns (bool, string memory)
     {   
         // only allow submission if in state
-        require(votingState == VotingState.TALLY);
+        require(votingState == VotingState.TALLY, "The contract needs to be in state: TALLY.");
 
         // don't accept if proof verification fails
         uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender].share;
@@ -383,8 +398,7 @@ contract Ballot {
     }
 
     // get system parameters
-    function getParameters() external view returns (uint256[3] memory) {
-        require(IS_PARAMETERS_SET);
+    function getParameters() external view onlyIfSysParamsSet returns (uint256[3] memory) {
         return [systemParameters.p, systemParameters.q, systemParameters.g];
     }
 
@@ -394,9 +408,8 @@ contract Ballot {
     }
 
     // get combined public key of the system
-    function getPublicKey() public view returns (uint256) {
-        require(IS_PUBKEY_SET, 'Public Key of the System not yet set');
-        return publicKey.h;
+    function getPublicKey() public view onlyIfPubKeySet returns (uint256)  {
+        return publicKey;
     }
 
     // get a vote cipher at a specific index
@@ -441,7 +454,7 @@ contract Ballot {
 
     // get vote result
     function getVoteResult() public view returns (uint256) {
-        require(votingState == VotingState.RESULT);
+        require(votingState == VotingState.RESULT, "The contract needs to be in state: RESULT.");
         return election.yesVotes;
     }
 }
