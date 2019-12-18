@@ -1,7 +1,7 @@
 //@ts-ignore
 const SumProofVerifier = artifacts.require('./FiniteField/SumProofVerifier')
 
-import {FFelGamal} from 'mp-crypto'
+import {FFelGamal} from '@meck93/evote-crypto'
 import {unlockedAddresses} from '../helper'
 import {assert} from 'chai'
 import BN = require('bn.js')

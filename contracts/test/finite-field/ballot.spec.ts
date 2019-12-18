@@ -2,7 +2,7 @@
 const Ballot = artifacts.require('./FiniteField/Ballot.sol')
 
 import {assert} from 'chai'
-import {FFelGamal} from 'mp-crypto'
+import {FFelGamal} from '@meck93/evote-crypto'
 import BN from 'bn.js'
 import {toSystemParams, toHex, unlockedAddresses} from '../helper'
 import {fail} from 'assert'

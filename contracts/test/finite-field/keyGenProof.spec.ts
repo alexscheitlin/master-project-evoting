@@ -1,7 +1,7 @@
 //@ts-ignore
 const KeyGenProofVerifier = artifacts.require('./FiniteField/KeyGenProofVerifier')
 
-import {FFelGamal} from 'mp-crypto'
+import {FFelGamal} from '@meck93/evote-crypto'
 import {unlockedAddresses} from '../helper'
 import {assert} from 'chai'
 
