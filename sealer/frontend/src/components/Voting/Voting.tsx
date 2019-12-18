@@ -1,9 +1,9 @@
-import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
+import { createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
 import React, { useState } from 'react'
 
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
-import { SealerBackend } from '../../services'
+import { BallotService } from '../../services'
 import { stepDescriptions } from '../../utils/descriptions'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { LoadSuccess } from '../shared/LoadSuccess'
@@ -14,16 +14,20 @@ interface Props {
 }
 
 export const Voting: React.FC<Props> = ({ nextStep }) => {
-  const [readyForTally, setReadyForTally] = useState(false)
   const classes = useStyles()
 
-  const getState = async (): Promise<void> => {
-    const state = await SealerBackend.getState()
-    setReadyForTally(state.state === VotingState.TALLY)
+  const isStateChange = async (): Promise<void> => {
+    try {
+      const response = await BallotService.getBallotState()
+      if (response === VotingState.TALLY) {
+        nextStep()
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  // only poll for peers if this node is not the bootnode
-  useInterval(getState, !readyForTally ? 4000 : 0)
+  useInterval(isStateChange, 4000)
 
   return (
     <StepContentWrapper>
@@ -32,30 +36,13 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
         <ListItem>
           <ListItemText>{stepDescriptions.voting}</ListItemText>
         </ListItem>
+      </List>
+      <List className={classes.next}>
         <ListItem>
           <ListItemIcon>
-            <LoadSuccess loading={!readyForTally} success={readyForTally} />
+            <LoadSuccess loading={true} />
           </ListItemIcon>
-
-          <ListItemText
-            primary={
-              !readyForTally
-                ? `Please wait until the Voting Authority closes the vote.`
-                : `The Voting Authority has closed the vote. Please proceed to the next step.`
-            }
-          />
-        </ListItem>
-
-        <ListItem>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            disabled={!readyForTally}
-            onClick={nextStep}
-          >
-            Next
-          </Button>
+          <ListItemText primary={`Please wait until the Voting Authority closes the vote.`} />
         </ListItem>
       </List>
     </StepContentWrapper>
@@ -72,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
       width: 160,
     },
-    nextButton: {
+    next: {
       position: 'absolute',
       bottom: 0,
     },
