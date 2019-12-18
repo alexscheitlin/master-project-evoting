@@ -52,8 +52,8 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
     const getRequiredValidators = async (): Promise<void> => {
       try {
         // FIXME: something does not work in the auth backend when connecting to the blockchain
-        const response = await SealerBackend.getState()
-        setRequiredSealers(response.requiredSealers)
+        const data = await SealerBackend.getState()
+        setRequiredSealers(data.requiredSealers)
       } catch (error) {
         console.log(error.message)
       }
