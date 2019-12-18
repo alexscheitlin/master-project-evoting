@@ -84,6 +84,17 @@ export const getBallotState = async (): Promise<VotingState> => {
   }
 }
 
+export const getVotingQuestion = async (): Promise<string> => {
+  const contract = getContract()
+  try {
+    const question: string = await contract.methods.getVotingQuestion().call()
+    return question
+  } catch (error) {
+    console.log(error)
+    throw new Error('Could not get the voting question from the contract')
+  }
+}
+
 /**
  * Distributed key generation. Submits one the public key to the Ballot Contract.
  *

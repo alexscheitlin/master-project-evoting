@@ -40,7 +40,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
   const isStateChange = async (): Promise<void> => {
     try {
       const response = await BallotService.getBallotState()
-      if (response === VotingState.VOTING) {
+      if (response.state === VotingState.VOTING) {
         nextStep()
       }
     } catch (error) {
