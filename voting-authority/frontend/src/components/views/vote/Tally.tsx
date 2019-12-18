@@ -2,6 +2,7 @@ import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme }
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import React, { useEffect, useState } from 'react'
 
+import { stepDescriptions } from '../../../descriptions'
 import { useVoteStateStore, VotingState } from '../../../models/voting'
 import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
@@ -75,6 +76,9 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
     <StepContentWrapper>
       <StepTitle title="Tally" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.tally}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <VpnKeyIcon />

@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from 'axios'
 import React, { useEffect, useState } from 'react'
 
 import { DEV_URL } from '../../../constants'
+import { stepDescriptions } from '../../../descriptions'
 import { useVoteStateStore, VotingState } from '../../../models/voting'
 import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
@@ -122,8 +123,11 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Vote Configuration" subtitle="Generation of Public Key" />
+      <StepTitle title="Vote Configuration" subtitle="Public Key Generation" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.config}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <VpnKeyIcon />

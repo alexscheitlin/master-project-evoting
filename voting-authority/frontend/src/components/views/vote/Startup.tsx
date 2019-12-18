@@ -17,6 +17,7 @@ import axios, { AxiosResponse } from 'axios'
 import React, { useEffect, useState } from 'react'
 
 import { DEV_URL } from '../../../constants'
+import { stepDescriptions } from '../../../descriptions'
 import { useVoteQuestionStore, useVoteStateStore, VotingState } from '../../../models/voting'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
 import { StepContentWrapper } from '../../defaults/StepContentWrapper'
@@ -158,6 +159,9 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
     <StepContentWrapper>
       <StepTitle title="Contract Deployment" />
       <List>
+        <ListItem>
+          <ListItemText>{stepDescriptions.startup}</ListItemText>
+        </ListItem>
         <ListItem>
           <ListItemIcon>
             <SettingsEthernetIcon />
