@@ -325,7 +325,7 @@ describe('Global Helper Test', () => {
     const unequalResults: number[] = Array(numberOfTrials)
 
     for (let i = 0; i < numberOfTrials; i++) {
-      if (i % 2 == 0) {
+      if (i % 2 === 0) {
         const bufferA1: Buffer = Buffer.alloc(bufferSize, 'A', 'utf8')
         const bufferB: Buffer = Buffer.alloc(bufferSize, 'B', 'utf8')
         const bufferA2: Buffer = Buffer.alloc(bufferSize, 'A', 'utf8')

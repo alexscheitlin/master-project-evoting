@@ -34,7 +34,7 @@ export const getUuid = (identities: Identity[], username: string): string => {
 }
 
 export const getToken = (tokens: IdentityToken[], uuid: string): string => {
-  const token: IdentityToken | undefined = tokens.find(t => t.uuid == uuid)
+  const token: IdentityToken | undefined = tokens.find(t => t.uuid === uuid)
 
   if (!token) {
     return ''
