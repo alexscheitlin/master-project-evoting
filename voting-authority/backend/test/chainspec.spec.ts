@@ -14,7 +14,7 @@ describe('Chainspec Tests', () => {
     let defaultChainspec
 
     before(() => {
-      defaultChainspec = JSON.parse(fs.readFileSync('./src/database/defaultChainspec.json', 'utf-8'))
+      defaultChainspec = JSON.parse(fs.readFileSync('./src/database/defaultChainspec.json', 'utf8'))
     })
 
     beforeEach(() => {
