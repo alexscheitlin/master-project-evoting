@@ -35,7 +35,7 @@ You will need a Github personal access token with `package:read, package:write` 
 
 #### Github Config JSON
 
-If the file does not exist, create a JSON file in the top-level folder `/` that has the following structure. Insert your personal values here.
+If the file does not exist, create a JSON file in the top-level folder (`/github.json`) that has the following structure. Insert your personal values here.
 
 ```json
 {
