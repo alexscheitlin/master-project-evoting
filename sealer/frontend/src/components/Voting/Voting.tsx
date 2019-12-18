@@ -19,7 +19,7 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
   const isStateChange = async (): Promise<void> => {
     try {
       const response = await BallotService.getBallotState()
-      if (response === VotingState.TALLY) {
+      if (response.state === VotingState.TALLY) {
         nextStep()
       }
     } catch (error) {

@@ -10,7 +10,7 @@ const sealerBackendUrl = (): string =>
 export const getBallotState = async () => {
   try {
     const response = await axios.get(sealerBackendUrl() + '/ballotState')
-    return response.data.state
+    return response.data
   } catch (error) {
     console.log(error)
     throw new Error(`Could not get state from sealer backend. ${error.message}`)
