@@ -1,11 +1,10 @@
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import fs from 'fs'
-import { VotingState } from '../models/states'
 
 const authBackendUrl = (): string =>
   `http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
 
-export const fetchAndStoreChainspec = async (): void => {
+export const fetchAndStoreChainspec = async (): Promise<void> => {
   let result
   let chainspec
   try {
@@ -62,15 +61,11 @@ export const getBallotAddress = async (): Promise<string> => {
   }
 }
 
-interface StateResponse {
-  state: VotingState
-}
-
-export const fetchState = async (): Promise<VotingState> => {
+export const fetchState = async () => {
   try {
-    const response: AxiosResponse<StateResponse> = await axios.get(authBackendUrl() + '/state')
+    const response = await axios.get(authBackendUrl() + '/state')
     if (response.status === 200) {
-      return response.data.state
+      return response.data
     } else {
       throw new Error(`Status: ${response.status}`)
     }

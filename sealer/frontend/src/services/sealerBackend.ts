@@ -13,8 +13,8 @@ interface StateResponse {
 
 export const getState = async (): Promise<StateResponse> => {
   try {
-    const response: AxiosResponse<StateResponse> = await axios.get(sealerBackendUrl() + '/state')
-    return response.data
+    const response = await axios.get(sealerBackendUrl() + '/state')
+    return response.data.state
   } catch (error) {
     console.log(error)
     throw new Error(`Could not get state from sealer backend. ${error.message}`)
