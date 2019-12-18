@@ -68,6 +68,18 @@ export const isBallotOpen = async (): Promise<boolean> => {
     return status === VotingState.VOTING
   } catch (error) {
     console.log(error)
+    throw new Error('Could not determine if ballot is open.')
+  }
+}
+
+export const getBallotState = async (): Promise<VotingState> => {
+  const contract = getContract()
+  try {
+    const status: string = await contract.methods.getBallotStatus().call()
+    // casting to state enum
+    return (<any>VotingState)[status]
+  } catch (error) {
+    console.log(error)
     throw new Error('The status of the Ballot could no be fetched.')
   }
 }
@@ -154,7 +166,7 @@ export const getVote = async (index: number): Promise<number> => {
 }
 
 // HELPERS
-export const toSystemParams = (params: BN[]): FFelGamal.SystemParameters => {
+export const toSystemParams = (params: number[]): FFelGamal.SystemParameters => {
   const systemParams: FFelGamal.SystemParameters = {
     p: new BN(params[0]),
     q: new BN(params[1]),
