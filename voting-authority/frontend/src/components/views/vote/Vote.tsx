@@ -111,10 +111,6 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  button: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1),
-  },
   closeButton: {
     marginTop: theme.spacing(1),
     marginRight: theme.spacing(1),

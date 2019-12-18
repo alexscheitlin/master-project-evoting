@@ -129,19 +129,10 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    padding: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
   button: {
     marginRight: theme.spacing(1),
     width: 160,
     height: 36,
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing(2),
   },
   nextButton: {
     position: 'absolute',

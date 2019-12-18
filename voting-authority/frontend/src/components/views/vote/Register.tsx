@@ -133,10 +133,6 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'relative',
-    minHeight: 700,
-  },
   button: {
     marginRight: theme.spacing(1),
     width: 160,
