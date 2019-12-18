@@ -170,21 +170,14 @@
   "ast": {
     "absolutePath": "/home/nik/dev/uni/map/master-project/contracts/contracts/FiniteField/ModuloMathLib.sol",
     "exportedSymbols": {
-      "ModuloMathLib": [
-        3564
-      ]
+      "ModuloMathLib": [3564]
     },
     "id": 3565,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 3364,
-        "literals": [
-          "solidity",
-          "^",
-          "0.5",
-          ".3"
-        ],
+        "literals": ["solidity", "^", "0.5", ".3"],
         "nodeType": "PragmaDirective",
         "src": "0:23:5"
       },
@@ -195,9 +188,7 @@
         "documentation": null,
         "fullyImplemented": true,
         "id": 3564,
-        "linearizedBaseContracts": [
-          3564
-        ],
+        "linearizedBaseContracts": [3564],
         "name": "ModuloMathLib",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -1641,10 +1632,7 @@
                         "id": 3481,
                         "name": "revert",
                         "nodeType": "Identifier",
-                        "overloadedDeclarations": [
-                          4366,
-                          4367
-                        ],
+                        "overloadedDeclarations": [4366, 4367],
                         "referencedDeclaration": 4366,
                         "src": "1227:6:5",
                         "typeDescriptions": {
@@ -1801,9 +1789,7 @@
                   }
                 },
                 {
-                  "assignments": [
-                    3496
-                  ],
+                  "assignments": [3496],
                   "declarations": [
                     {
                       "constant": false,
@@ -1838,9 +1824,7 @@
                   "src": "1275:9:5"
                 },
                 {
-                  "assignments": [
-                    3499
-                  ],
+                  "assignments": [3499],
                   "declarations": [
                     {
                       "constant": false,
@@ -1892,9 +1876,7 @@
                   "src": "1294:13:5"
                 },
                 {
-                  "assignments": [
-                    3503
-                  ],
+                  "assignments": [3503],
                   "declarations": [
                     {
                       "constant": false,
@@ -1941,9 +1923,7 @@
                   "src": "1317:14:5"
                 },
                 {
-                  "assignments": [
-                    3507
-                  ],
+                  "assignments": [3507],
                   "declarations": [
                     {
                       "constant": false,
@@ -1990,9 +1970,7 @@
                   "src": "1341:14:5"
                 },
                 {
-                  "assignments": [
-                    3511
-                  ],
+                  "assignments": [3511],
                   "declarations": [
                     {
                       "constant": false,
@@ -2842,21 +2820,14 @@
   "legacyAST": {
     "absolutePath": "/home/nik/dev/uni/map/master-project/contracts/contracts/FiniteField/ModuloMathLib.sol",
     "exportedSymbols": {
-      "ModuloMathLib": [
-        3564
-      ]
+      "ModuloMathLib": [3564]
     },
     "id": 3565,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 3364,
-        "literals": [
-          "solidity",
-          "^",
-          "0.5",
-          ".3"
-        ],
+        "literals": ["solidity", "^", "0.5", ".3"],
         "nodeType": "PragmaDirective",
         "src": "0:23:5"
       },
@@ -2867,9 +2838,7 @@
         "documentation": null,
         "fullyImplemented": true,
         "id": 3564,
-        "linearizedBaseContracts": [
-          3564
-        ],
+        "linearizedBaseContracts": [3564],
         "name": "ModuloMathLib",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -4313,10 +4282,7 @@
                         "id": 3481,
                         "name": "revert",
                         "nodeType": "Identifier",
-                        "overloadedDeclarations": [
-                          4366,
-                          4367
-                        ],
+                        "overloadedDeclarations": [4366, 4367],
                         "referencedDeclaration": 4366,
                         "src": "1227:6:5",
                         "typeDescriptions": {
@@ -4473,9 +4439,7 @@
                   }
                 },
                 {
-                  "assignments": [
-                    3496
-                  ],
+                  "assignments": [3496],
                   "declarations": [
                     {
                       "constant": false,
@@ -4510,9 +4474,7 @@
                   "src": "1275:9:5"
                 },
                 {
-                  "assignments": [
-                    3499
-                  ],
+                  "assignments": [3499],
                   "declarations": [
                     {
                       "constant": false,
@@ -4564,9 +4526,7 @@
                   "src": "1294:13:5"
                 },
                 {
-                  "assignments": [
-                    3503
-                  ],
+                  "assignments": [3503],
                   "declarations": [
                     {
                       "constant": false,
@@ -4613,9 +4573,7 @@
                   "src": "1317:14:5"
                 },
                 {
-                  "assignments": [
-                    3507
-                  ],
+                  "assignments": [3507],
                   "declarations": [
                     {
                       "constant": false,
@@ -4662,9 +4620,7 @@
                   "src": "1341:14:5"
                 },
                 {
-                  "assignments": [
-                    3511
-                  ],
+                  "assignments": [3511],
                   "declarations": [
                     {
                       "constant": false,
