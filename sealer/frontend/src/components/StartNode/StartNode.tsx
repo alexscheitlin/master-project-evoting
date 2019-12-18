@@ -1,10 +1,21 @@
-import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
+import {
+  Button,
+  CircularProgress,
+  createStyles,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  makeStyles,
+  Theme,
+} from '@material-ui/core'
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import React, { useState } from 'react'
 
 import { useInterval } from '../../hooks/useInterval'
+import { VotingState } from '../../models/states'
 import { SealerBackend } from '../../services'
 import { stepDescriptions } from '../../utils/descriptions'
 import { delay } from '../../utils/helper'
@@ -65,12 +76,28 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   }
 
   const pollPeers = async (): Promise<void> => {
-    const nrPeers = await SealerBackend.getNrPeers()
-    setPeers(nrPeers)
+    try {
+      const nrPeers = await SealerBackend.getNrPeers()
+      setPeers(nrPeers)
+    } catch (error) {
+      console.log('could not poll peers')
+    }
+  }
+
+  const isStateChange = async (): Promise<void> => {
+    try {
+      const response = await SealerBackend.getState()
+      if (response.state === VotingState.CONFIG) {
+        nextStep()
+      }
+    } catch (error) {
+      console.log('Could not fetch the state.')
+    }
   }
 
   // only poll for peers if this node is not the bootnode
   useInterval(pollPeers, isNodeRunning ? REFRESH_INTERVAL_MS : 0)
+  useInterval(isStateChange, isNodeRunning ? REFRESH_INTERVAL_MS : 0)
 
   return (
     <StepContentWrapper>
@@ -131,45 +158,34 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
                 </pre>
               </div>
             </ListItem>
-            {isNodeRunning && (
-              <>
-                <ListItem>
-                  <ListItemIcon>
-                    <LoadSuccess success={true} />
-                  </ListItemIcon>
-                  <ListItemText primary={`Established connection with the authority.`} />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <LoadSuccess loading={true} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      isBootNode
-                        ? `You are the bootnode. Please wait for other sealers to connect.`
-                        : `Looking for peers to connect to..`
-                    }
-                    secondary={`connected to ${peers} peers`}
-                  />
-                </ListItem>
-              </>
-            )}
           </>
         )}
       </List>
 
-      <List className={classes.nextButton}>
-        <ListItem>
-          <Button
-            className={classes.button}
-            disabled={peers === 0}
-            variant="contained"
-            color="primary"
-            onClick={nextStep}
-          >
-            Next
-          </Button>
-        </ListItem>
+      <List className={classes.next}>
+        {isNodeRunning ? (
+          <>
+            <ListItem>
+              <ListItemIcon>
+                <KeyboardArrowRightIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  isBootNode
+                    ? `You are the bootnode. Please wait for other sealers to connect.`
+                    : `Looking for peers to connect to...`
+                }
+                secondary={`connected to ${peers} peers`}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <CircularProgress size={24} />
+              </ListItemIcon>
+              <ListItemText primary={`Wating for the Voting Authority to deploy the Ballot Smart Contract`} />
+            </ListItem>
+          </>
+        ) : null}
       </List>
     </StepContentWrapper>
   )
@@ -193,7 +209,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
       width: 160,
     },
-    nextButton: {
+    next: {
       position: 'absolute',
       bottom: 0,
     },
