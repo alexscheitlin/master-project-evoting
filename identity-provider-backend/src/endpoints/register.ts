@@ -3,6 +3,7 @@ import express from 'express'
 
 import { addToList, getListFromDB, IDENTITIES_TABLE, TOKENS_TABLE } from '../database/database'
 import { Identity, IdentityToken } from '../models'
+import { shuffle } from '../utils/shuffle'
 
 const axios = require('axios')
 const router: express.Router = express.Router()
@@ -72,7 +73,7 @@ router.post('/registerVoters', async (req, res) => {
       await axios.post(
         `http://${process.env.ACCESS_PROVIDER_BACKEND_IP}:${process.env.ACCESS_PROVIDER_BACKEND_PORT}/sendTokens`,
         {
-          tokens: identityTokens.map(iT => iT.token), // TODO: shuffle tokens
+          tokens: shuffle(identityTokens.map(iT => iT.token)),
         }
       )
     } catch (error) {
