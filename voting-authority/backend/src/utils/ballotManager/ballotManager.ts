@@ -21,7 +21,7 @@ const getContract = (): Contract => {
   return contract
 }
 
-export const setSystemParameters = async (): void => {
+export const setSystemParameters = async (): Promise<void> => {
   const contract = getContract()
   const authAcc = await unlockAuthAccount()
 
