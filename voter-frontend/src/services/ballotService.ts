@@ -1,5 +1,5 @@
-import BN from 'bn.js'
 import { FFelGamal } from '@meck93/evote-crypto'
+import BN from 'bn.js'
 import Web3 from 'web3'
 
 /**
@@ -117,5 +117,41 @@ export const castNoVote = async (contract: any, wallet: string): Promise<boolean
     return true
   } catch (error) {
     throw new Error(`Could not send vote and proof to contract: ${error.message}`)
+  }
+}
+
+/**
+ * Fetches the final voting result -> number of yes votes.
+ */
+export const getVoteResult = async (contract: any): Promise<number> => {
+  try {
+    return await contract.methods.getVoteResult().call()
+  } catch (error) {
+    console.log(error)
+    throw new Error(`The final voting result could not be fetched. ${error}`)
+  }
+}
+
+/**
+ * Gets number of votes
+ */
+export const getNumberOfVotes = async (contract: any): Promise<number> => {
+  try {
+    return await contract.methods.getNumberOfVotes().call()
+  } catch (error) {
+    throw new Error('The number of votes could not be assessed.')
+  }
+}
+
+/**
+ * Gets the voting question
+ */
+export const getVotingQuestion = async (contract: any): Promise<string> => {
+  try {
+    const question: string = await contract.methods.getVotingQuestion().call()
+    return question
+  } catch (error) {
+    console.log(error)
+    throw new Error('Could not get the voting question from the contract')
   }
 }

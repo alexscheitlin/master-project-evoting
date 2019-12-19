@@ -7,13 +7,30 @@ export const [useVoterStore] = create((set, get) => ({
   contract: {},
   contractAddress: '',
   connectionNodeUrl: '',
+  error: false,
+  message: '',
+
+  // -----------------------------------
+  // SET IF ERRORs
+  // -----------------------------------
+  setMessage: (message: string) => {
+    set({ message: message })
+  },
+
+  // -----------------------------------
+  // SET IF ERRORs
+  // -----------------------------------
+  setError: (flag: boolean) => {
+    set({ error: flag })
+  },
 
   // -----------------------------------
   // LOGOUT
   // -----------------------------------
-  logout: (): void => {
+  logout: (message?: string): void => {
     localStorage.clear()
     set({ authenticated: false })
+    get().setMessage(message)
   },
 
   // -----------------------------------

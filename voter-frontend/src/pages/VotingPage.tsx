@@ -16,14 +16,17 @@ const VotingPage: React.FC = () => {
   const classes = useStyles()
   const [balance, setBalance] = useState('')
   const [votingQuestion, setVotingQuestion] = useState('')
+  const [ballot, setBallot] = useState()
+  const [web3, setWeb3] = useState()
   const state = useVoterStore()
 
   const initializePage = async (): Promise<void> => {
     // get web3 context and the ballot contract
     const web3: Web3 = await getWeb3(state.getConnectionNodeUrl())
+    setWeb3(web3)
     //@ts-ignore
     const contract = new web3.eth.Contract(BallotContract.abi, state.getBallotContractAddress())
-
+    setBallot(contract)
     // query the balance of the voter wallet
     const balance = await web3.eth.getBalance(state.getWallet())
     setBalance(balance)
@@ -42,10 +45,9 @@ const VotingPage: React.FC = () => {
       <Header />
       <div className={classes.root}>
         <Question votingQuestion={votingQuestion} />
-        <VotingPanel votingQuestion={votingQuestion} />
+        <VotingPanel contract={ballot} />
         <ChainInfo contractAddress={state.contractAddress} walletAddress={state.wallet} balance={balance} />
       </div>
-
       <Footer />
     </Paper>
   )
