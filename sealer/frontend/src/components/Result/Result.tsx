@@ -1,31 +1,39 @@
-import { Box, createStyles, List, ListItem, ListItemText, Theme, Typography, ListItemIcon } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
-import React, { useEffect, useState } from 'react'
-
+import { createStyles, List, ListItem, ListItemIcon, ListItemText, Theme, Typography } from '@material-ui/core'
+import { green, red } from '@material-ui/core/colors'
 import EqualizerIcon from '@material-ui/icons/Equalizer'
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
 import ThumbDownIcon from '@material-ui/icons/ThumbDown'
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
+import { makeStyles } from '@material-ui/styles'
+import React, { useEffect, useState } from 'react'
 
-import { stepDescriptions } from '../../utils/descriptions'
-import { StepTitle } from '../shared/StepTitle'
 import { BallotService } from '../../services'
-import { green, red } from '@material-ui/core/colors'
+import { stepDescriptions } from '../../utils/descriptions'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
+import { StepTitle } from '../shared/StepTitle'
 
 export const Result: React.FC = () => {
   const classes = useStyles()
 
   const [yesVotes, setYesVotes] = useState<number>(0)
+  const [noVotes, setNoVotes] = useState<number>(0)
   const [totalVotes, setTotalVotes] = useState<number>(0)
   const [votingQuestion, setVotingQuestion] = useState('')
+  const [whoWon, setWhoWon] = useState<string>()
 
   const getResult = async () => {
     const res = await BallotService.getBallotState()
     setYesVotes(res.yesVotes)
     setTotalVotes(res.totalVotes)
+    setNoVotes(res.totalVotes - res.yesVotes)
     setVotingQuestion(res.votingQuestion)
-    console.log(res)
+    if (yesVotes === noVotes) {
+      setWhoWon('TIED')
+    } else if (yesVotes > noVotes) {
+      setWhoWon('YES')
+    } else {
+      setWhoWon('NO')
+    }
   }
 
   useEffect(() => {
@@ -68,7 +76,7 @@ export const Result: React.FC = () => {
         <ListItem>
           <ListItemText>
             <Typography variant="h5">
-              The Result of the Vote is: <strong>{yesVotes > totalVotes - yesVotes ? 'YES' : 'NO'}</strong>
+              The Result of the Vote is: <strong>{whoWon}</strong>
             </Typography>
           </ListItemText>
         </ListItem>
