@@ -10,6 +10,7 @@ import {
   USED_TOKENS_TABLE,
   VALID_TOKENS_TABLE,
 } from '../database/database'
+import { VotingState } from '../models/state'
 import { verifyAddress } from '../utils/addressVerification'
 import { createAccount } from '../utils/rpc'
 import { fundWallet, unlockAuthAccount } from '../utils/web3'
@@ -20,6 +21,7 @@ const router: express.Router = express.Router()
 const ADDRESS_INVALID: string = 'Address registration failed. Address is not valid or has already been registered.'
 const TOKEN_INVALID: string = 'Address registration failed. Signup token is not valid or has already been used.'
 const NO_BALLOT_ADDRESS: string = 'Could not get ballot address!'
+const WRONG_PHASE: string = 'Wallet funding only possible if in phase VOTING.'
 const ACCOUNT_CREATION_FAILED: string = 'The wallet could not be created!'
 const ACCOUNT_UNLOCK_FAILED: string = 'The wallet could not be unlocked!'
 const SUCCESS_MSG: string = 'Successfully verified token and registered address. Happy Voting!'
@@ -44,6 +46,20 @@ router.post('/register', async (req, res) => {
   const voterToken: string = req.body.token
   const voterAddress: string = req.body.address
 
+  let state: VotingState
+  try {
+    const response = await axios.get(`${serverConfig.authUrl}/state`)
+    state = response.data.state
+  } catch (error) {
+    throw new Error('Could not fetch state from authority.')
+  }
+
+  // wallets can and should only be funded in the VOTING phase
+  if (state !== VotingState.VOTING) {
+    res.status(400).json({ success: false, msg: WRONG_PHASE })
+    return
+  }
+
   // verify that the provided address is valid and not already registered
   if (!verifyAddress(REGISTERED_VOTERS_TABLE, voterAddress)) {
     res.status(400).json({ success: false, msg: ADDRESS_INVALID })
@@ -57,6 +73,7 @@ router.post('/register', async (req, res) => {
   }
 
   // get ballot address from voting authority backend (to later return it to the user so that he can cast his vote)
+  // If this is reached, then the ballot is for sure deployed and open, therefore we can return it at the end
   let ballotAddress = ''
   try {
     const data = await axios.get(`${serverConfig.authUrl}/deploy`)
@@ -65,7 +82,7 @@ router.post('/register', async (req, res) => {
       throw new Error()
     }
   } catch (error) {
-    res.status(500).json({ success: false, msg: NO_BALLOT_ADDRESS })
+    res.status(200).json({ success: false, msg: NO_BALLOT_ADDRESS })
     return
   }
 
