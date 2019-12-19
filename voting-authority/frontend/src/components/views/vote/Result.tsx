@@ -36,11 +36,14 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
 
   const [yesVotes, setYesVotes] = useState<number>(0)
   const [noVotes, setNoVotes] = useState<number>(0)
+  const [totalVotes, setTotalVotes] = useState<number>(0)
 
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
 
   const [inTransition, setInTransition] = useState(false)
+
+  const [whoWon, setWhoWon] = useState<string>()
 
   const getState = async (): Promise<void> => {
     try {
@@ -48,6 +51,13 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
       setYesVotes(data.yesVotes)
       setNoVotes(data.noVotes)
       setVotingQuestion(data.votingQuestion)
+      if (yesVotes === noVotes) {
+        setWhoWon('TIED')
+      } else if (yesVotes > noVotes) {
+        setWhoWon('YES')
+      } else {
+        setWhoWon('NO')
+      }
     } catch (error) {
       setErrorMessage(error.msg)
       setHasError(true)
@@ -109,7 +119,7 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
         <ListItem>
           <ListItemText>
             <Typography variant="h5">
-              The Result of the Vote is: <strong>{yesVotes > noVotes ? 'YES' : 'NO'}</strong>
+              The Result of the Vote is: <strong>{whoWon}</strong>
             </Typography>
           </ListItemText>
         </ListItem>
