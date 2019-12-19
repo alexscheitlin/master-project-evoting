@@ -6,6 +6,7 @@ import { setupDB } from './database/database'
 import nodeUrl from './endpoints/nodeUrl'
 import register from './endpoints/register'
 import sendTokens from './endpoints/sendTokens'
+import state from './endpoints/state'
 import { requestLogger, responseLogger } from './utils/logger'
 
 config()
@@ -22,6 +23,7 @@ server.use(cors({ origin: 'http://localhost:3000' }))
 server.use('/', nodeUrl)
 server.use('/', register)
 server.use('/', sendTokens)
+server.use('/', state)
 
 // setup the database
 setupDB()
