@@ -27,10 +27,9 @@ export const [useVoterStore] = create((set, get) => ({
   // -----------------------------------
   // LOGOUT
   // -----------------------------------
-  logout: (message?: string): void => {
+  logout: (): void => {
     localStorage.clear()
     set({ authenticated: false })
-    get().setMessage(message)
   },
 
   // -----------------------------------

@@ -12,11 +12,9 @@ import ErrorIcon from '@material-ui/icons/Error'
 interface Props {
   onLogin: (username: string, password: string) => void
   loading: boolean
-  error: boolean
-  msg: string
 }
 
-const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
+const LoginForm: React.FC<Props> = ({ onLogin, loading }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const voterState = useVoterStore()
@@ -78,8 +76,6 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
             </List>
           </div>
         )}
-
-        {error && <Typography>{msg}</Typography>}
       </Paper>
     </Container>
   )

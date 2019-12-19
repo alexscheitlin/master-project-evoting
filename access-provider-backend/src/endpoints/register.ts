@@ -82,7 +82,7 @@ router.post('/register', async (req, res) => {
       throw new Error()
     }
   } catch (error) {
-    res.status(200).json({ success: false, msg: NO_BALLOT_ADDRESS })
+    res.status(500).json({ success: false, msg: NO_BALLOT_ADDRESS })
     return
   }
 

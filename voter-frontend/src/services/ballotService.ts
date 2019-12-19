@@ -48,7 +48,6 @@ const submitVote = async (
 
     // TODO: check returnValues field on response -> event emitted from Ballot
     // If user votes altough the vote is closed, the UI renders it as success
-    console.log(res)
     return true
   } catch (error) {
     throw new Error(`Vote submission failed: ${error.message}`)
