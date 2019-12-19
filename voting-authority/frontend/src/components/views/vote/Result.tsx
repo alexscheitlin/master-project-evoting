@@ -1,4 +1,4 @@
-import { Button, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme, Typography } from '@material-ui/core'
+import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { green, red } from '@material-ui/core/colors'
 import EqualizerIcon from '@material-ui/icons/Equalizer'
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
@@ -12,7 +12,6 @@ import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
 import { StepContentWrapper } from '../../defaults/StepContentWrapper'
 import { StepTitle } from '../../defaults/StepTitle'
-import { LoadSuccess } from '../helper/LoadSuccess'
 
 // simulates a delay like an asyc call would
 const delay = (t: number): Promise<void> => new Promise(resolve => setTimeout(resolve, t))
@@ -29,7 +28,6 @@ interface ResultStateResponse {
 }
 
 export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
-  const classes = useStyles()
   const { nextState } = useVoteStateStore()
 
   const [votingQuestion, setVotingQuestion] = useState('')
@@ -69,19 +67,6 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
   useEffect(() => {
     getState()
   })
-
-  const reset = async (): Promise<void> => {
-    try {
-      setInTransition(true)
-      await delay(2000)
-      await nextState()
-      setInTransition(false)
-      handleNext()
-    } catch (error) {
-      setErrorMessage(error.msg)
-      setHasError(true)
-    }
-  }
 
   return (
     <StepContentWrapper>
@@ -124,28 +109,7 @@ export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
           </ListItemText>
         </ListItem>
       </List>
-
-      <List className={classes.nextButton}>
-        <ListItem>
-          <Button variant="contained" color="primary" onClick={reset} className={classes.button}>
-            {!inTransition ? `New Vote` : <LoadSuccess loading={true} white={true} />}
-          </Button>
-        </ListItem>
-      </List>
-
       {hasError && <ErrorSnackbar open={hasError} message={errorMessage} />}
     </StepContentWrapper>
   )
 }
-
-const useStyles = makeStyles((theme: Theme) => ({
-  button: {
-    marginRight: theme.spacing(1),
-    width: 160,
-    height: 36,
-  },
-  nextButton: {
-    position: 'absolute',
-    bottom: 0,
-  },
-}))

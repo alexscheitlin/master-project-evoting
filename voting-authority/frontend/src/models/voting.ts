@@ -86,5 +86,4 @@ export const [useActiveStepStore] = create(set => ({
     set({ activeStep: step })
   },
   nextStep: (): void => set(prevState => ({ activeStep: prevState.activeStep + 1 })),
-  reset: (): void => set({ activeStep: 0 }),
 }))
