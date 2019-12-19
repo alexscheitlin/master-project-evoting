@@ -65,7 +65,8 @@ export const LoadingPage: React.FC = () => {
       // TODO set error message that token is not valid
       // currenlty just redirecting to login
       voterState.setError(true)
-      voterState.logout('Token is invalid.')
+      voterState.setMessage('Token is invalid.')
+      voterState.logout()
       return ''
     }
   }
