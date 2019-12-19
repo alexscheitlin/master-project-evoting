@@ -11,9 +11,10 @@ import Web3 from 'web3'
 
 import BallotContract from '../contract-abis/Ballot.json'
 import { AccessProviderService } from '../services'
-import { useVoterStore } from '../store'
+import { useErrorStore, useVoterStore } from '../store'
 import getWeb3 from '../util/getWeb3'
 import { delay } from '../util/helper'
+import { Snack } from '../components/Snackbar'
 
 // The 3 things that are checked inside this component
 function getSteps(): string[] {
@@ -39,6 +40,7 @@ export const LoadingPage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0)
   const steps = getSteps()
   const voterState = useVoterStore()
+  const errorState = useErrorStore()
 
   const LOADING_DELAY = 500
 
@@ -62,10 +64,7 @@ export const LoadingPage: React.FC = () => {
       voterState.setBallotContractAddress(response.ballot)
       return response.ballot
     } catch (error) {
-      // TODO set error message that token is not valid
-      // currenlty just redirecting to login
-      voterState.setError(true)
-      voterState.setMessage('Token is invalid.')
+      errorState.open('Token is invalid.', Snack.ERROR)
       voterState.logout()
       return ''
     }
