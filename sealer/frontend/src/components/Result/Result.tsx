@@ -13,8 +13,6 @@ import { StepContentWrapper } from '../Helpers/StepContentWrapper'
 import { StepTitle } from '../shared/StepTitle'
 
 export const Result: React.FC = () => {
-  const classes = useStyles()
-
   const [yesVotes, setYesVotes] = useState<number>(0)
   const [noVotes, setNoVotes] = useState<number>(0)
   const [totalVotes, setTotalVotes] = useState<number>(0)
@@ -38,7 +36,7 @@ export const Result: React.FC = () => {
 
   useEffect(() => {
     getResult()
-  }, [])
+  }, [yesVotes])
 
   return (
     <StepContentWrapper>

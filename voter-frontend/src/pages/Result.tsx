@@ -36,7 +36,6 @@ const Result: React.FC<Props> = ({ contract }) => {
   const [totalVotes, setTotalVotes] = useState(0)
   const [votingQuestion, setVotingQuestion] = useState('')
   const [whoWon, setWhoWon] = useState<string>()
-  const state = useVoterStore()
 
   const getState = async (): Promise<void> => {
     try {
@@ -68,7 +67,7 @@ const Result: React.FC<Props> = ({ contract }) => {
         setWhoWon('NO')
       }
     }
-  }, [contract])
+  }, [contract, yesVotes])
 
   return (
     <Container maxWidth="md">
