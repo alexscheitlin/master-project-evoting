@@ -1,4 +1,4 @@
-import { CircularProgress, Paper } from '@material-ui/core'
+import { CircularProgress, Paper, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -6,6 +6,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import React, { useState } from 'react'
+import { useVoterStore } from '../../store'
+import ErrorIcon from '@material-ui/icons/Error'
 
 interface Props {
   onLogin: (username: string, password: string) => void
@@ -17,6 +19,7 @@ interface Props {
 const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const voterState = useVoterStore()
   const classes = useStyles()
 
   return (
@@ -63,6 +66,19 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading, error, msg }) => {
             {loading && <CircularProgress size={24} />}
           </Button>
         </form>
+        {voterState.error && (
+          <div>
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <ErrorIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText color="#ffffff">{voterState.message}</ListItemText>
+              </ListItem>
+            </List>
+          </div>
+        )}
+
         {error && <Typography>{msg}</Typography>}
       </Paper>
     </Container>
@@ -84,5 +100,6 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    height: 35,
   },
 }))

@@ -18,14 +18,14 @@ const LoginPage: React.FC = () => {
       setMsg('')
       await delay(500)
       const token = await EIdentityProviderService.getToken(username, password)
+      setLoading(false)
       voterState.setToken(token)
       voterState.setAuthenicated(true)
-      setLoading(false)
     } catch (error) {
       console.log(error)
       setLoading(false)
-      setError(true)
-      setMsg('Login failed!')
+      voterState.setError(true)
+      voterState.logout('Login failed. Wrong username or password.')
     }
   }
 

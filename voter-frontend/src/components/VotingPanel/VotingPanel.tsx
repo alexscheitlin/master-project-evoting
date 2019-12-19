@@ -10,10 +10,10 @@ import { useVoterStore } from '../../store'
 import { delay } from '../../util/helper'
 
 interface Props {
-  votingQuestion: string
+  contract: any
 }
 
-const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
+const VotingPanel: React.FC<Props> = ({ contract }) => {
   const [selectedVote, setSelectedVote] = useState<VotingOption>(VotingOption.UNSPEC)
   const [submissionState, setSubmissionState] = useState(SubmissionState.NOT_CONFIRMED)
   const [message, setMessage] = useState('Please submit a vote below')
@@ -36,7 +36,7 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
     switch (selectedVote) {
       case VotingOption.YES:
         try {
-          await BallotService.castYesVote(voterState.contract, voterState.wallet)
+          await BallotService.castYesVote(contract, voterState.wallet)
           setMessage('Your Vote was submitted successfully.')
           setSubmissionState(SubmissionState.CONFIRMED)
         } catch (error) {
@@ -46,7 +46,7 @@ const VotingPanel: React.FC<Props> = ({ votingQuestion }) => {
         break
       case VotingOption.NO:
         try {
-          await BallotService.castNoVote(voterState.contract, voterState.wallet)
+          await BallotService.castNoVote(contract, voterState.wallet)
           setMessage('Your Vote was submitted successfully')
           setSubmissionState(SubmissionState.CONFIRMED)
         } catch (error) {

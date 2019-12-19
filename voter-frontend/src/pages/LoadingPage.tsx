@@ -58,11 +58,15 @@ export const LoadingPage: React.FC = () => {
   const fundWallet = async (account: string): Promise<string> => {
     await delay(LOADING_DELAY)
     try {
-      const ballotAddress = await AccessProviderService.fundWallet(voterState.token, account)
-      voterState.setBallotContractAddress(ballotAddress)
-      return ballotAddress
+      const response = await AccessProviderService.fundWallet(voterState.token, account)
+      voterState.setBallotContractAddress(response.ballot)
+      return response.ballot
     } catch (error) {
-      throw new Error(error.message)
+      // TODO set error message that token is not valid
+      // currenlty just redirecting to login
+      voterState.setError(true)
+      voterState.logout('Token is invalid.')
+      return ''
     }
   }
 
@@ -81,25 +85,27 @@ export const LoadingPage: React.FC = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1)
   }
 
-  useEffect(() => {
-    // ------------------------------
-    // Setup function
-    // ------------------------------
-    // go through every step of the loading process
-    // - create account
-    // -
-    async function setup(): Promise<any> {
-      const connectionURL = await AccessProviderService.getConnectionNodeUrl()
-      voterState.setConnectionNodeUrl(connectionURL)
-      const web3: Web3 = await getWeb3(connectionURL)
-      nextStep()
-      const account = await createAccount(web3)
-      nextStep()
-      const ballot = await fundWallet(account)
+  // ------------------------------
+  // Setup function
+  // ------------------------------
+  // go through every step of the loading process
+  async function setup(): Promise<any> {
+    const connectionURL = await AccessProviderService.getConnectionNodeUrl()
+    voterState.setConnectionNodeUrl(connectionURL)
+    const web3: Web3 = await getWeb3(connectionURL)
+    nextStep()
+    const account = await createAccount(web3)
+    nextStep()
+    const ballot = await fundWallet(account)
+    // ballot exists
+    if (ballot !== '') {
       nextStep()
       await connectToContract(web3, ballot)
+      voterState.setBallotContractAddress(ballot)
     }
+  }
 
+  useEffect(() => {
     setup()
     return (): void => {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
