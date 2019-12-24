@@ -16,13 +16,11 @@ import ThumbDownIcon from '@material-ui/icons/ThumbDown'
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import React, { useEffect, useState } from 'react'
 import Web3 from 'web3'
-
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { StepTitle } from '../components/StepTitle'
 import BallotContract from '../contract-abis/Ballot.json'
 import { AccessProviderService, BallotService } from '../services'
-import { useVoterStore } from '../store'
 import getWeb3 from '../util/getWeb3'
 
 interface Props {
