@@ -62,8 +62,8 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
       }
 
       setListening(true)
+      return () => events.close()
     }
-    return () => events.close()
   }, [listening, sealers])
 
   // Get Wallet information from sealer backend
