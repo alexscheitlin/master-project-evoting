@@ -25,7 +25,7 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
         )
 
         // TODO: maybe this can be fetched from somewhere else or done more intelligently
-        const systemParamsString: string[] = await BallotManager.getSystemParameters()
+        const systemParamsString: number[] = await BallotManager.getSystemParameters()
         const systemParams: FFelGamal.SystemParameters = {
           p: new BN(systemParamsString[0]),
           q: new BN(systemParamsString[1]),

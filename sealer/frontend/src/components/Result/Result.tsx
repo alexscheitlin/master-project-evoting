@@ -1,12 +1,10 @@
-import { createStyles, List, ListItem, ListItemIcon, ListItemText, Theme, Typography } from '@material-ui/core'
+import { List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { green, red } from '@material-ui/core/colors'
 import EqualizerIcon from '@material-ui/icons/Equalizer'
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
 import ThumbDownIcon from '@material-ui/icons/ThumbDown'
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
-import { makeStyles } from '@material-ui/styles'
 import React, { useEffect, useState } from 'react'
-
 import { BallotService } from '../../services'
 import { stepDescriptions } from '../../utils/descriptions'
 import { StepContentWrapper } from '../Helpers/StepContentWrapper'
@@ -82,27 +80,3 @@ export const Result: React.FC = () => {
     </StepContentWrapper>
   )
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      position: 'relative',
-      minHeight: 700,
-    },
-    wrapper: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    button: {
-      marginRight: theme.spacing(1),
-      width: 160,
-    },
-    statusButtonWrapper: {},
-
-    loader: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-    },
-  })
-)

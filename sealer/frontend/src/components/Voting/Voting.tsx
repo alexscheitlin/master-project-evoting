@@ -1,6 +1,5 @@
 import { createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
-import React, { useState } from 'react'
-
+import React from 'react'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { BallotService } from '../../services'

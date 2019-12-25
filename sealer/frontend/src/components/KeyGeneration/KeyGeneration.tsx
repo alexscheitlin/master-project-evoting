@@ -1,8 +1,7 @@
 import { Button, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
-import React, { useEffect, useState } from 'react'
-
+import React, { useState } from 'react'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { BallotService, SealerBackend } from '../../services'

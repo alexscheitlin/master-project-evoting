@@ -239,7 +239,7 @@ export const submitDecryptedShare = async (
   sumCipher: FFelGamal.Cipher,
   decryptedShare: BN,
   decryptedShareProof: FFelGamal.Proof.DecryptionProof
-): Promise<void> => {
+): Promise<any> => {
   const contract = getContract()
   const authAcc = await getAuthAccount()
 

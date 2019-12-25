@@ -5,16 +5,12 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
 import ThumbDownIcon from '@material-ui/icons/ThumbDown'
 import ThumbUpIcon from '@material-ui/icons/ThumbUp'
 import React, { useEffect, useState } from 'react'
-
 import { stepDescriptions } from '../../../descriptions'
-import { useVoteStateStore, VotingState } from '../../../models/voting'
+import { VotingState } from '../../../models/voting'
 import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
 import { StepContentWrapper } from '../../defaults/StepContentWrapper'
 import { StepTitle } from '../../defaults/StepTitle'
-
-// simulates a delay like an asyc call would
-const delay = (t: number): Promise<void> => new Promise(resolve => setTimeout(resolve, t))
 
 interface ResultProps {
   handleNext: () => void
@@ -28,18 +24,13 @@ interface ResultStateResponse {
 }
 
 export const Result: React.FC<ResultProps> = ({ handleNext }: ResultProps) => {
-  const { nextState } = useVoteStateStore()
-
   const [votingQuestion, setVotingQuestion] = useState('')
 
   const [yesVotes, setYesVotes] = useState<number>(0)
   const [noVotes, setNoVotes] = useState<number>(0)
-  const [totalVotes, setTotalVotes] = useState<number>(0)
 
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
-
-  const [inTransition, setInTransition] = useState(false)
 
   const [whoWon, setWhoWon] = useState<string>()
 

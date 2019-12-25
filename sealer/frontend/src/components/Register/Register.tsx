@@ -53,30 +53,40 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   // Subscribe to newly registered sealers
   useEffect(() => {
+    let events: EventSource
     if (!listening) {
-      const events = new EventSource(config.authBackend.devUrl + '/registered')
+      events = new EventSource(config.authBackend.devUrl + '/registered')
       events.onmessage = (event): void => {
         const parsedData = JSON.parse(event.data)
         setSealers(sealers => sealers.concat(parsedData))
       }
 
       setListening(true)
+      return () => events.close()
     }
   }, [listening, sealers])
 
   // Get Wallet information from sealer backend
   useEffect(() => {
     async function init(): Promise<void> {
-      const address = await SealerBackend.getWalletAddress()
-      setWallet(address)
+      try {
+        const address = await SealerBackend.getWalletAddress()
+        setWallet(address)
+      } catch (error) {
+        console.log(error)
+      }
     }
     init()
   }, [])
 
   const isStateChange = async (): Promise<void> => {
-    const response = await SealerBackend.getState()
-    if (response.state === VotingState.STARTUP) {
-      nextStep()
+    try {
+      const response = await SealerBackend.getState()
+      if (response.state === VotingState.STARTUP) {
+        nextStep()
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 

@@ -43,7 +43,7 @@ router.post('/generateKeys', async (req, res) => {
     // sealer adds it's public key share to the contract
     await BallotManager.submitPublicKeyShare(keyShare, keyGenProof)
 
-    res.status(200).json({ msg: 'Successfully submitted public key share to the ballot contract.' })
+    res.status(201).json({ msg: 'Successfully submitted public key share to the ballot contract.' })
   } catch (error) {
     console.log(error)
     res.status(400).json({ msg: 'Unable submit the public key share to the ballot contract.' })

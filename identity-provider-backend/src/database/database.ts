@@ -18,7 +18,7 @@ export const setupDB = (): void => {
   // read identities and map them to the Identity interface
   // assumption: voters already have an existing eIdentity
   // uuids version 4 generated with: https://www.uuidgenerator.net/
-  const rawIdentities = fs.readFileSync('./src/database/identities', 'utf-8')
+  const rawIdentities = fs.readFileSync('./src/database/identities', 'utf8')
   const identities = []
   for (const identity of rawIdentities.split('\n')) {
     const values = identity.split(':')

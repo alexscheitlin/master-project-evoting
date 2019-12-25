@@ -10,10 +10,8 @@ import {
   Theme,
 } from '@material-ui/core'
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'
-import GetAppIcon from '@material-ui/icons/GetApp'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import React, { useState } from 'react'
-
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { SealerBackend } from '../../services'

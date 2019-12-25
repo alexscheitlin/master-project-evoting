@@ -17,6 +17,12 @@ interface Props {
 
 const Question: React.FC<Props> = ({ votingQuestion }) => {
   const classes = useStyles()
+
+  const getDate = (): string => {
+    const date: Date = new Date()
+    return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
+  }
+
   return (
     <Grid container direction="column" justify="center">
       <Grid item>
@@ -26,7 +32,7 @@ const Question: React.FC<Props> = ({ votingQuestion }) => {
       </Grid>
       <Grid item>
         <Box textAlign="center" className={classes.divider}>
-          <Typography variant="h5">Vote of February 16, 2020</Typography>
+          <Typography variant="h5">`Vote of ${getDate()}`</Typography>
         </Box>
       </Grid>
     </Grid>
