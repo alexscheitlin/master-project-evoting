@@ -1,49 +1,72 @@
 FROM node:12-alpine as builder
 
+# variables used to perform npm-cli-login
+ARG GITHUB_TOKEN
+ARG GITHUB_USER
+ARG GITHUB_EMAIL
+
 # Create app directory
 WORKDIR /usr/src
 
-# install bash
-RUN apk add --no-cache bash python make g++ gcc
+# install build dependencies
+RUN apk add --no-cache bash python make g++ gcc openssh-client git
 
 # Install the app dependencies
 COPY ./backend/package*.json ./backend/
-RUN cd ./backend && npm i --force
+COPY ./backend/.npmrc ./backend/
 
+# install npm cli login to retrieve private package from github
+RUN npm install -g npm-cli-login
+RUN NPM_USER=${GITHUB_USER} NPM_PASS=${GITHUB_TOKEN} NPM_EMAIL=${GITHUB_EMAIL} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
+
+RUN cd ./backend && npm i
+
+# install frontend
 COPY ./frontend/package*.json ./frontend/
 RUN cd ./frontend && npm i
 
-COPY ./backend ./backend
-COPY ./frontend ./frontend
+# copy remaining files
+COPY ./backend/src ./backend/src
+COPY ./backend/tsconfig.json ./backend/tsconfig.json
+COPY ./backend/postbuild.sh ./backend/postbuild.sh
+COPY ./backend/solidity ./backend/solidity
 
-# Copy over source files of crypto library
-COPY ./backend/mp-crypto ./backend/mp-crypto
+COPY ./frontend/src ./frontend/src
+COPY ./frontend/public ./frontend/public
+COPY ./frontend/tsconfig.json ./frontend/tsconfig.json
 
-# This script will install dependencies inside /mp-crypto
-# and add the custom weier curve to the elliptic package
-RUN chmod +x ./backend/crypto.sh && ./backend/crypto.sh
+# env variables
+ENV VOTING_AUTH_BACKEND_PORT=4001
+ENV VOTING_AUTH_BACKEND_IP=172.1.1.41
+ENV VOTING_AUTH_FRONTEND_PORT=3001
+ENV VOTING_AUTH_FRONTEND_IP=localhost
+ENV PARITY_NODE_PORT=7011
+ENV PARITY_NODE_IP=172.1.1.171
+ENV NODE_ENV=production
+ENV REACT_APP_AUTH_FRONTEND_IP=localhost
+ENV REACT_APP_AUTH_PORT=3001
+ENV REACT_APP_AUTH_BACKEND_IP=172.1.1.41
+ENV REACT_APP_AUTH_BACKEND_PORT=4001
 
 # build backend
 RUN cd ./backend && npm run build
-COPY ./backend/src/database/db.json ./backend/dist/src/database/db.json
-COPY ./backend/src/database/defaultChainspec.json ./backend/dist/src/database/defaultChainspec.json
-COPY ./backend/solidity/toDeploy ./backend/dist/solidity/toDeploy
 
 # build frontend
 RUN cd ./frontend && npm run build
 
 FROM node:12-alpine
 
+# env variables
 ENV VOTING_AUTH_BACKEND_PORT=4001
-ENV VOTING_AUTH_BACKEND_IP=localhost
+ENV VOTING_AUTH_BACKEND_IP=172.1.1.41
 ENV VOTING_AUTH_FRONTEND_PORT=3001
 ENV VOTING_AUTH_FRONTEND_IP=localhost
 ENV PARITY_NODE_PORT=7011
 ENV PARITY_NODE_IP=172.1.1.171
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV REACT_APP_AUTH_FRONTEND_IP=localhost
 ENV REACT_APP_AUTH_PORT=3001
-ENV REACT_APP_AUTH_BACKEND_IP=localhost
+ENV REACT_APP_AUTH_BACKEND_IP=172.1.1.41
 ENV REACT_APP_AUTH_BACKEND_PORT=4001
 
 # Create app directory
@@ -55,9 +78,8 @@ COPY --from=builder /usr/src/frontend/node_modules /usr/src/frontend/node_module
 
 # copy the dist
 COPY --from=builder /usr/src/backend/dist /usr/src/backend/dist
-COPY --from=builder /usr/src/frontend/build /user/src/frontend/build
+COPY --from=builder /usr/src/frontend/build /usr/src/frontend/build
 
 EXPOSE 4001
-EXPOSE 3001
 
 CMD ["node", "./backend/dist/src/server.js"]

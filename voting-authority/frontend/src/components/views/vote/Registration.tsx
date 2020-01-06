@@ -49,6 +49,7 @@ export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, han
       }
 
       setListening(true)
+      return () => events.close()
     }
   }, [listening, sealers])
 
