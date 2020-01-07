@@ -20,7 +20,7 @@ const Question: React.FC<Props> = ({ votingQuestion }) => {
 
   const getDate = (): string => {
     const date: Date = new Date()
-    return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
+    return `${date.getDate()}.${date.getMonth()+1}. ${date.getFullYear()}`
   }
 
   return (
@@ -32,7 +32,7 @@ const Question: React.FC<Props> = ({ votingQuestion }) => {
       </Grid>
       <Grid item>
         <Box textAlign="center" className={classes.divider}>
-          <Typography variant="h5">`Vote of ${getDate()}`</Typography>
+          <Typography variant="h5">{`Vote of ${getDate()}`}</Typography>
         </Box>
       </Grid>
     </Grid>
