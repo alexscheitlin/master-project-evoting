@@ -2,7 +2,6 @@
   "lerna": "3.18.4",
   "packages": [
     "access-provider-backend/",
-    "crypto/**",
     "identity-provider-backend/",
     "sealer/frontend/",
     "voter-frontend/",
