@@ -1,24 +1,8 @@
 import { AppBar, Grid, IconButton, makeStyles, MobileStepper, Theme, Toolbar, Typography } from '@material-ui/core'
+import { red, green } from '@material-ui/core/colors'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import React from 'react'
-
 import { useActiveStepStore } from '../../models/voting'
-
-const useStyles = makeStyles((theme: Theme) => ({
-  appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-  },
-  toolbar: {
-    flexWrap: 'wrap',
-  },
-  toolbarTitle: {
-    flexGrow: 1,
-  },
-  bar: {
-    width: '100%',
-    padding: 0,
-  },
-}))
 
 export const Header: React.FC = () => {
   const classes = useStyles()
@@ -31,14 +15,25 @@ export const Header: React.FC = () => {
           <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
             Voting Authority
           </Typography>
-          <IconButton
-            color="inherit"
-            onClick={(): Window | null =>
-              window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')
-            }
-          >
-            <GitHubIcon />
-          </IconButton>
+          <div className={classes.buttonWrapper}>
+            {activeStep >= 2 ? (
+              <Typography variant="h6" className={classes.greenButton} noWrap>
+                ON CHAIN
+              </Typography>
+            ) : (
+              <Typography variant="h6" className={classes.redButton} noWrap>
+                OFF CHAIN
+              </Typography>
+            )}
+            <IconButton
+              color="inherit"
+              onClick={(): Window | null =>
+                window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')
+              }
+            >
+              <GitHubIcon />
+            </IconButton>
+          </div>
         </Toolbar>
         <MobileStepper
           classes={{ progress: classes.bar }}
@@ -54,3 +49,30 @@ export const Header: React.FC = () => {
     </Grid>
   )
 }
+
+const useStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+  toolbar: {
+    flexWrap: 'wrap',
+  },
+  toolbarTitle: {
+    flexGrow: 1,
+  },
+  bar: {
+    width: '100%',
+    padding: 0,
+  },
+  buttonWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  redButton: {
+    color: red[400],
+  },
+  greenButton: {
+    color: green[400],
+  },
+}))

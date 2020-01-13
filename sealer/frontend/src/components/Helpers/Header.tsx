@@ -1,4 +1,5 @@
 import { AppBar, Grid, IconButton, makeStyles, MobileStepper, Theme, Toolbar, Typography } from '@material-ui/core'
+import { red, green } from '@material-ui/core/colors'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import React from 'react'
 import { useActiveStepStore } from '../../store/store'
@@ -14,14 +15,25 @@ export const Header: React.FC = () => {
           <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
             {`Sealer Nr: ${process.env.REACT_APP_SEALER_FRONTEND_PORT}`}
           </Typography>
-          <IconButton
-            color="inherit"
-            onClick={(): Window | null =>
-              window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')
-            }
-          >
-            <GitHubIcon />
-          </IconButton>
+          <div className={classes.buttonWrapper}>
+            {activeStep >= 2 ? (
+              <Typography variant="h6" className={classes.greenButton} noWrap>
+                ON CHAIN
+              </Typography>
+            ) : (
+              <Typography variant="h6" className={classes.redButton} noWrap>
+                OFF CHAIN
+              </Typography>
+            )}
+            <IconButton
+              color="inherit"
+              onClick={(): Window | null =>
+                window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')
+              }
+            >
+              <GitHubIcon />
+            </IconButton>
+          </div>
         </Toolbar>
         <MobileStepper
           classes={{ progress: classes.bar }}
@@ -51,5 +63,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   bar: {
     width: '100%',
     padding: 0,
+  },
+  buttonWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  redButton: {
+    color: red[400],
+  },
+  greenButton: {
+    color: green[400],
   },
 }))
