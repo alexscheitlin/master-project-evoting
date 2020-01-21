@@ -11,10 +11,10 @@ export enum SubmissionState {
 }
 
 export enum VotingState {
-  REGISTER = 'REGISTER',
-  STARTUP = 'STARTUP',
-  CONFIG = 'CONFIG',
+  REGISTRATION = 'REGISTRATION',
+  PAIRING = 'PAIRING',
+  KEY_GENERATION = 'KEY_GENERATION',
   VOTING = 'VOTING',
-  TALLY = 'TALLY',
+  TALLYING = 'TALLYING',
   RESULT = 'RESULT',
 }

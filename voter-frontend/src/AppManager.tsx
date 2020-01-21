@@ -63,9 +63,9 @@ const AppManager: React.FC = () => {
 
   const getPage = (): React.ReactNode => {
     switch (votingState) {
-      case VotingState.REGISTER:
-      case VotingState.STARTUP:
-      case VotingState.CONFIG:
+      case VotingState.REGISTRATION:
+      case VotingState.PAIRING:
+      case VotingState.KEY_GENERATION:
         return <NotOpen />
       case VotingState.VOTING:
         if (!state.authenticated) {
@@ -75,7 +75,7 @@ const AppManager: React.FC = () => {
         } else {
           return <VotingPage />
         }
-      case VotingState.TALLY:
+      case VotingState.TALLYING:
         return <Tally />
       case VotingState.RESULT:
         return <Result contract={contract} />
