@@ -34,7 +34,7 @@ const submitVote = async (
   vote: FFelGamal.Cipher,
   contract: any,
   wallet: string
-): Promise<boolean> => {
+): Promise<string> => {
   try {
     const res = await contract.methods
       .vote(
@@ -48,7 +48,7 @@ const submitVote = async (
 
     // TODO: check returnValues field on response -> event emitted from Ballot
     // If user votes altough the vote is closed, the UI renders it as success
-    return true
+    return res
   } catch (error) {
     throw new Error(`Vote submission failed: ${error.message}`)
   }
@@ -86,14 +86,13 @@ const getContractParameters = async (contract: any): Promise<[BN, FFelGamal.Syst
  * @param contract the solidity contract object
  * @param wallet ETH public key
  */
-export const castYesVote = async (contract: any, wallet: string): Promise<boolean> => {
+export const castYesVote = async (contract: any, wallet: string): Promise<string> => {
   const [publicKey, systemParameters] = await getContractParameters(contract)
   const vote = FFelGamal.Voting.generateYesVote(systemParameters, publicKey)
   const proof = FFelGamal.Proof.Membership.generateYesProof(vote, systemParameters, publicKey, wallet)
 
   try {
-    await submitVote(proof, vote, contract, wallet)
-    return true
+    return await submitVote(proof, vote, contract, wallet)
   } catch (error) {
     throw new Error(`Could not send vote and proof to contract: ${error.message}`)
   }
@@ -105,15 +104,14 @@ export const castYesVote = async (contract: any, wallet: string): Promise<boolea
  * @param contract the solidity contract object
  * @param wallet ETH public key
  */
-export const castNoVote = async (contract: any, wallet: string): Promise<boolean> => {
+export const castNoVote = async (contract: any, wallet: string): Promise<string> => {
   const [publicKey, systemParameters] = await getContractParameters(contract)
   // generate and submit noVote
   const vote = FFelGamal.Voting.generateNoVote(systemParameters, publicKey)
   const proof = FFelGamal.Proof.Membership.generateNoProof(vote, systemParameters, publicKey, wallet)
 
   try {
-    await submitVote(proof, vote, contract, wallet)
-    return true
+    return await submitVote(proof, vote, contract, wallet)
   } catch (error) {
     throw new Error(`Could not send vote and proof to contract: ${error.message}`)
   }

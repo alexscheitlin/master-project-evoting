@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { VoteTransaction } from '../models/voting'
 
 export const [useVoterStore] = create((set, get) => ({
   authenticated: false,
@@ -9,9 +10,10 @@ export const [useVoterStore] = create((set, get) => ({
   connectionNodeUrl: '',
   error: false,
   message: '',
+  voteTx: '',
 
   // -----------------------------------
-  // SET IF ERRORs
+  // SET Message
   // -----------------------------------
   setMessage: (message: string) => {
     set({ message: message })
@@ -137,5 +139,32 @@ export const [useVoterStore] = create((set, get) => ({
   setConnectionNodeUrl: (url: string): void => {
     set({ connectionNodeUrl: url })
     localStorage.setItem('connectionNodeUrl', url)
+  },
+
+  // -----------------------------------
+  // Vote Transaction
+  // -----------------------------------
+  isVoteTxSet: (): boolean => {
+    const tx = localStorage.getItem('voteTx')
+    if (tx === null || tx === '') {
+      return false
+    } else {
+      return true
+    }
+  },
+  getVoteTx: (): VoteTransaction | undefined | null => {
+    if (get().isVoteTxSet()) {
+      const tx = localStorage.getItem('voteTx')
+      if (tx !== null) {
+        set({ voteTx: JSON.parse(tx) })
+        return JSON.parse(tx)
+      }
+    } else {
+      return undefined
+    }
+  },
+  setVoteTx: (tx: VoteTransaction) => {
+    set({ voteTx: tx })
+    localStorage.setItem('voteTx', JSON.stringify(tx))
   },
 }))
