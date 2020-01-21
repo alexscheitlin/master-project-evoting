@@ -45,23 +45,23 @@ GET /state
 
 Responses depending on the state:
 
-**VotingState.REGISTER**:
+**VotingState.REGISTRATION**:
 
 ```javascript
 200: "ok"
 {
-    "state"             : "REGISTER",
+    "state"             : "REGISTRATION",
     "registeredSealers" : number,
     "requiredSealers"   : number
 }
 ```
 
-**VotingState.STARTUP**:
+**VotingState.PAIRING**:
 
 ```javascript
 200: "ok"
 {
-    "state"            : "STARTUP",
+    "state"            : "PAIRING",
     "connectedSealers" : number,
     "signedUpSealers"  : number,
     "requiredSealers"  : number,
@@ -70,17 +70,17 @@ Responses depending on the state:
 
 500: "number of connected sealers could not be fetched"
 {
-    "state" : "STARTUP",
+    "state" : "PAIRING",
     "msg"   : string
 }
 ```
 
-**VotingState.CONFIG**:
+**VotingState.KEY_GENERATION**:
 
 ```javascript
 200: "ok"
 {
-    "state"              : "CONFIG",
+    "state"              : "KEY_GENERATION",
     "submittedKeyShares" : number,
     "requiredKeyShares"  : number,
     "publicKey"          : number
@@ -88,7 +88,7 @@ Responses depending on the state:
 
 500: "number of submitted public key shares could not be fetched"
 {
-    "state" : "CONFIG",
+    "state" : "KEY_GENERATION",
     "msg"   : string
 }
 ```
@@ -110,19 +110,19 @@ Responses depending on the state:
 }
 ```
 
-**VotingState.TALLY**:
+**VotingState.TALLYING**:
 
 ```javascript
 200: "ok"
 {
-    "state"                    : "TALLY",
+    "state"                    : "TALLYING",
     "submittedDecryptedShares" : number,
     "requiredDecryptedShares"  : number
 }
 
 500: "number of decrypted shares could not be fetched"
 {
-    "state" : "TALLY",
+    "state" : "TALLYING",
     "msg"   : string
 }
 ```
@@ -151,50 +151,50 @@ POST /state
 
 Responses and actions depending on the state:
 
-**VotingState.REGISTER**:
+**VotingState.REGISTRATION**:
 
 ```javascript
 201: "created"
 {
-    "state" : "STARTUP",
+    "state" : "PAIRING",
     "msg"   : string
 }
 
 400: "not enough sealer wallets registered"
 {
-    "state" : "REGISTER",
+    "state" : "REGISTRATION",
     "msg"   : string
 }
 ```
 
-=> change to `STARTUP` state
+=> change to `PAIRING` state
 
-**VotingState.STARTUP**:
+**VotingState.PAIRING**:
 
 ```javascript
 201: "created"
 {
-    "state" : "CONFIG",
+    "state" : "KEY_GENERATION",
     "msg"   : string
 }
 
 400: "not enough sealers connected"
 400: "ballot contract not deployed"
 {
-    "state" : "STARTUP",
+    "state" : "PAIRING",
     "msg"   : string
 }
 
 500: "number of connected sealers could not be fetched"
 {
-    "state" : "STARTUP",
+    "state" : "PAIRING",
     "msg"   : string
 }
 ```
 
-=> change to `CONFIG` state
+=> change to `KEY_GENERATION` state
 
-**VotingState.CONFIG**:
+**VotingState.KEY_GENERATION**:
 
 ```javascript
 201: "created"
@@ -206,14 +206,14 @@ Responses and actions depending on the state:
 400: "not enough public key shares submitted"
 400: "public key not generated"
 {
-    "state" : "CONFIG",
+    "state" : "KEY_GENERATION",
     "msg"   : string
 }
 
 500: "number of public key shares could not be fetched"
 500: "ballot could not be opened"
 {
-    "state" : "CONFIG",
+    "state" : "KEY_GENERATION",
     "msg"   : string
 }
 ```
@@ -227,7 +227,7 @@ Responses and actions depending on the state:
 ```javascript
 201: "created"
 {
-    "state" : "TALLY",
+    "state" : "TALLYING",
     "msg"   : string
 }
 
@@ -240,9 +240,9 @@ Responses and actions depending on the state:
 
 => close ballot contract
 
-=> change to `TALLY` state
+=> change to `TALLYING` state
 
-**VotingState.TALLY**:
+**VotingState.TALLYING**:
 
 ```javascript
 201: "created"
@@ -253,7 +253,7 @@ Responses and actions depending on the state:
 
 400: "not enough decrypted shares submitted"
 {
-    "state" : "TALLY",
+    "state" : "TALLYING",
     "msg"   : string
 }
 
@@ -261,7 +261,7 @@ Responses and actions depending on the state:
 500: "decrypted shares could not be combined"
 500: "voting result not available"
 {
-    "state" : "TALLY",
+    "state" : "TALLYING",
     "msg"   : string
 }
 ```

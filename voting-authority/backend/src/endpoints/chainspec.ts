@@ -92,15 +92,15 @@ router.get('/chainspec', (req, res) => {
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
   const registeredAuthorities: string[] = getValueFromDB(AUTHORITIES_TABLE) as string[]
 
-  // REGISTER -> returns default chainspec for authority account creation
-  if (state === 'REGISTER') {
+  // REGISTRATION -> returns default chainspec for authority account creation
+  if (state === 'REGISTRATION') {
     res.status(400).json({
       msg: AUTHORITY_REGISTRATION_ONGOING,
       registeredSealers: registeredAuthorities.length,
       requiredSealers: requiredAuthorities,
     })
   }
-  // STARTUP -> returns the chainspec containing all authority addresses
+  // PAIRING -> returns the chainspec containing all authority addresses
   else {
     const customConfig = getObjectFromDB(CHAINSPEC_TABLE)
     res.status(200).json(customConfig)
@@ -110,8 +110,8 @@ router.get('/chainspec', (req, res) => {
 router.post('/chainspec', (req, res) => {
   const state: string = getValueFromDB(STATE_TABLE) as string
 
-  // no longer allow authority registration once the voting state has changed to STARTUP
-  if (state !== 'REGISTER') {
+  // no longer allow authority registration once the voting state has changed to PAIRING
+  if (state !== 'REGISTRATION') {
     res.status(400).json({ created: false, msg: AUTHORITY_REGISTRATION_CLOSED })
     return
   }

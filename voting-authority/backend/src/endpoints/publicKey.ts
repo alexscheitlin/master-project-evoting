@@ -6,9 +6,9 @@ import { getValueFromDB, STATE_TABLE } from '../database/database'
 import { BallotManager } from '../utils/ballotManager'
 import { VotingState } from './state'
 
-const TOO_EARLY_MSG: string = 'You are too early to create the public key. Please wait for the CONFIG stage.'
+const TOO_EARLY_MSG: string = 'You are too early to create the public key. Please wait for the KEY_GENERATION stage.'
 const TOO_LATE_MSG: string =
-  'You are too late to create the public key. You should have done that during the CONFIG stage.'
+  'You are too late to create the public key. You should have done that during the KEY_GENERATION stage.'
 const KEYSHARE_GENERATION_ONGOING: string = 'The key share generation is ongoing. Please wait until it is finished.'
 const PUBLIC_KEY_ALREADY_GENERATED: string = 'The public key was already generated.'
 const SUCCESSFUL: string = 'The public key generation was successful!'
@@ -20,15 +20,15 @@ router.post('/publickey', async (req, res) => {
   const requiredAuthorities: number = parityConfig.numberOfAuthorityNodes
 
   switch (currentState) {
-    case VotingState.REGISTER: {
+    case VotingState.REGISTRATION: {
       res.status(400).json({ msg: TOO_EARLY_MSG })
       return
     }
-    case VotingState.STARTUP: {
+    case VotingState.PAIRING: {
       res.status(400).json({ msg: TOO_EARLY_MSG })
       return
     }
-    case VotingState.CONFIG: {
+    case VotingState.KEY_GENERATION: {
       let publicKey: BN
 
       // check if the public key was already created
@@ -74,7 +74,7 @@ router.post('/publickey', async (req, res) => {
       res.status(400).json({ msg: TOO_LATE_MSG })
       return
     }
-    case VotingState.TALLY: {
+    case VotingState.TALLYING: {
       res.status(400).json({ msg: TOO_LATE_MSG })
       return
     }
