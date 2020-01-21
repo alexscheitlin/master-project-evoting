@@ -56,7 +56,7 @@ export const Process: React.FC = () => {
           {VOTE_LABELS.map(label => (
             <Step key={label}>
               <StepLabel>
-                <Typography variant="h5">{label}</Typography>
+                <Typography variant="h6">{label}</Typography>
               </StepLabel>
             </Step>
           ))}
