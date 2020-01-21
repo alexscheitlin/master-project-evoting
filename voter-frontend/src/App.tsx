@@ -4,6 +4,7 @@ import React from 'react'
 
 import AppManager from './AppManager'
 import AppWrapper from './components/Layout/AppWrapper/AppWrapper'
+import { SimpleSnackbar } from './components/Snackbar/SimpleSnackbar'
 import mainTheme from './Theme'
 
 const App: React.FC = () => {
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           </Grid>
         </Container>
       </AppWrapper>
+      <SimpleSnackbar />
     </ThemeProvider>
   )
 }
