@@ -4,6 +4,19 @@ FROM node:12-alpine as builder
 ARG GITHUB_TOKEN
 ARG GITHUB_USER
 ARG GITHUB_EMAIL
+ARG PARITY_PORT
+ARG PARITY_IP
+ARG VA_PORT
+ARG VA_IP
+
+# env variables
+ENV PARITY_NODE_PORT=$PARITY_PORT
+ENV PARITY_NODE_IP=$PARITY_IP
+ENV VOTING_AUTH_BACKEND_PORT=$VA_PORT
+ENV VOTING_AUTH_BACKEND_IP=$VA_IP
+ENV REACT_APP_AUTH_BACKEND_PORT=$VA_PORT
+ENV REACT_APP_AUTH_BACKEND_IP=$VA_IP
+ENV NODE_ENV=development
 
 # Create app directory
 WORKDIR /usr/src
@@ -35,39 +48,17 @@ COPY ./frontend/src ./frontend/src
 COPY ./frontend/public ./frontend/public
 COPY ./frontend/tsconfig.json ./frontend/tsconfig.json
 
-# env variables
-ENV VOTING_AUTH_BACKEND_PORT=4001
-ENV VOTING_AUTH_BACKEND_IP=172.1.1.41
-ENV VOTING_AUTH_FRONTEND_PORT=3001
-ENV VOTING_AUTH_FRONTEND_IP=localhost
-ENV PARITY_NODE_PORT=7011
-ENV PARITY_NODE_IP=172.1.1.171
-ENV NODE_ENV=production
-ENV REACT_APP_AUTH_FRONTEND_IP=localhost
-ENV REACT_APP_AUTH_PORT=3001
-ENV REACT_APP_AUTH_BACKEND_IP=172.1.1.41
-ENV REACT_APP_AUTH_BACKEND_PORT=4001
-
 # build backend
 RUN cd ./backend && npm run build
 
 # build frontend
 RUN cd ./frontend && npm run build
 
+## STAGE 2
 FROM node:12-alpine
 
-# env variables
-ENV VOTING_AUTH_BACKEND_PORT=4001
-ENV VOTING_AUTH_BACKEND_IP=172.1.1.41
-ENV VOTING_AUTH_FRONTEND_PORT=3001
-ENV VOTING_AUTH_FRONTEND_IP=localhost
-ENV PARITY_NODE_PORT=7011
-ENV PARITY_NODE_IP=172.1.1.171
+# env variable
 ENV NODE_ENV=production
-ENV REACT_APP_AUTH_FRONTEND_IP=localhost
-ENV REACT_APP_AUTH_PORT=3001
-ENV REACT_APP_AUTH_BACKEND_IP=172.1.1.41
-ENV REACT_APP_AUTH_BACKEND_PORT=4001
 
 # Create app directory
 WORKDIR /usr/src
@@ -79,7 +70,5 @@ COPY --from=builder /usr/src/frontend/node_modules /usr/src/frontend/node_module
 # copy the dist
 COPY --from=builder /usr/src/backend/dist /usr/src/backend/dist
 COPY --from=builder /usr/src/frontend/build /usr/src/frontend/build
-
-EXPOSE 4001
 
 CMD ["node", "./backend/dist/src/server.js"]
