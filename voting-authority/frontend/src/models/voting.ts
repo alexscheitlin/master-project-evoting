@@ -4,43 +4,45 @@ import https from 'https'
 import { DEV_URL } from '../constants'
 
 export enum VotingState {
-  REGISTER = 'REGISTER',
-  STARTUP = 'STARTUP',
-  CONFIG = 'CONFIG',
+  REGISTRATION = 'REGISTRATION',
+  PAIRING = 'PAIRING',
+  KEY_GENERATION = 'KEY_GENERATION',
   VOTING = 'VOTING',
-  TALLY = 'TALLY',
+  TALLYING = 'TALLYING',
   RESULT = 'RESULT',
 }
 
 export const VOTE_STATES: string[] = [
-  VotingState.REGISTER,
-  VotingState.STARTUP,
-  VotingState.CONFIG,
+  VotingState.REGISTRATION,
+  VotingState.PAIRING,
+  VotingState.KEY_GENERATION,
   VotingState.VOTING,
-  VotingState.TALLY,
+  VotingState.TALLYING,
   VotingState.RESULT,
 ]
 
+// TODO: use VotingState (as it is the same)
 export enum VoteLabels {
-  REGISTER = 'REGISTER',
-  STARTUP = 'STARTUP',
-  CONFIG = 'CONFIG',
+  REGISTRATION = 'REGISTRATION',
+  PAIRING = 'PAIRING',
+  KEY_GENERATION = 'KEY_GENERATION',
   VOTING = 'VOTING',
-  TALLY = 'TALLY',
+  TALLYING = 'TALLYING',
   RESULT = 'RESULT',
 }
 
+// TODO: use VOTE_STATES (as it is the same)
 export const VOTE_LABELS: string[] = [
-  VoteLabels.REGISTER,
-  VoteLabels.STARTUP,
-  VoteLabels.CONFIG,
+  VoteLabels.REGISTRATION,
+  VoteLabels.PAIRING,
+  VoteLabels.KEY_GENERATION,
   VoteLabels.VOTING,
-  VoteLabels.TALLY,
+  VoteLabels.TALLYING,
   VoteLabels.RESULT,
 ]
 
 export const [useVoteStateStore] = create((set, get) => ({
-  state: VotingState.REGISTER,
+  state: VotingState.REGISTRATION,
   setState: (newState: VotingState): void =>
     set({
       state: newState,

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { DEV_URL } from '../../constants'
 import { useActiveStepStore, useVoteStateStore, VOTE_LABELS, VOTE_STATES, VotingState } from '../../models/voting'
 import { ErrorSnackbar } from '../defaults/ErrorSnackbar'
-import { Config, Register, Startup, Tally, Vote } from './vote'
+import { KeyGeneration, Pairing, Registration, Tally, Vote } from './vote'
 import { Result } from './vote/Result'
 
 interface StateResponse {
@@ -51,11 +51,11 @@ export const Process: React.FC = () => {
   const getStep = (step: number): React.ReactNode => {
     switch (step) {
       case 0:
-        return <Register handleNext={nextStep} requiredSealers={requiredSealers} />
+        return <Registration handleNext={nextStep} requiredSealers={requiredSealers} />
       case 1:
-        return <Startup handleNext={nextStep} requiredSealers={requiredSealers} />
+        return <Pairing handleNext={nextStep} requiredSealers={requiredSealers} />
       case 2:
-        return <Config handleNext={nextStep} />
+        return <KeyGeneration handleNext={nextStep} />
       case 3:
         return <Vote handleNext={nextStep} />
       case 4:

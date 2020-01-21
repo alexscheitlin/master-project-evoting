@@ -17,11 +17,11 @@ import { useInterval } from '../helper/UseInterval'
 // simulates a delay like an asyc call would
 const delay = (t: number): Promise<void> => new Promise(resolve => setTimeout(resolve, t))
 
-interface ConfigProps {
+interface KeyGenerationProps {
   handleNext: () => void
 }
 
-interface ConfigStateReponse {
+interface KeyGenerationStateReponse {
   state: VotingState
   submittedKeyShares: number
   requiredKeyShares: number
@@ -33,7 +33,7 @@ interface PublicKeyPostResponse {
   publicKey: number
 }
 
-export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
+export const KeyGeneration: React.FC<KeyGenerationProps> = ({ handleNext }: KeyGenerationProps) => {
   const classes = useStyles()
   const REFRESH_INTERVAL_MS = 4000
 
@@ -86,7 +86,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
 
   const checkNumberOfSubmittedPublicKeyShares = async (): Promise<void> => {
     try {
-      const data: ConfigStateReponse = (await fetchState()) as ConfigStateReponse
+      const data: KeyGenerationStateReponse = (await fetchState()) as KeyGenerationStateReponse
       setRequiredKeyShares(data.requiredKeyShares)
       setSubmittedKeyShares(data.submittedKeyShares)
 
@@ -126,7 +126,7 @@ export const Config: React.FC<ConfigProps> = ({ handleNext }: ConfigProps) => {
       <StepTitle title="Vote Configuration" subtitle="Public Key Generation" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.config}</ListItemText>
+          <ListItemText>{stepDescriptions.keyGeneration}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>
