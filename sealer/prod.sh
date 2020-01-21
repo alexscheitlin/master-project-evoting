@@ -92,23 +92,15 @@ echo GITHUB_EMAIL=$GITHUB_EMAIL >> $dir/.env
 ####### FRONTEND
 
 ###########################################
-# ENV variables
-###########################################
-ACCESS_PROVIDER_PORT=$(cat $globalConfig | jq .services.access_provider_backend.port)
-ACCESS_PROVIDER_IP=$(cat $globalConfig | jq .services.access_provider_backend.ip.$mode | tr -d \")
-
-IDENTITY_PROVIDER_PORT=$(cat $globalConfig | jq .services.identity_provider_backend.port)
-IDENTITY_PROVIDER_IP=$(cat $globalConfig | jq .services.identity_provider_backend.ip.$mode | tr -d \")
-
-###########################################
 # write ENV variables into .env
 ###########################################
-echo REACT_APP_ACCESS_PROVIDER_PORT=${ACCESS_PROVIDER_PORT} >> $dir/.env
-echo REACT_APP_ACCESS_PROVIDER_IP=${ACCESS_PROVIDER_IP} >> $dir/.env
-echo REACT_APP_IDENTITY_PROVIDER_PORT=${IDENTITY_PROVIDER_PORT} >> $dir/.env
-echo REACT_APP_IDENTITY_PROVIDER_IP=${IDENTITY_PROVIDER_IP} >> $dir/.env
 echo REACT_APP_VOTING_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT} >> $dir/.env
 echo REACT_APP_VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP} >> $dir/.env
+echo REACT_APP_SEALER_FRONTEND_PORT=${SEALER_FRONTEND_PORT} >> $dir/.env
+echo REACT_APP_SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP} >> $dir/.env
+echo REACT_APP_SEALER_BACKEND_PORT=${SEALER_BACKEND_PORT} >> $dir/.env
+echo REACT_APP_SEALER_BACKEND_IP=${SEALER_BACKEND_IP} >> $dir/.env
+echo PORT=${SEALER_FRONTEND_PORT} >> $dir/.env
 
 ###########################################
 # docker network
@@ -122,8 +114,10 @@ $parentDir/docker-network.sh $network_name
 cd $dir
 
 # start docker containers
-docker-compose -p controller_$sealerNr -f production.yml build --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER
-docker-compose -p controller_$sealerNr -f production.yml up --detach
+docker-compose -p controller_$sealerNr -f production.yml build --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER \
+--build-arg SB_PORT=$SEALER_BACKEND_PORT --build-arg SB_IP=$SEALER_BACKEND_IP --build-arg SF_PORT=$SEALER_FRONTEND_PORT --build-arg SF_IP=$SEALER_FRONTEND_IP \
+--build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP 
+docker-compose -p controller_$sealerNr -f production.yml up --detach 
 
 # remove all temp files
 rm -f $backendDir/wallet/sealer.json

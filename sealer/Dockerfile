@@ -1,11 +1,37 @@
 FROM node:12-alpine as builder
 
-# Create app directory
-WORKDIR /usr/src
-
+# variables used to perform npm-cli-login
 ARG GITHUB_TOKEN
 ARG GITHUB_USER
 ARG GITHUB_EMAIL
+ARG SB_PORT
+ARG SB_IP
+ARG SF_PORT
+ARG SF_IP
+ARG PARITY_PORT
+ARG PARITY_IP
+ARG VA_PORT
+ARG VA_IP
+
+# env variables
+ENV SEALER_BACKEND_PORT=$SB_PORT
+ENV SEALER_BACKEND_IP=$SB_IP
+ENV SEALER_FRONTEND_PORT=$SF_PORT
+ENV SEALER_FRONTEND_IP=$SF_IP
+ENV PARITY_NODE_PORT=$PARITY_PORT
+ENV PARITY_NODE_IP=$PARITY_IP
+ENV VOTING_AUTH_BACKEND_PORT=$VA_PORT
+ENV VOTING_AUTH_BACKEND_IP=$VA_IP
+ENV REACT_APP_VOTING_AUTH_BACKEND_PORT=$VA_PORT
+ENV REACT_APP_VOTING_AUTH_BACKEND_IP=$VA_IP
+ENV REACT_APP_SEALER_FRONTEND_PORT=$SF_PORT
+ENV REACT_APP_SEALER_FRONTEND_IP=$SF_IP
+ENV REACT_APP_SEALER_BACKEND_PORT=$SB_PORT
+ENV REACT_APP_SEALER_BACKEND_IP=$SB_IP
+ENV NODE_ENV=development
+
+# Create app directory
+WORKDIR /usr/src
 
 # install build dependencies
 RUN apk add --no-cache bash python make g++ gcc openssh-client git
@@ -34,53 +60,44 @@ COPY ./frontend/src ./frontend/src
 COPY ./frontend/public ./frontend/public
 COPY ./frontend/tsconfig.json ./frontend/tsconfig.json
 
-# env variables
-ENV VOTING_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT}
-ENV VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP}
-ENV SEALER_BACKEND_PORT=${SEALER_BACKEND_PORT}
-ENV SEALER_BACKEND_IP=${SEALER_BACKEND_IP}
-ENV SEALER_FRONTEND_PORT=${SEALER_FRONTEND_PORT}
-ENV SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP}
-ENV PARITY_NODE_PORT=${PARITY_NODE_PORT}
-ENV PARITY_NODE_IP=${PARITY_NODE_IP}
-ENV NODE_ENV=${NODE_ENV}
-ENV REACT_APP_ACCESS_PROVIDER_IP=${REACT_APP_ACCESS_PROVIDER_IP}
-ENV REACT_APP_ACCESS_PROVIDER_PORT=${REACT_APP_ACCESS_PROVIDER_PORT}
-ENV REACT_APP_IDENTITY_PROVIDER_PORT=${REACT_APP_IDENTITY_PROVIDER_PORT}
-ENV REACT_APP_IDENTITY_PROVIDER_IP=${REACT_APP_IDENTITY_PROVIDER_IP}
-ENV REACT_APP_VOTING_AUTH_BACKEND_PORT=${REACT_APP_VOTING_AUTH_BACKEND_PORT}
-ENV REACT_APP_VOTING_AUTH_BACKEND_IP=${REACT_APP_VOTING_AUTH_BACKEND_IP}
-
 # build backend
 RUN cd ./backend && npm run build
 
 # build frontend
 RUN cd ./frontend && npm run build
 
-FROM node:12-alpine
+## STAGE 2
+FROM node:12-alpine as installer
 
-# env variables
-ENV VOTING_AUTH_BACKEND_PORT=${VOTING_AUTH_BACKEND_PORT}
-ENV VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP}
-ENV SEALER_BACKEND_PORT=${SEALER_BACKEND_PORT}
-ENV SEALER_BACKEND_IP=${SEALER_BACKEND_IP}
-ENV SEALER_FRONTEND_PORT=${SEALER_FRONTEND_PORT}
-ENV SEALER_FRONTEND_IP=${SEALER_FRONTEND_IP}
-ENV PARITY_NODE_PORT=${PARITY_NODE_PORT}
-ENV PARITY_NODE_IP=${PARITY_NODE_IP}
-ENV NODE_ENV=${NODE_ENV}
-ENV REACT_APP_ACCESS_PROVIDER_IP=${REACT_APP_ACCESS_PROVIDER_IP}
-ENV REACT_APP_ACCESS_PROVIDER_PORT=${REACT_APP_ACCESS_PROVIDER_PORT}
-ENV REACT_APP_IDENTITY_PROVIDER_PORT=${REACT_APP_IDENTITY_PROVIDER_PORT}
-ENV REACT_APP_IDENTITY_PROVIDER_IP=${REACT_APP_IDENTITY_PROVIDER_IP}
-ENV REACT_APP_VOTING_AUTH_BACKEND_PORT=${REACT_APP_VOTING_AUTH_BACKEND_PORT}
-ENV REACT_APP_VOTING_AUTH_BACKEND_IP=${REACT_APP_VOTING_AUTH_BACKEND_IP}
+# env variable
+ENV NODE_ENV=production
+
+# Create app directory
+WORKDIR /usr/src
+
+# install build dependencies
+RUN apk add --no-cache bash python make g++ gcc openssh-client git
+
+# install the backend dependencies
+COPY ./backend/package*.json ./backend/
+
+# this below is a little hack to tricky npm not to try and install @meck93/evote-crypto and elliptic
+# @meck93/evote-crypto is a private package and the credentials for the installation cannot be passed to the second build stage
+# copy the evote-crypto library (since it's private and has been installed before)
+COPY --from=builder /usr/src/backend/node_modules/@meck93 /usr/src/backend/node_modules/@meck93
+COPY --from=builder /usr/src/backend/node_modules/elliptic /usr/src/backend/node_modules/elliptic
+
+RUN cd ./backend && npm i
+
+## STAGE 3
+FROM node:12-alpine
 
 # Create app directory
 WORKDIR /usr/src
 
 # Install app dependencies
-COPY --from=builder /usr/src/backend/node_modules /usr/src/backend/node_modules
+COPY --from=installer /usr/src/backend/node_modules /usr/src/backend/node_modules
+COPY --from=builder /usr/src/backend/wallet /usr/src/backend/wallet
 COPY --from=builder /usr/src/frontend/node_modules /usr/src/frontend/node_modules
 
 # copy the dist
