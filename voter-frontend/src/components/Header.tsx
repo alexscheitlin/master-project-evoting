@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   toolbar: {
     flexWrap: 'wrap',
   },
-  toolbarTitle: {
+  toolbarPlaceholder: {
     flexGrow: 1,
   },
   colorBar: {
@@ -28,9 +28,7 @@ export const Header: React.FC = () => {
     <Grid item component="header">
       <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
-          <Typography variant="h5" color="inherit" noWrap className={classes.toolbarTitle}>
-            ProjectName
-          </Typography>
+          <div className={classes.toolbarPlaceholder}></div>
           <IconButton
             color="inherit"
             onClick={(): Window | null =>
