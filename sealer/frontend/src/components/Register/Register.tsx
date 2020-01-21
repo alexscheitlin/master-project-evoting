@@ -36,14 +36,12 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   const [requiredSealers, setRequiredSealers] = useState<number>()
   const [sealers, setSealers] = useState<string[]>([])
-  const [listening, setListening] = useState<boolean>(false)
 
   useEffect(() => {
     const getRequiredValidators = async (): Promise<void> => {
       try {
         // FIXME: something does not work in the auth backend when connecting to the blockchain
         const data = await SealerBackend.getState()
-        console.log(data)
         setRequiredSealers(data.requiredSealers)
       } catch (error) {
         console.log(error.message)
@@ -54,18 +52,17 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   // Subscribe to newly registered sealers
   useEffect(() => {
-    if (!listening) {
-      const events = new EventSource(`${AUTH_BACKEND_URL}/registered`)
-      events.onmessage = (event): void => {
-        console.log(event.data)
-        const parsedData = JSON.parse(event.data)
-        setSealers(sealers => sealers.concat(parsedData))
-      }
-
-      setListening(true)
-      return () => events.close()
+    const events = new EventSource(`${AUTH_BACKEND_URL}/registered`)
+    events.onmessage = event => {
+      console.log('eventData', event.data, event)
+      const parsedData = JSON.parse(event.data)
+      setSealers(sealers => sealers.concat(parsedData))
     }
-  }, [listening, sealers])
+    return () => {
+      console.log('eventSource closed.')
+      events.close()
+    }
+  }, [])
 
   // Get Wallet information from sealer backend
   useEffect(() => {
