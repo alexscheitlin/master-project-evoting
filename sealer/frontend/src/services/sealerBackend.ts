@@ -1,8 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import { VotingState } from '../models/states'
-
-const sealerBackendUrl = (): string =>
-  `http://${process.env.REACT_APP_SEALER_BACKEND_IP}:${process.env.REACT_APP_SEALER_BACKEND_PORT}`
+import { SEALER_BACKEND_URL } from '../config'
 
 // TODO: Think about improving the StateResponse since it's not always the same!
 interface StateResponse {
@@ -13,17 +11,17 @@ interface StateResponse {
 
 export const getState = async (): Promise<StateResponse> => {
   try {
-    const response: AxiosResponse = await axios.get(sealerBackendUrl() + '/state')
+    const response: AxiosResponse = await axios.get(`${SEALER_BACKEND_URL}/state`)
     return response.data.state
   } catch (error) {
     console.log(error)
-    throw new Error(`Could not get state from sealer backend. ${error.message}`)
+    throw new Error(`Could not get state from sealer backend. ${error.message} ${SEALER_BACKEND_URL}`)
   }
 }
 
 export const isBallotDeployed = async (): Promise<boolean> => {
   try {
-    const response: AxiosResponse = await axios.get(sealerBackendUrl() + '/deploy')
+    const response: AxiosResponse = await axios.get(`${SEALER_BACKEND_URL}/deploy`)
     return response.data.deployed
   } catch (error) {
     console.log(error)
@@ -33,7 +31,7 @@ export const isBallotDeployed = async (): Promise<boolean> => {
 
 export const getWalletAddress = async (): Promise<string> => {
   try {
-    const response: AxiosResponse = await axios.get(sealerBackendUrl() + '/register')
+    const response: AxiosResponse = await axios.get(`${SEALER_BACKEND_URL}/register`)
     return response.data.result
   } catch (error) {
     console.log(error)
@@ -43,7 +41,7 @@ export const getWalletAddress = async (): Promise<string> => {
 
 export const registerWallet = async (wallet: string): Promise<void> => {
   try {
-    const response: AxiosResponse = await axios.post(sealerBackendUrl() + '/register')
+    const response: AxiosResponse = await axios.post(`${SEALER_BACKEND_URL}/register`)
     if (!(response.status === 201)) {
       throw new Error(`POST /register failed -> Status Code: ${response.status}`)
     }
@@ -55,7 +53,7 @@ export const registerWallet = async (wallet: string): Promise<void> => {
 
 export const loadConfiguration = async (): Promise<void> => {
   try {
-    const response: AxiosResponse = await axios.get(sealerBackendUrl() + '/chainspec')
+    const response: AxiosResponse = await axios.get(`${SEALER_BACKEND_URL}/chainspec`)
     if (!(response.status === 200)) {
       throw new Error(`GET /chainspec failed -> Status Code: ${response.status}`)
     }
@@ -71,7 +69,7 @@ interface RegisterSealerResponse {
 
 export const registerMySealerNode = async (): Promise<RegisterSealerResponse> => {
   try {
-    const response: AxiosResponse = await axios.post(sealerBackendUrl() + '/peer')
+    const response: AxiosResponse = await axios.post(`${SEALER_BACKEND_URL}/peer`)
     if (response.status === 201) {
       return response.data
     } else {
@@ -85,7 +83,7 @@ export const registerMySealerNode = async (): Promise<RegisterSealerResponse> =>
 
 export const getNrPeers = async (): Promise<number> => {
   try {
-    const response: AxiosResponse = await axios.get(sealerBackendUrl() + '/peer')
+    const response: AxiosResponse = await axios.get(`${SEALER_BACKEND_URL}/peer`)
     if (response.status === 200) {
       return response.data.nrOfPeers
     } else {
@@ -99,7 +97,7 @@ export const getNrPeers = async (): Promise<number> => {
 
 export const generateKeys = async (): Promise<void> => {
   try {
-    const response: AxiosResponse = await axios.post(sealerBackendUrl() + '/generateKeys')
+    const response: AxiosResponse = await axios.post(`${SEALER_BACKEND_URL}/generateKeys`)
     if (!(response.status === 201)) {
       throw new Error(`POST /generateKeys failed -> Status Code: ${response.status}`)
     }
@@ -112,7 +110,7 @@ export const generateKeys = async (): Promise<void> => {
 
 export const decryptShare = async (): Promise<void> => {
   try {
-    const response: AxiosResponse = await axios.post(sealerBackendUrl() + '/decrypt', {})
+    const response: AxiosResponse = await axios.post(`${SEALER_BACKEND_URL}/decrypt`, {})
     if (!(response.status === 201)) {
       throw new Error(`POST /decrypt failed -> Status Code: ${response.status}`)
     }
