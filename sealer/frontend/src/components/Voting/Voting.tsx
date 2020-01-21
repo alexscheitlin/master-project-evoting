@@ -1,5 +1,7 @@
 import { createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core'
-import React from 'react'
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
+import ReceiptIcon from '@material-ui/icons/Receipt'
+import React, { useState } from 'react'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { BallotService } from '../../services'
@@ -15,10 +17,17 @@ interface Props {
 export const Voting: React.FC<Props> = ({ nextStep }) => {
   const classes = useStyles()
 
+  const [votesSubmitted, setVotesSubmitted] = useState<number>(0)
+  const [votingQuestion, setVotingQuesiton] = useState<string>('')
+
   const isStateChange = async (): Promise<void> => {
     try {
       const response = await BallotService.getBallotState()
-      if (response.state === VotingState.TALLYING) {
+      if (response.state === VotingState.VOTING) {
+        console.log('ballot state', response)
+        setVotesSubmitted(response.nrOfVotes)
+        setVotingQuesiton(response.votingQuestion)
+      } else if (response.state === VotingState.TALLYING) {
         nextStep()
       }
     } catch (error) {
@@ -34,6 +43,18 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.voting}</ListItemText>
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <QuestionAnswerIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${votingQuestion}`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <ReceiptIcon />
+          </ListItemIcon>
+          <ListItemText>{votesSubmitted} - votes submitted</ListItemText>
         </ListItem>
       </List>
       <List className={classes.next}>
