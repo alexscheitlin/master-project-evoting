@@ -1,14 +1,12 @@
 import axios from 'axios'
 import fs from 'fs'
-
-const authBackendUrl = (): string =>
-  `http://${process.env.VOTING_AUTH_BACKEND_IP}:${process.env.VOTING_AUTH_BACKEND_PORT}`
+import { AUTH_BACKEND_URL } from '../utils/constants'
 
 export const fetchAndStoreChainspec = async (): Promise<void> => {
   let result
   let chainspec
   try {
-    result = await axios.get(authBackendUrl() + '/chainspec')
+    result = await axios.get(`${AUTH_BACKEND_URL}/chainspec`)
   } catch (error) {
     console.log(error)
     throw new Error('Unable to fetch the chainspec from the auth backend. Check if the system is in the correct state.')
@@ -26,7 +24,7 @@ export const fetchAndStoreChainspec = async (): Promise<void> => {
 export const getBootNodeUrl = async (myUrl: string): Promise<string> => {
   try {
     // get bootnode from auth backend
-    const response = await axios.post(authBackendUrl() + '/connectionNode', {
+    const response = await axios.post(`${AUTH_BACKEND_URL}/connectionNode`, {
       url: myUrl,
     })
     return response.data.connectTo
@@ -38,7 +36,7 @@ export const getBootNodeUrl = async (myUrl: string): Promise<string> => {
 
 export const registerWallet = async (addressToRegister: string): Promise<void> => {
   try {
-    await axios.post(authBackendUrl() + '/chainspec', {
+    await axios.post(`${AUTH_BACKEND_URL}/chainspec`, {
       address: addressToRegister,
     })
   } catch (error) {
@@ -49,7 +47,7 @@ export const registerWallet = async (addressToRegister: string): Promise<void> =
 
 export const getBallotAddress = async (): Promise<string> => {
   try {
-    const response = await axios.get(authBackendUrl() + '/deploy')
+    const response = await axios.get(`${AUTH_BACKEND_URL}/deploy`)
     if (response.status === 204) {
       return ''
     }
@@ -61,15 +59,15 @@ export const getBallotAddress = async (): Promise<string> => {
   }
 }
 
-export const fetchState = async () => {
+export const fetchState = async (): Promise<string> => {
   try {
-    const response = await axios.get(authBackendUrl() + '/state')
+    const response = await axios.get(`${AUTH_BACKEND_URL}/state`)
     if (response.status === 200) {
       return response.data
     } else {
       throw new Error(`Status: ${response.status}`)
     }
   } catch (error) {
-    throw new Error(`Unable to get state from authority backend. ${error.msg}`)
+    throw new Error(`Unable to get state from authority backend. ${error}`)
   }
 }

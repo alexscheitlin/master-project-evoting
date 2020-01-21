@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { AuthBackend, BallotManager } from '../services'
+import { BallotManager } from '../services'
 import { VotingState } from '../models/states'
 
 const router: express.Router = express.Router()
