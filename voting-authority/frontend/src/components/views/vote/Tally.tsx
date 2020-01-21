@@ -77,7 +77,7 @@ export const Tally: React.FC<TallyProps> = ({ handleNext }: TallyProps) => {
       <StepTitle title="Tally" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.tally}</ListItemText>
+          <ListItemText>{stepDescriptions.tallying}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>

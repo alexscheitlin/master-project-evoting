@@ -11,12 +11,12 @@ import { StepContentWrapper } from '../../defaults/StepContentWrapper'
 import { StepTitle } from '../../defaults/StepTitle'
 import { LoadSuccess } from '../helper/LoadSuccess'
 
-interface RegisterProps {
+interface RegistrationProps {
   requiredSealers: number
   handleNext: () => void
 }
 
-export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext }: RegisterProps) => {
+export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, handleNext }: RegistrationProps) => {
   const classes = useStyles()
 
   const { nextState } = useVoteStateStore()
@@ -73,7 +73,7 @@ export const Register: React.FC<RegisterProps> = ({ requiredSealers, handleNext 
       <StepTitle title="Address Registration" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.register}</ListItemText>
+          <ListItemText>{stepDescriptions.registration}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>

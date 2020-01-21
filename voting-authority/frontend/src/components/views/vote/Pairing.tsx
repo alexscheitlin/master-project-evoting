@@ -25,12 +25,12 @@ import { StepTitle } from '../../defaults/StepTitle'
 import { LoadSuccess } from '../helper/LoadSuccess'
 import { useInterval } from '../helper/UseInterval'
 
-interface StartupProps {
+interface PairingProps {
   requiredSealers: number
   handleNext: () => void
 }
 
-interface StartupStateResponse {
+interface PairingStateResponse {
   state: VotingState
   connectedSealers: number
   signedUpSealers: number
@@ -43,7 +43,7 @@ interface VoteDeployResponse {
   message: string
 }
 
-export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }: StartupProps) => {
+export const Pairing: React.FC<PairingProps> = ({ requiredSealers, handleNext }: PairingProps) => {
   const classes = useStyles()
   const REFRESH_INTERVAL_MS = 4000
 
@@ -69,7 +69,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       if (response.status === 200 && response.data.address !== '') {
         setVoteQuestionDeployed(true)
         setAddress(response.data.address)
-        const state: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`)
+        const state: AxiosResponse<PairingStateResponse> = await axios.get(`${DEV_URL}/state`)
         setQuestion(state.data.question)
       }
     } catch (error) {
@@ -79,7 +79,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
 
   const checkNumberOfAuthoritiesOnline = async (): Promise<void> => {
     try {
-      const response: AxiosResponse<StartupStateResponse> = await axios.get(`${DEV_URL}/state`)
+      const response: AxiosResponse<PairingStateResponse> = await axios.get(`${DEV_URL}/state`)
 
       if (response.status === 200) {
         setSignedUpSealers(response.data.signedUpSealers)
@@ -160,7 +160,7 @@ export const Startup: React.FC<StartupProps> = ({ requiredSealers, handleNext }:
       <StepTitle title="Contract Deployment" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.startup}</ListItemText>
+          <ListItemText>{stepDescriptions.pairing}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>
