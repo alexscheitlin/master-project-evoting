@@ -82,7 +82,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   const isStateChange = async (): Promise<void> => {
     try {
       const response = await SealerBackend.getState()
-      if (response.state === VotingState.STARTUP) {
+      if (response.state === VotingState.PAIRING) {
         nextStep()
       }
     } catch (error) {
@@ -113,7 +113,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
       <StepTitle title="Address Registration" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.register}</ListItemText>
+          <ListItemText>{stepDescriptions.registration}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>

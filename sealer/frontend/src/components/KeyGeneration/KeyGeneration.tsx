@@ -54,7 +54,7 @@ export const KeyGeneration: React.FC<Props> = ({ nextStep }) => {
       <StepTitle title="Key Generation" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.config}</ListItemText>
+          <ListItemText>{stepDescriptions.keyGeneration}</ListItemText>
         </ListItem>
         <ListItem>
           <ListItemIcon>

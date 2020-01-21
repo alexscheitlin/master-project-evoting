@@ -85,7 +85,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
   const isStateChange = async (): Promise<void> => {
     try {
       const response = await SealerBackend.getState()
-      if (response.state === VotingState.CONFIG) {
+      if (response.state === VotingState.KEY_GENERATION) {
         nextStep()
       }
     } catch (error) {
@@ -102,7 +102,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
       <StepTitle title="Start Node" />
       <List>
         <ListItem>
-          <ListItemText>{stepDescriptions.startup}</ListItemText>
+          <ListItemText>{stepDescriptions.pairing}</ListItemText>
         </ListItem>
         <ListItem>
           {!loading && !chainSpecLoaded ? (

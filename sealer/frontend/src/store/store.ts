@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { VotingState } from '../models/states'
 
 export const [useVoteStateStore] = create((set, get) => ({
-  state: VotingState.REGISTER,
+  state: VotingState.REGISTRATION,
   setState: (newState: VotingState): void =>
     set({
       state: newState,
