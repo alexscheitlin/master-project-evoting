@@ -63,9 +63,9 @@ SEALER_FRONTEND_PORT=$(cat $globalConfig | jq .services.sealer_frontend_$sealerN
 # - Sealer Frontend IP (either 172.1.1.XXX or localhost)
 SEALER_FRONTEND_IP=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.ip.$mode | tr -d \")
 # - POA Blockchain Main RPC PORT (the port stays the same, in dev and prod mode)
-PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_1.port)
+PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.port)
 # - POA Blockchain Main RPC IP (either 172.1.1.XXX or localhost)
-PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_1.ip.$mode | tr -d \")
+PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.ip.$mode | tr -d \")
 # - Specify NODE_ENV
 NODE_ENV=$mode
 # - Specify the Github credentials
@@ -110,7 +110,8 @@ echo PORT=${SEALER_FRONTEND_PORT} >> $dir/.env
 network_name=$(cat $globalConfig | jq .network.name | tr -d \")
 $parentDir/docker-network.sh $network_name
 
-# go into correct directory to start docker compose with the .env file
+# make sure the database is clean
+cd $dir/backend && npm run clean
 cd $dir
 
 # start docker containers

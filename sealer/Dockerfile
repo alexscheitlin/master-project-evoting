@@ -66,39 +66,18 @@ RUN cd ./backend && npm run build
 # build frontend
 RUN cd ./frontend && npm run build
 
+RUN rm -rf ./backend/node_modules
+RUN cd ./backend && npm i --production
+
 ## STAGE 2
-FROM node:12-alpine as installer
-
-# env variable
-ENV NODE_ENV=production
-
-# Create app directory
-WORKDIR /usr/src
-
-# install build dependencies
-RUN apk add --no-cache bash python make g++ gcc openssh-client git
-
-# install the backend dependencies
-COPY ./backend/package*.json ./backend/
-
-# this below is a little hack to tricky npm not to try and install @meck93/evote-crypto and elliptic
-# @meck93/evote-crypto is a private package and the credentials for the installation cannot be passed to the second build stage
-# copy the evote-crypto library (since it's private and has been installed before)
-COPY --from=builder /usr/src/backend/node_modules/@meck93 /usr/src/backend/node_modules/@meck93
-COPY --from=builder /usr/src/backend/node_modules/elliptic /usr/src/backend/node_modules/elliptic
-
-RUN cd ./backend && npm i
-
-## STAGE 3
 FROM node:12-alpine
 
 # Create app directory
 WORKDIR /usr/src
 
 # Install app dependencies
-COPY --from=installer /usr/src/backend/node_modules /usr/src/backend/node_modules
+COPY --from=builder /usr/src/backend/node_modules /usr/src/backend/node_modules
 COPY --from=builder /usr/src/backend/wallet /usr/src/backend/wallet
-COPY --from=builder /usr/src/frontend/node_modules /usr/src/frontend/node_modules
 
 # copy the dist
 COPY --from=builder /usr/src/backend/dist /usr/src/backend/dist

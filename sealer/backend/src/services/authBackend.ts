@@ -1,5 +1,6 @@
 import axios from 'axios'
 import fs from 'fs'
+import path from 'path'
 import { AUTH_BACKEND_URL } from '../utils/constants'
 
 export const fetchAndStoreChainspec = async (): Promise<void> => {
@@ -14,7 +15,7 @@ export const fetchAndStoreChainspec = async (): Promise<void> => {
 
   try {
     chainspec = JSON.stringify(result.data)
-    fs.writeFileSync('src/chainspec/chain.json', chainspec)
+    fs.writeFileSync(path.join(__dirname, '../chainspec/chain.json'), chainspec)
   } catch (error) {
     console.log(error)
     throw new Error('Could not store the chainspec to src/chainspec/chain.json')
