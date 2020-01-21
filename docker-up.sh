@@ -6,6 +6,6 @@
 
 # start and register 3 nodes
 ./poa-blockchain/scripts/dev-chain-sealers.sh
-./ethstats/start_ethstats.sh
+./ethstats/docker-start.sh
 
 docker ps
