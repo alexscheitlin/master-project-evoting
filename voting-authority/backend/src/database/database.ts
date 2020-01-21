@@ -24,7 +24,7 @@ export const setupDB = (): void => {
 
   // set defaults (if JSON is empty)
   db.defaults({
-    state: 'REGISTER',
+    state: 'REGISTRATION',
     authorities: [],
     nodes: [],
     ballotAddress: '',

@@ -16,7 +16,7 @@ import { createAccount } from '../utils/rpc'
 import { getNumberOfConnectedAuthorities } from '../utils/web3'
 import { VotingState } from './state'
 
-const TOO_EARLY: string = 'We are in the REGISTER stage. Please wait with the deployment!'
+const TOO_EARLY: string = 'We are in the REGISTRATION stage. Please wait with the deployment!'
 const BALLOT_DEPLOYED_SUCCESS_MESSAGE: string = 'Ballot successfully deployed. System parameters successfully set.'
 const BALLOT_ALREADY_DEPLOYED_MESSAGE: string = 'Ballot already deployed.'
 const VOTE_QUESTION_INVALID: string = 'Vote Question was not provided or is not of type String.'
@@ -34,7 +34,7 @@ export const validateVoteQuestion = (question: string): boolean => {
 
 router.post('/deploy', async (req: express.Request, res: express.Response) => {
   const currentState: string = getValueFromDB(STATE_TABLE) as string
-  if (currentState === VotingState.REGISTER) {
+  if (currentState === VotingState.REGISTRATION) {
     res.status(400).json({ msg: TOO_EARLY })
     return
   }

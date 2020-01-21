@@ -2,9 +2,9 @@ import express from 'express'
 import { addToList, getValueFromDB, STATE_TABLE, NODES_TABLE } from '../database/database'
 import { VotingState } from './state'
 
-const TOO_EARLY_MSG: string = 'You are too early to connect. Please wait for the STARTUP stage.'
+const TOO_EARLY_MSG: string = 'You are too early to connect. Please wait for the PAIRING stage.'
 const ON_TIME_MSG: string = "Let's connect and spin up that network!."
-const TOO_LATE_MSG: string = 'You are too late to connect. You should have done that during the STARTUP stage.'
+const TOO_LATE_MSG: string = 'You are too late to connect. You should have done that during the PAIRING stage.'
 
 const URL_WRONG_FORMAT: string = 'The provided URL has the wrong format!'
 const URL_ALREADY_STORED: string = 'The provided URL is already stored!'
@@ -18,10 +18,10 @@ router.post('/connectionNode', async (req, res) => {
 
   let msg: string = ''
   switch (currentState) {
-    case VotingState.REGISTER:
+    case VotingState.REGISTRATION:
       res.status(400).json({ msg: TOO_EARLY_MSG })
       return
-    case VotingState.STARTUP:
+    case VotingState.PAIRING:
       // check the url format
       // http://abcdef:1234
       if (!url.match(/^http:\/\/.*:\d{4}$/)) {
@@ -38,13 +38,13 @@ router.post('/connectionNode', async (req, res) => {
         res.status(201).json({ msg: ON_TIME_MSG, yourUrl: url, connectTo: nodes[0] })
         return
       }
-    case VotingState.CONFIG:
+    case VotingState.KEY_GENERATION:
       msg = TOO_LATE_MSG
       break
     case VotingState.VOTING:
       msg = TOO_LATE_MSG
       break
-    case VotingState.TALLY:
+    case VotingState.TALLYING:
       msg = TOO_LATE_MSG
       break
   }
