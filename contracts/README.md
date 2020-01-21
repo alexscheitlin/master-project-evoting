@@ -8,6 +8,8 @@ This project also offers a **ganache-cli** dev chain. `npm run ganache:dev` will
 
 ### link mp-crypto first
 
+TODO: needs to be updated with the new location of the crypto library
+
 ```bash
 cd crypto
 npm i

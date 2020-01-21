@@ -14,7 +14,7 @@ contract Ballot {
     // /////////////////////////////////
     // structs
     // /////////////////////////////////
-    enum VotingState {CONFIG, VOTING, TALLY, RESULT}
+    enum VotingState {KEY_GENERATION, VOTING, TALLYING, RESULT}
 
     // parameters for the elgamal crypto system
     struct SystemParameters {
@@ -123,7 +123,7 @@ contract Ballot {
     // /////////////////////////////////
     // variables
     // /////////////////////////////////
-    VotingState private votingState = VotingState.CONFIG;
+    VotingState private votingState = VotingState.KEY_GENERATION;
 
     VoteProofVerifier private voteVerifier;
     SumProofVerifier private sumVerifier;
@@ -211,22 +211,22 @@ contract Ballot {
 
     // open the Ballot and change into state VOTING
     function openBallot() public onlyOwner onlyIfPubKeySet onlyIfSysParamsSet {
-        require(votingState == VotingState.CONFIG, 'Need state CONFIG.');
+        require(votingState == VotingState.KEY_GENERATION, 'Need state KEY_GENERATION.');
         votingState = VotingState.VOTING;
     }
 
-    // close the Ballot and change into state TALLY
+    // close the Ballot and change into state TALLYING
     function closeBallot() public onlyOwner onlyIfPubKeySet onlyIfSysParamsSet {
         require(votingState == VotingState.VOTING, 'Need state VOTING.');
 
-        votingState = VotingState.TALLY;
+        votingState = VotingState.TALLYING;
     }
 
     // combine all submitted decrypted shares to find the final tally
     // each sealer has to first submit it's decrypted share
     // the product of all decrypted shares will form the final result (nr of yes-votes)
     function combineDecryptedShares() public {
-        require(votingState == VotingState.TALLY, 'Need state TALLY.');
+        require(votingState == VotingState.TALLYING, 'Need state TALLYING.');
         require(election.decryptedShareWallet.length == NR_OF_AUTHORITY_NODES, 'Nr of shares !== nr of sealers.');
 
         // define starting value (here, we take the share of the first address)
@@ -266,9 +266,9 @@ contract Ballot {
         external
         returns (bool, string memory)
     {
-        // accept key shares only if state is CONFIG
+        // accept key shares only if state is KEY_GENERATION
         // and the public key does not yet exist
-        require(votingState == VotingState.CONFIG, 'Need state CONFIG.');
+        require(votingState == VotingState.KEY_GENERATION, 'Need state KEY_GENERATION.');
         require(!IS_PUBKEY_SET, 'Public key shares can only be submitted if the public key is not yet set.');
         require(
             keyGenProofVerifier.verifyProof(proof_c, proof_d, key, msg.sender),
@@ -303,7 +303,7 @@ contract Ballot {
         returns (bool, string memory)
     {
         // only allow submission if in state
-        require(votingState == VotingState.TALLY, 'The contract needs to be in state: TALLY.');
+        require(votingState == VotingState.TALLYING, 'The contract needs to be in state: TALLYING.');
 
         // don't accept if proof verification fails
         uint256 publicKeyShare = election.pubKeyShareMapping[msg.sender].share;
@@ -411,16 +411,16 @@ contract Ballot {
 
     // get the status of the vote
     function getBallotStatus() public view returns (string memory) {
-        if (votingState == VotingState.CONFIG) {
-            return 'CONFIG';
+        if (votingState == VotingState.KEY_GENERATION) {
+            return 'KEY_GENERATION';
         }
 
         if (votingState == VotingState.VOTING) {
             return 'VOTING';
         }
 
-        if (votingState == VotingState.TALLY) {
-            return 'TALLY';
+        if (votingState == VotingState.TALLYING) {
+            return 'TALLYING';
         }
 
         if (votingState == VotingState.RESULT) {
