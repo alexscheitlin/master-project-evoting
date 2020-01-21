@@ -54,6 +54,9 @@ RUN cd ./backend && npm run build
 # build frontend
 RUN cd ./frontend && npm run build
 
+RUN rm -rf ./backend/node_modules
+RUN cd ./backend && npm i --production
+
 ## STAGE 2
 FROM node:12-alpine
 
@@ -65,7 +68,6 @@ WORKDIR /usr/src
 
 # Install app dependencies
 COPY --from=builder /usr/src/backend/node_modules /usr/src/backend/node_modules
-COPY --from=builder /usr/src/frontend/node_modules /usr/src/frontend/node_modules
 
 # copy the dist
 COPY --from=builder /usr/src/backend/dist /usr/src/backend/dist

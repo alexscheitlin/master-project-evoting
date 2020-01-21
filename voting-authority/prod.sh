@@ -98,7 +98,8 @@ echo REACT_APP_VOTING_AUTH_BACKEND_IP=${VOTING_AUTH_BACKEND_IP} >> $dir/.env
 network_name=$(cat $globalConfig | jq .network.name | tr -d \")
 $parentDir/docker-network.sh $network_name
 
-# go into correct directory to start docker compose with the .env file
+# make sure the database is clean
+cd $dir/backend && npm run clean
 cd $dir
 
 # start docker containers

@@ -9,6 +9,7 @@ readonly parentDir="$(dirname "$dir")"
 readonly parentParentDir="$(dirname "$parentDir")"
 
 # copy json files needed to run
+cp $dir/src/database/db_default.json $dir/dist/src/database/db_default.json
 cp $dir/src/database/db.json $dir/dist/src/database/db.json
 cp $dir/src/database/defaultChainspec.json $dir/dist/src/database/defaultChainspec.json
 cp -r $dir/solidity/toDeploy $dir/dist/solidity/toDeploy

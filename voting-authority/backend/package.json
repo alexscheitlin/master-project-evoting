@@ -20,7 +20,8 @@
     "contracts:compile": "./node_modules/.bin/ts-node solidity/scripts/compile.ts",
     "contracts:deploy": "./node_modules/.bin/ts-node solidity/scripts/deploy.ts",
     "contracts": "npm run contracts:compile && npm run contracts:deploy",
-    "clean:db": "rm -f src/database/db.json"
+    "clean:db": "rm -f src/database/db.json",
+    "clean": "rm -rf dist && rm -rf node_modules && rm -f src/database/db.json && cp src/database/db_default.json src/database/db.json"
   },
   "license": "MIT",
   "dependencies": {
