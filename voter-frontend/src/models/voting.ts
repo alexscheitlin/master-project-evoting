@@ -18,3 +18,12 @@ export enum VotingState {
   TALLYING = 'TALLYING',
   RESULT = 'RESULT',
 }
+
+export interface VoteTransaction {
+  blockHash: string
+  blockNumber: number
+  from: string
+  to: string
+  transactionHash: string
+  accepted: boolean
+}
