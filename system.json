@@ -109,6 +109,9 @@
       "rpc_port": 7013,
       "node_port": 30303,
       "ws_port": 5013
+    },
+    "ethstats": {
+      "port": 6001
     }
   }
 }
