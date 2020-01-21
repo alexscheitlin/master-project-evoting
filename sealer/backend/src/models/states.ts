@@ -1,17 +1,18 @@
 export enum VotingState {
-  REGISTER = 'REGISTER',
-  STARTUP = 'STARTUP',
-  CONFIG = 'CONFIG',
+  REGISTRATION = 'REGISTRATION',
+  PAIRING = 'PAIRING',
+  KEY_GENERATION = 'KEY_GENERATION',
   VOTING = 'VOTING',
-  TALLY = 'TALLY',
+  TALLYING = 'TALLYING',
   RESULT = 'RESULT',
 }
 
+
 export const VOTE_STATES: string[] = [
-  VotingState.REGISTER,
-  VotingState.STARTUP,
-  VotingState.CONFIG,
+  VotingState.REGISTRATION,
+  VotingState.PAIRING,
+  VotingState.KEY_GENERATION,
   VotingState.VOTING,
-  VotingState.TALLY,
+  VotingState.TALLYING,
   VotingState.RESULT,
 ]

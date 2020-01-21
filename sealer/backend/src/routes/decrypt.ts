@@ -12,11 +12,11 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
     // TODO: fetch state directly from contract instead of vote-auth backend
     let state: VotingState = await AuthBackend.fetchState()
     console.log(state)
-    state = VotingState.TALLY
+    state = VotingState.TALLYING
 
     // TODO: add handling for other cases
     switch (state) {
-      case VotingState.TALLY: {
+      case VotingState.TALLYING: {
         // TODO: check if decrypted share for this authority has already been submitted
 
         const votesAsStrings = await BallotManager.getAllVotes()
