@@ -173,7 +173,7 @@ contract('Ballot.sol', () => {
     assert(status === 'VOTING', 'Ballot should still be open')
     await ballotContract.closeBallot()
     status = await ballotContract.getBallotStatus()
-    assert(status === 'TALLY', 'Ballot was not closed')
+    assert(status === 'TALLYING', 'Ballot was not closed')
 
     /**
      * 6.1 COUNTING OF THE VOTES BY AUTHORITY 1
