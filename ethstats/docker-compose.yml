@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  ethstats:
+    image: alethio/ethereum-lite-explorer
+    environment:
+      - APP_NODE_URL=http://localhost:${PARITY_NODE_PORT}
+    ports:
+      - ${ETHSTATS_PORT}:80
