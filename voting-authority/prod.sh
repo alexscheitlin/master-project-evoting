@@ -65,9 +65,6 @@ echo VOTING_AUTH_FRONTEND_IP=$VOTING_AUTH_FRONTEND_IP >> $dir/.env
 echo PARITY_NODE_PORT=$PARITY_NODE_PORT >> $dir/.env
 echo PARITY_NODE_IP=$PARITY_NODE_IP >> $dir/.env
 echo NODE_ENV=$NODE_ENV >> $dir/.env
-echo GITHUB_TOKEN=$GITHUB_TOKEN >> $dir/.env
-echo GITHUB_USER=$GITHUB_USER >> $dir/.env
-echo GITHUB_EMAIL=$GITHUB_EMAIL >> $dir/.env
 
 ####### FRONTEND
 

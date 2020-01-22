@@ -18,15 +18,14 @@ ENV REACT_APP_AUTH_BACKEND_PORT=$VA_PORT
 ENV REACT_APP_AUTH_BACKEND_IP=$VA_IP
 ENV NODE_ENV=development
 
-# Create app directory
+# create app directory
 WORKDIR /usr/src
 
 # install build dependencies
 RUN apk add --no-cache bash python make g++ gcc openssh-client git
 
-# Install the app dependencies
-COPY ./backend/package*.json ./backend/
-COPY ./backend/.npmrc ./backend/
+# copy the backend folder
+COPY ./backend ./backend
 
 # install npm cli login to retrieve private package from github
 RUN npm install -g npm-cli-login
@@ -34,19 +33,9 @@ RUN NPM_USER=${GITHUB_USER} NPM_PASS=${GITHUB_TOKEN} NPM_EMAIL=${GITHUB_EMAIL} N
 
 RUN cd ./backend && npm i
 
-# install frontend
-COPY ./frontend/package*.json ./frontend/
+# copy the frontend folder and install the frontend
+COPY ./frontend ./frontend
 RUN cd ./frontend && npm i
-
-# copy remaining files
-COPY ./backend/src ./backend/src
-COPY ./backend/tsconfig.json ./backend/tsconfig.json
-COPY ./backend/postbuild.sh ./backend/postbuild.sh
-COPY ./backend/solidity ./backend/solidity
-
-COPY ./frontend/src ./frontend/src
-COPY ./frontend/public ./frontend/public
-COPY ./frontend/tsconfig.json ./frontend/tsconfig.json
 
 # build backend
 RUN cd ./backend && npm run build
@@ -54,22 +43,20 @@ RUN cd ./backend && npm run build
 # build frontend
 RUN cd ./frontend && npm run build
 
+# remove the dev node_modules and install the production version (backend-only)
 RUN rm -rf ./backend/node_modules
 RUN cd ./backend && npm i --production
 
-## STAGE 2
+## STAGE 2 -> only copy the important stuff from the previous stage
 FROM node:12-alpine
 
-# env variable
-ENV NODE_ENV=production
-
-# Create app directory
+# create app directory
 WORKDIR /usr/src
 
-# Install app dependencies
+# copy the backend: production node_modules and wallet folder
 COPY --from=builder /usr/src/backend/node_modules /usr/src/backend/node_modules
 
-# copy the dist
+# copy the output (dist and build) folder
 COPY --from=builder /usr/src/backend/dist /usr/src/backend/dist
 COPY --from=builder /usr/src/frontend/build /usr/src/frontend/build
 
