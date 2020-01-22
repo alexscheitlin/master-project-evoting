@@ -176,7 +176,7 @@ export const Pairing: React.FC<PairingProps> = ({ requiredSealers, handleNext }:
             <ListItemText
               primary={
                 readyForDeployment
-                  ? `all sealers registered, you can now deploy the contrat`
+                  ? `all sealers registered, you can now deploy the contract`
                   : `please wait until all sealers have registered to deploy the contract`
               }
             />
@@ -185,7 +185,14 @@ export const Pairing: React.FC<PairingProps> = ({ requiredSealers, handleNext }:
 
         {!voteQuestionDeployed && (
           <ListItem>
-            <TextField fullWidth label="Enter Vote Question" variant="outlined" required onChange={handleInputChange} />
+            <TextField
+              fullWidth
+              label="Enter Vote Question"
+              variant="outlined"
+              disabled={!readyForDeployment}
+              required
+              onChange={handleInputChange}
+            />
             {loading ? (
               <IconButton disabled={true}>
                 <LoadSuccess success={false} loading={loading} />
