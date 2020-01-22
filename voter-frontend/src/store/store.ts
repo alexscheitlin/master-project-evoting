@@ -30,7 +30,7 @@ export const [useVoterStore] = create((set, get) => ({
   // LOGOUT
   // -----------------------------------
   logout: (): void => {
-    localStorage.clear()
+    sessionStorage.clear()
     set({ authenticated: false })
   },
 
@@ -38,7 +38,7 @@ export const [useVoterStore] = create((set, get) => ({
   // AUTHENTICATION
   // -----------------------------------
   isAuthenticated: (): boolean => {
-    const isAuth = localStorage.getItem('authenticated')
+    const isAuth = sessionStorage.getItem('authenticated')
     if (isAuth === 'true') {
       return true
     } else {
@@ -47,14 +47,14 @@ export const [useVoterStore] = create((set, get) => ({
   },
   setAuthenicated: (auth: boolean): void => {
     set({ authenticated: auth })
-    localStorage.setItem('authenticated', auth.toString())
+    sessionStorage.setItem('authenticated', auth.toString())
   },
 
   // -----------------------------------
   // TOKEN
   // -----------------------------------
   isTokenSet: (): boolean => {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('token')
     if (token === null || token === '') {
       return false
     } else {
@@ -63,19 +63,19 @@ export const [useVoterStore] = create((set, get) => ({
   },
   getToken: (): string | undefined | null => {
     if (get().isTokenSet()) {
-      return localStorage.getItem('token')
+      return sessionStorage.getItem('token')
     }
   },
   setToken: (token: string): void => {
     set({ token: token })
-    localStorage.setItem('token', token)
+    sessionStorage.setItem('token', token)
   },
 
   // -----------------------------------
   // WALLET
   // -----------------------------------
   isWalletSet: (): boolean => {
-    const wallet = localStorage.getItem('wallet')
+    const wallet = sessionStorage.getItem('wallet')
     if (wallet === null || wallet === '') {
       return false
     } else {
@@ -84,12 +84,12 @@ export const [useVoterStore] = create((set, get) => ({
   },
   getWallet: (): string | undefined | null => {
     if (get().isWalletSet()) {
-      return localStorage.getItem('wallet')
+      return sessionStorage.getItem('wallet')
     }
   },
   setWallet: (wallet: string): void => {
     set({ wallet: wallet })
-    localStorage.setItem('wallet', wallet)
+    sessionStorage.setItem('wallet', wallet)
   },
 
   // -----------------------------------
@@ -103,7 +103,7 @@ export const [useVoterStore] = create((set, get) => ({
   // BALLOT CONTRACT ADDRESS
   // -----------------------------------
   isBallotContractAddressSet: (): boolean => {
-    const address = localStorage.getItem('contractAddress')
+    const address = sessionStorage.getItem('contractAddress')
     if (address === null || address === '') {
       return false
     } else {
@@ -112,19 +112,19 @@ export const [useVoterStore] = create((set, get) => ({
   },
   getBallotContractAddress: (): string | undefined | null => {
     if (get().isBallotContractAddressSet()) {
-      return localStorage.getItem('contractAddress')
+      return sessionStorage.getItem('contractAddress')
     }
   },
   setBallotContractAddress: (address: string): void => {
     set({ contractAddress: address })
-    localStorage.setItem('contractAddress', address)
+    sessionStorage.setItem('contractAddress', address)
   },
 
   // -----------------------------------
   // CONNECTION NODE
   // -----------------------------------
   isConnectionNodeUrlSet: (): boolean => {
-    const url = localStorage.getItem('connectionNodeUrl')
+    const url = sessionStorage.getItem('connectionNodeUrl')
     if (url === null || url === '') {
       return false
     } else {
@@ -133,19 +133,19 @@ export const [useVoterStore] = create((set, get) => ({
   },
   getConnectionNodeUrl: (): string | undefined | null => {
     if (get().isConnectionNodeUrlSet()) {
-      return localStorage.getItem('connectionNodeUrl')
+      return sessionStorage.getItem('connectionNodeUrl')
     }
   },
   setConnectionNodeUrl: (url: string): void => {
     set({ connectionNodeUrl: url })
-    localStorage.setItem('connectionNodeUrl', url)
+    sessionStorage.setItem('connectionNodeUrl', url)
   },
 
   // -----------------------------------
   // Vote Transaction
   // -----------------------------------
   isVoteTxSet: (): boolean => {
-    const tx = localStorage.getItem('voteTx')
+    const tx = sessionStorage.getItem('voteTx')
     if (tx === null || tx === '') {
       return false
     } else {
@@ -154,7 +154,7 @@ export const [useVoterStore] = create((set, get) => ({
   },
   getVoteTx: (): VoteTransaction | undefined | null => {
     if (get().isVoteTxSet()) {
-      const tx = localStorage.getItem('voteTx')
+      const tx = sessionStorage.getItem('voteTx')
       if (tx !== null) {
         set({ voteTx: JSON.parse(tx) })
         return JSON.parse(tx)
@@ -165,6 +165,6 @@ export const [useVoterStore] = create((set, get) => ({
   },
   setVoteTx: (tx: VoteTransaction) => {
     set({ voteTx: tx })
-    localStorage.setItem('voteTx', JSON.stringify(tx))
+    sessionStorage.setItem('voteTx', JSON.stringify(tx))
   },
 }))
