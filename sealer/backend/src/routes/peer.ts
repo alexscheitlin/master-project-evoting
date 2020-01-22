@@ -42,7 +42,7 @@ router.post('/peer', async (req, res) => {
     try {
       // send the enode to the bootNode url
       await RPC.registerEnodeWithAuthority(enode, bootNodeUrl)
-      res.status(200).json({ msg: PEER_SUCCESS_MSG, bootnode: false })
+      res.status(201).json({ msg: PEER_SUCCESS_MSG, bootnode: false })
       return
     } catch (error) {
       res
