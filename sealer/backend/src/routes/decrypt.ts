@@ -1,7 +1,7 @@
 import express from 'express'
 import { getValueFromDB, PRIVATE_KEY_SHARE_TABLE } from '../database/database'
 import { VotingState } from '../models/states'
-import { AuthBackend, BallotManager } from '../services'
+import { BallotManager } from '../services'
 import BN = require('bn.js')
 import { FFelGamal } from '@meck93/evote-crypto'
 
@@ -9,8 +9,8 @@ const router: express.Router = express.Router()
 
 router.post('/decrypt', async (req: express.Request, res: express.Response) => {
   try {
-    // TODO: fetch state directly from contract instead of vote-auth backend
-    let state: VotingState = await AuthBackend.fetchState()
+    // fetch state directly from contract instead of vote-auth backend
+    let state: VotingState = await BallotManager.getBallotState()
     console.log(state)
     state = VotingState.TALLYING
 
@@ -18,7 +18,6 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
     switch (state) {
       case VotingState.TALLYING: {
         // TODO: check if decrypted share for this authority has already been submitted
-
         const votesAsStrings = await BallotManager.getAllVotes()
         const votes: FFelGamal.Cipher[] = votesAsStrings.map(
           vote => ({ a: new BN(vote.a), b: new BN(vote.b) } as FFelGamal.Cipher)

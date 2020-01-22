@@ -28,7 +28,6 @@ export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, han
   const [success, setSuccess] = useState<boolean>(false)
 
   const [sealers, setSealers] = useState<string[]>([])
-  const [listening, setListening] = useState<boolean>(false)
 
   const [allSealersConnected, setAllSealersConnected] = useState(false)
 
@@ -39,18 +38,16 @@ export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, han
   }, [sealers, requiredSealers])
 
   useEffect(() => {
-    if (!listening) {
-      const events = new EventSource(`${DEV_URL}/registered`)
-      events.onmessage = (event): void => {
-        const parsedData = JSON.parse(event.data)
-        setSealers(sealers =>
-          sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index)
-        )
-      }
-
-      setListening(true)
+    const events = new EventSource(`${DEV_URL}/registered`)
+    events.onmessage = (event): void => {
+      const parsedData = JSON.parse(event.data)
+      setSealers(sealers => sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index))
     }
-  }, [listening, sealers])
+    return () => {
+      console.log('eventSource closed.')
+      events.close()
+    }
+  }, [])
 
   const nextStep = async (): Promise<void> => {
     try {

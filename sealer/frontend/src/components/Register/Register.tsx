@@ -14,7 +14,7 @@ import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet'
 import VpnKeyIcon from '@material-ui/icons/VpnKey'
 import React, { useEffect, useState } from 'react'
 
-import { config } from '../../config'
+import { AUTH_BACKEND_URL } from '../../config'
 import { useInterval } from '../../hooks/useInterval'
 import { VotingState } from '../../models/states'
 import { SealerBackend } from '../../services'
@@ -36,7 +36,6 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   const [requiredSealers, setRequiredSealers] = useState<number>()
   const [sealers, setSealers] = useState<string[]>([])
-  const [listening, setListening] = useState<boolean>(false)
 
   useEffect(() => {
     const getRequiredValidators = async (): Promise<void> => {
@@ -53,18 +52,17 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
 
   // Subscribe to newly registered sealers
   useEffect(() => {
-    let events: EventSource
-    if (!listening) {
-      events = new EventSource(config.authBackend.devUrl + '/registered')
-      events.onmessage = (event): void => {
-        const parsedData = JSON.parse(event.data)
-        setSealers(sealers => sealers.concat(parsedData))
-      }
-
-      setListening(true)
-      return () => events.close()
+    const events = new EventSource(`${AUTH_BACKEND_URL}/registered`)
+    events.onmessage = event => {
+      console.log('eventData', event.data, event)
+      const parsedData = JSON.parse(event.data)
+      setSealers(sealers => sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index))
     }
-  }, [listening, sealers])
+    return () => {
+      console.log('eventSource closed.')
+      events.close()
+    }
+  }, [])
 
   // Get Wallet information from sealer backend
   useEffect(() => {

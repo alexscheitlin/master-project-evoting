@@ -33,6 +33,9 @@ server.use(
       'http://172.1.1.131:3011', // sealer 1 frontend,
       'http://172.1.1.132:3012', // sealer 2 frontend,
       'http://172.1.1.133:3013', // sealer 3 frontend
+      'http://172.1.1.141:4011', // sealer 1 backend,
+      'http://172.1.1.142:4012', // sealer 2 backend,
+      'http://172.1.1.143:4013', // sealer 3 backend
       `http://${process.env.VOTING_AUTH_FRONTEND_IP}:${process.env.VOTING_AUTH_FRONTEND_PORT}`,
       `http://172.1.1.173:7013`,
       `http://localhost:7013`,

@@ -165,7 +165,7 @@ export const getNumberOfVotes = async (): Promise<number> => {
  *
  * @param index the index of the vote
  */
-export const getVote = async (index: number): Promise<number> => {
+export const getVote = async (index: number): Promise<BN[]> => {
   const contract = getContract()
   const authAcc = await getAuthAccount()
   try {
@@ -191,7 +191,7 @@ export const getAllVotes = async (): Promise<FFelGamal.Cipher[]> => {
   const voteCount = await getNumberOfVotes()
 
   for (let i = 0; i < voteCount; i++) {
-    const vote = await getVote(i)
+    const vote: BN[] = await getVote(i)
     const c: FFelGamal.Cipher = { a: vote[0], b: vote[1] }
     votes.push(c)
   }
