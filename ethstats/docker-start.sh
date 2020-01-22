@@ -37,5 +37,13 @@ echo PARITY_NODE_PORT=$PARITY_NODE_PORT >> $dir/.env
 # # start container
 # ###########################################
 cd $dir
-docker-compose -p eth-stats -f docker-compose.yml up --build --detach
+
+if [[ $1 == 1 ]]; then
+    # build containers
+    docker-compose -p eth-stats -f docker-compose.yml up --build --detach
+else
+    # don't build containers
+    docker-compose -p eth-stats -f docker-compose.yml up --detach
+fi
+
 rm -f $dir/.env

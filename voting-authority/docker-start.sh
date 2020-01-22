@@ -81,6 +81,18 @@ $parentDir/docker-network.sh $network_name
 ###########################################
 # start containers
 ###########################################
+
+########################################
+# decide if container needs to be built
+########################################
 cd $dir
-docker-compose -p vote-auth -f docker-compose.yml up --build --detach
+
+if [[ $1 == 1 ]]; then
+    # build containers
+    docker-compose -p vote-auth -f docker-compose.yml up --build --detach
+else
+    # don't build containers
+    docker-compose -p vote-auth -f docker-compose.yml up --detach
+fi
+
 rm -f $dir/.env

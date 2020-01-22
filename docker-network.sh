@@ -7,13 +7,13 @@
 ##############################################
 network_name=$1
 
-echo $(docker network ls | xargs | grep -q $network_name)
+exists=$(docker network ls | grep -c $network_name)
 
 # check if parity-nodes docker network exists, otherwise create it
-if [[ $(docker network ls | xargs | grep -q $network_name) == 0 ]]; then
-    echo "network: $network_name exists!"
+if [[ $exists == 1 ]]; then
+    echo "> $network_name network already exists...using existing network."
 else
-    echo "creating network: $network_name"
+    echo "> creating network: $network_name"
     docker network create $network_name \
     --driver=bridge \
     --subnet=172.1.1.0/24 \

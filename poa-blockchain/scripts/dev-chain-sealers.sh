@@ -8,7 +8,13 @@ readonly parentParentDir="$(dirname "$parentDir")"
 # start a chain with three parity-nodes
 $dir/dev-chain-parity-nodes.sh
 
+shouldBuild=0
+
+if [[ $1 == 1 ]]; then
+    shouldBuild=1
+fi
+
 # start the three sealers (frontend + backend pairs)
-$parentParentDir/sealer/docker-start.sh 1
-$parentParentDir/sealer/docker-start.sh 2
-$parentParentDir/sealer/docker-start.sh 3
+$parentParentDir/sealer/docker-start.sh 1 $shouldBuild
+$parentParentDir/sealer/docker-start.sh 2 $shouldBuild
+$parentParentDir/sealer/docker-start.sh 3 $shouldBuild
