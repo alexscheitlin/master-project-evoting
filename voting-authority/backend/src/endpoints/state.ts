@@ -109,7 +109,7 @@ router.get('/state', async (req, res) => {
         state: currentState,
         submittedKeyShares: submittedKeyShares,
         requiredKeyShares: requiredKeyShares,
-        publicKey: !(publicKey.toNumber() !== 0) ? publicKey : -1,
+        publicKey: publicKey.toNumber() > 0 ? publicKey.toNumber() : -1,
       })
       break
     }
