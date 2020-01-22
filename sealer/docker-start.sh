@@ -11,8 +11,6 @@ readonly parentDir="$(dirname "$dir")"
 # Mode
 ###########################################
 mode=production
-echo "The mode is: $mode"
-
 ###########################################
 # Config
 # - the config file with all IPs and ports
@@ -97,7 +95,13 @@ $parentDir/docker-network.sh $network_name
 cd $dir
 
 # start docker containers
-docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
+if [[ $2 == 1 ]]; then
+    # build containers
+    docker-compose -p controller_$sealerNr -f docker-compose.yml up --build --detach
+else
+    # don't build containers
+    docker-compose -p controller_$sealerNr -f docker-compose.yml up --detach
+fi
 
 # remove all temp files
 rm -f $dir/backend/wallet/sealer.json

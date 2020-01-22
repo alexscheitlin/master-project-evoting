@@ -18,8 +18,6 @@ rm -f $dir/.env
 # Mode
 ###########################################
 mode=development
-echo "The mode is: $mode"
-
 ###########################################
 # Config
 # - the config file with all IPs and ports
