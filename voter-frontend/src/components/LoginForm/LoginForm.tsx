@@ -53,6 +53,7 @@ const LoginForm: React.FC<Props> = ({ onLogin, loading }) => {
             onChange={(e): void => setPassword(e.target.value)}
           />
           <Button
+            type="submit"
             fullWidth
             variant="contained"
             color="primary"
