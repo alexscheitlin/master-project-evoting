@@ -8,6 +8,9 @@ export const Header: React.FC = () => {
   const classes = useStyles()
   const { activeStep } = useActiveStepStore()
 
+  const stepName: string = activeStep >= 2 ? `ON CHAIN` : `OFF CHAIN`
+  const stepColor = activeStep >= 2 ? classes.greenButton : classes.redButton
+
   return (
     <Grid item component="header">
       <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
@@ -16,15 +19,9 @@ export const Header: React.FC = () => {
             {`Sealer Nr: ${process.env.REACT_APP_SEALER_FRONTEND_PORT}`}
           </Typography>
           <div className={classes.buttonWrapper}>
-            {activeStep >= 2 ? (
-              <Typography variant="h6" className={classes.greenButton} noWrap>
-                ON CHAIN
-              </Typography>
-            ) : (
-              <Typography variant="h6" className={classes.redButton} noWrap>
-                OFF CHAIN
-              </Typography>
-            )}
+            <Typography variant="h6" className={stepColor} noWrap>
+              {stepName}
+            </Typography>
             <IconButton
               color="inherit"
               onClick={(): Window | null =>
