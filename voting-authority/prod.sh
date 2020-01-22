@@ -105,7 +105,7 @@ cd $dir
 # start docker containers
 docker-compose -p vote_auth -f production.yml build --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER \
 --build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP 
-docker-compose -p vote_auth -f production.yml up --detach
+docker-compose -p vote_auth -f production.yml up --detach --no-build
 
 # remove all temp files
 rm -f $dir/.env
