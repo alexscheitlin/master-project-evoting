@@ -17,7 +17,7 @@
     "@types/elliptic": "^6.4.10",
     "@types/node": "12.12.6",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
-    "@typescript-eslint/parser": "^2.5.0",
+    "@typescript-eslint/parser": "^2.14.0",
     "bn.js": "^5.0.0",
     "chai": "^4.2.0",
     "eslint-config-prettier": "^6.5.0",
