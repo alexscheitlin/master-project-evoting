@@ -31,9 +31,7 @@ export const Header: React.FC = () => {
           <div className={classes.toolbarPlaceholder}></div>
           <IconButton
             color="inherit"
-            onClick={(): Window | null =>
-              window.open('https://github.com/alexscheitlin/master-project-evoting', '_blank')
-            }
+            onClick={(): Window | null => window.open('http://bcbev.ch/provotum-v2', '_blank')}
           >
             <GitHubIcon />
           </IconButton>
