@@ -1,6 +1,8 @@
 import { Contract } from 'web3-eth-contract'
 
-import { getWeb3, unlockAuthAccount } from '../../src/utils/web3'
+import { parityConfig } from '../../src/config'
+import { unlockAccountRPC } from '../../src/utils/rpc'
+import { getWeb3 } from '../../src/utils/web3'
 
 const ballotContract = require('../toDeploy/Ballot.json')
 const moduloLibrary = require('../toDeploy/ModuloMathLib.json')
@@ -18,10 +20,13 @@ const deploy = async (
   const hasNumberOfAuthNodes = numberOfAuthNodes !== undefined
   const hasAddresses = addresses !== undefined
 
-  const authAccount = await unlockAuthAccount()
-
   let deployedContract: Contract
   try {
+    const authAccount = await unlockAccountRPC(
+      parityConfig.nodeUrl,
+      parityConfig.accountPassword,
+      parityConfig.accountAddress
+    )
     deployedContract = await new web3.eth.Contract(abi)
       .deploy({
         data: bytecode,
@@ -33,6 +38,7 @@ const deploy = async (
       })
       .send({ from: authAccount, gas: 6000000 })
   } catch (error) {
+    console.log(error)
     throw new Error('Could not deploy the contract (web3.eth.Contract(abi).deploy).')
   }
 

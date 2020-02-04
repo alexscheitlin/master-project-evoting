@@ -14,6 +14,7 @@ import { AccessProviderService } from '../services'
 import { useVoterStore } from '../store'
 import getWeb3 from '../util/getWeb3'
 import { delay } from '../util/helper'
+import { createAccountRPC, unlockAccountRPC } from '../util/rpc'
 
 // The 3 things that are checked inside this component
 function getSteps(): string[] {
@@ -46,8 +47,8 @@ export const LoadingPage: React.FC = () => {
     await delay(LOADING_DELAY)
     try {
       const account = await web3.eth.personal.newAccount('securePassword')
-      //@ts-ignore
-      await web3.eth.personal.unlockAccount(account, 'securePassword', null)
+      await unlockAccountRPC(voterState.getConnectionNodeUrl(), 'securePassword', account)
+
       voterState.setWallet(account)
       return account
     } catch (error) {

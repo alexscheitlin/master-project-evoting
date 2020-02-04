@@ -26,3 +26,19 @@ export const registerEnodeWithAuthority = async (enode: string, connectTo: strin
   }
   await axios.post(connectTo, body, config)
 }
+
+export const unlockAccountRPC = async (url: string, password: string, address: string): Promise<string> => {
+  const body = {
+    jsonrpc: '2.0',
+    method: 'personal_unlockAccount',
+    params: [address, password, null],
+    id: 0,
+  }
+  const response = await axios.post(url, body, config)
+
+  if (response.data.error) {
+    throw new Error(response.data.error.message)
+  } else {
+    return address
+  }
+}

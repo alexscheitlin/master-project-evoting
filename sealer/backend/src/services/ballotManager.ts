@@ -1,10 +1,11 @@
-import BN = require('bn.js')
 import { FFelGamal } from '@meck93/evote-crypto'
+import BN = require('bn.js')
 
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../database/database'
+import { VotingState } from '../models/states'
 import { Account } from '../utils'
 import { getWeb3 } from '../utils/web3'
-import { VotingState } from '../models/states'
+import { unlockAccountRPC } from './rpc'
 
 const ballotContract = require('../contract-abis/Ballot.json')
 
@@ -23,22 +24,17 @@ const getContract = (): any => {
 }
 
 /**
- * Returns the account unlocked account
+ * Returns the authority account and unlocks it
  */
 export const getAuthAccount = async (): Promise<string> => {
   // read out wallet address
   const wallet = Account.getWallet()
   const password = Account.getPassword()
-
-  // TODO: look at the code from Alex and add the part where we 'create'
-  // the account first
-
-  const web3 = getWeb3()
+  const port = process.env.PARITY_NODE_PORT as string
+  const url = `http://${process.env.PARITY_NODE_IP}:${port}`
 
   try {
-    // @ts-ignore
-    await web3.eth.personal.unlockAccount(wallet, password, null)
-    return wallet
+    return await unlockAccountRPC(url, password, wallet)
   } catch (error) {
     console.log(error)
     throw new Error(`Unable to unlock account for ${wallet}.`)
