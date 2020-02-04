@@ -70,7 +70,7 @@ export const Vote: React.FC<VotingProps> = ({ handleNext }: VotingProps) => {
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Voting Phase" />
+      <StepTitle title="Voting" />
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.voting}</ListItemText>

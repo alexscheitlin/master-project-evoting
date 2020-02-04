@@ -51,7 +51,7 @@ export const TallyVotes: React.FC<Props> = ({ nextStep }) => {
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Tally Votes" />
+      <StepTitle title="Tallying" />
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.tallying}</ListItemText>

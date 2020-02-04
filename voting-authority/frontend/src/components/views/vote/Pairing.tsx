@@ -157,7 +157,7 @@ export const Pairing: React.FC<PairingProps> = ({ requiredSealers, handleNext }:
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Contract Deployment" />
+      <StepTitle title="Network Pairing" />
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.pairing}</ListItemText>
