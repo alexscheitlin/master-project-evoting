@@ -1,4 +1,4 @@
-# Master Project: eVoting
+# Provotum (2.0)
 
 |          Voter          |          Authority          |          Sealer          |
 | :---------------------: | :-------------------------: | :----------------------: |
