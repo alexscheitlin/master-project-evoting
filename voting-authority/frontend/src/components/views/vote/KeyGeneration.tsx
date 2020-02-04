@@ -123,7 +123,7 @@ export const KeyGeneration: React.FC<KeyGenerationProps> = ({ handleNext }: KeyG
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Vote Configuration" subtitle="Public Key Generation" />
+      <StepTitle title="Key Generation" />
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.keyGeneration}</ListItemText>

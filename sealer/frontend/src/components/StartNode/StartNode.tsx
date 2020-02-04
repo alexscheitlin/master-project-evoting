@@ -99,7 +99,7 @@ export const StartNode: React.FC<Props> = ({ nextStep }) => {
 
   return (
     <StepContentWrapper>
-      <StepTitle title="Start Node" />
+      <StepTitle title="Network Pairing" />
       <List>
         <ListItem>
           <ListItemText>{stepDescriptions.pairing}</ListItemText>
