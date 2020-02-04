@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const config = { headers: { 'Content-Type': 'application/json' } }
 
-export const createAccount = async (url: string, password: string, passphrase: string): Promise<string> => {
+export const createAccountRPC = async (url: string, password: string, passphrase: string): Promise<string> => {
   const body = {
     jsonrpc: '2.0',
     method: 'parity_newAccountFromPhrase',

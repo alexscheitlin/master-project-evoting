@@ -59,7 +59,7 @@ const VotingPanel: React.FC<Props> = ({ contract }) => {
     switch (selectedVote) {
       case VotingOption.YES:
         try {
-          const res: any = await BallotService.castYesVote(contract, voterState.wallet)
+          const res: any = await BallotService.castYesVote(contract, voterState)
           const voteTx = {
             blockHash: res.blockHash,
             blockNumber: res.blockNumber,
@@ -79,7 +79,7 @@ const VotingPanel: React.FC<Props> = ({ contract }) => {
         break
       case VotingOption.NO:
         try {
-          const res: any = await BallotService.castNoVote(contract, voterState.wallet)
+          const res: any = await BallotService.castNoVote(contract, voterState)
           const voteTx = {
             blockHash: res.blockHash,
             blockNumber: res.blockNumber,

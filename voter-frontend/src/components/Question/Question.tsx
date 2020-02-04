@@ -20,7 +20,7 @@ const Question: React.FC<Props> = ({ votingQuestion }) => {
 
   const getDate = (): string => {
     const date: Date = new Date()
-    return `${date.getDate()}.${date.getMonth()+1}. ${date.getFullYear()}`
+    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`
   }
 
   return (

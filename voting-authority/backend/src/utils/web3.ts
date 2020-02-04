@@ -1,4 +1,5 @@
 import Web3 from 'web3'
+
 import { parityConfig } from '../config'
 
 export const getWeb3 = (): Web3 => {

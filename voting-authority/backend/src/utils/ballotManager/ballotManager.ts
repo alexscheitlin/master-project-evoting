@@ -1,11 +1,13 @@
-import BN = require('bn.js')
-import { Contract } from 'web3-eth-contract'
 import { FFelGamal } from '@meck93/evote-crypto'
+import BN = require('bn.js')
 import path from 'path'
+import { Contract } from 'web3-eth-contract'
 
+import { parityConfig } from '../../config'
 import { BALLOT_ADDRESS_TABLE, getValueFromDB } from '../../database/database'
 import { VotingState } from '../../endpoints/state'
-import { getWeb3, unlockAuthAccount } from '../web3'
+import { unlockAccountRPC } from '../rpc'
+import { getWeb3 } from '../web3'
 
 const ballotContract = require(path.join(__dirname, '/../../../solidity/toDeploy/Ballot.json'))
 const web3 = getWeb3()
@@ -21,9 +23,13 @@ const getContract = (): Contract => {
   return contract
 }
 
+const getAuthAccount = async (): Promise<string> => {
+  return await unlockAccountRPC(parityConfig.nodeUrl, parityConfig.accountPassword, parityConfig.accountAddress)
+}
+
 export const setSystemParameters = async (): Promise<void> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
 
   // TODO: how do we generate suitable params?
   const p_: number = 23
@@ -54,7 +60,7 @@ export const getPublicKey = async (): Promise<BN> => {
  */
 export const generatePublicKey = async (): Promise<void> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     await contract.methods.generatePublicKey().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -67,7 +73,7 @@ export const generatePublicKey = async (): Promise<void> => {
  */
 export const createVerifiers = async (): Promise<void> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     await contract.methods.createVerifiers().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -80,7 +86,7 @@ export const createVerifiers = async (): Promise<void> => {
  */
 export const openBallot = async (): Promise<void> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     await contract.methods.openBallot().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -93,7 +99,7 @@ export const openBallot = async (): Promise<void> => {
  */
 export const closeBallot = async (): Promise<void> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     await contract.methods.closeBallot().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -125,7 +131,7 @@ export const getNrOfPublicKeyShares = async (): Promise<number> => {
 
 export const getNumberOfDecryptedShares = async (): Promise<number> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     return parseInt(await contract.methods.getNrOfDecryptedShares().call({ from: authAcc }))
   } catch (error) {
@@ -139,7 +145,7 @@ export const getNumberOfDecryptedShares = async (): Promise<number> => {
  */
 export const combineDecryptedShares = async (): Promise<boolean> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     return await contract.methods.combineDecryptedShares().send({ from: authAcc, gas: GAS_LIMIT })
   } catch (error) {
@@ -152,7 +158,7 @@ export const combineDecryptedShares = async (): Promise<boolean> => {
  */
 export const getVoteResult = async (): Promise<number> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     return await contract.methods.getVoteResult().call({ from: authAcc })
   } catch (error) {
@@ -165,7 +171,7 @@ export const getVoteResult = async (): Promise<number> => {
  */
 export const getNumberOfVotes = async (): Promise<number> => {
   const contract = getContract()
-  const authAcc = await unlockAuthAccount()
+  const authAcc = await getAuthAccount()
   try {
     return await contract.methods.getNumberOfVotes().call({ from: authAcc })
   } catch (error) {

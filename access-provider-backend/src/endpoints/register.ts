@@ -12,8 +12,8 @@ import {
 } from '../database/database'
 import { VotingState } from '../models/state'
 import { verifyAddress } from '../utils/addressVerification'
-import { createAccount } from '../utils/rpc'
-import { fundWallet, unlockAuthAccount } from '../utils/web3'
+import { createAccount, unlockAccountRPC } from '../utils/rpc'
+import { fundWallet } from '../utils/web3'
 
 const router: express.Router = express.Router()
 
@@ -110,7 +110,7 @@ router.post('/register', async (req, res) => {
     }
 
     try {
-      await unlockAuthAccount()
+      await unlockAccountRPC(serverConfig.nodeUrl, serverConfig.accountPassword, serverConfig.accountAddress)
     } catch (error) {
       res.status(500).json({ msg: ACCOUNT_UNLOCK_FAILED, error: error.message })
       return
