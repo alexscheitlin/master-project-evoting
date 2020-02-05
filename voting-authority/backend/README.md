@@ -52,7 +52,8 @@ Responses depending on the state:
 {
     "state"             : "REGISTRATION",
     "registeredSealers" : number,
-    "requiredSealers"   : number
+    "requiredSealers"   : number,
+    "sealerAddresses"   : string[]
 }
 ```
 

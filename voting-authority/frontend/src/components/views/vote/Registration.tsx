@@ -3,17 +3,25 @@ import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet'
 import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet'
 import React, { useEffect, useState } from 'react'
 
-import { DEV_URL } from '../../../constants'
 import { stepDescriptions } from '../../../descriptions'
-import { useVoteStateStore } from '../../../models/voting'
+import { useVoteStateStore, VotingState } from '../../../models/voting'
+import { fetchState } from '../../../services/authBackend'
 import { ErrorSnackbar } from '../../defaults/ErrorSnackbar'
 import { StepContentWrapper } from '../../defaults/StepContentWrapper'
 import { StepTitle } from '../../defaults/StepTitle'
 import { LoadSuccess } from '../helper/LoadSuccess'
+import { useInterval } from '../helper/UseInterval'
 
 interface RegistrationProps {
   requiredSealers: number
   handleNext: () => void
+}
+
+interface RegistrationStateResponse {
+  state: VotingState
+  registeredSealers: number
+  requiredSealers: number
+  sealerAddresses: string[]
 }
 
 export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, handleNext }: RegistrationProps) => {
@@ -38,15 +46,21 @@ export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, han
   }, [sealers, requiredSealers])
 
   useEffect(() => {
-    const events = new EventSource(`${DEV_URL}/registered`)
-    events.onmessage = (event): void => {
-      const parsedData = JSON.parse(event.data)
-      setSealers(sealers => sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index))
-    }
-    return () => {
-      events.close()
-    }
+    getState()
   }, [])
+
+  const getState = async (): Promise<void> => {
+    try {
+      const data: RegistrationStateResponse = (await fetchState()) as RegistrationStateResponse
+      setSealers(data.sealerAddresses || [])
+    } catch (error) {
+      setErrorMessage(error.msg)
+      setHasError(true)
+      console.error(error)
+    }
+  }
+
+  useInterval(() => getState(), 4000)
 
   const nextStep = async (): Promise<void> => {
     try {

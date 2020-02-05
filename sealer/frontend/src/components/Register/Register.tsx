@@ -50,18 +50,6 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
     getRequiredValidators()
   }, [])
 
-  // Subscribe to newly registered sealers
-  useEffect(() => {
-    const events = new EventSource(`${AUTH_BACKEND_URL}/registered`)
-    events.onmessage = event => {
-      const parsedData = JSON.parse(event.data)
-      setSealers(sealers => sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index))
-    }
-    return () => {
-      events.close()
-    }
-  }, [])
-
   // Get Wallet information from sealer backend
   useEffect(() => {
     async function init(): Promise<void> {
@@ -75,9 +63,10 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
     init()
   }, [])
 
-  const isStateChange = async (): Promise<void> => {
+  const updateState = async (): Promise<void> => {
     try {
       const response = await SealerBackend.getState()
+      setSealers(response.sealerAddresses || [])
       if (response.state === VotingState.PAIRING) {
         nextStep()
       }
@@ -86,7 +75,7 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
     }
   }
 
-  useInterval(isStateChange, 4000)
+  useInterval(updateState, 4000)
 
   // Tell the backend to register this sealer's wallet
   const register = async (): Promise<void> => {

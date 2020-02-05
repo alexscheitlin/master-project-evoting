@@ -7,6 +7,7 @@ interface StateResponse {
   state: VotingState
   registeredSealers: number
   requiredSealers: number
+  sealerAddresses: string[]
 }
 
 export const getState = async (): Promise<StateResponse> => {

@@ -45,6 +45,7 @@ router.get('/state', async (req, res) => {
         state: currentState,
         registeredSealers: registeredAuthorities.length,
         requiredSealers: requiredAuthorities,
+        sealerAddresses: registeredAuthorities,
       })
       break
     }
