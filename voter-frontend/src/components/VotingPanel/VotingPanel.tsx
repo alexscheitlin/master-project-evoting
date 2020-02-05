@@ -22,7 +22,7 @@ import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined'
 import ToggleButton from '@material-ui/lab/ToggleButton'
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import copy from 'copy-to-clipboard'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { SubmissionState, VotingOption } from '../../models/voting'
 import { BallotService } from '../../services'

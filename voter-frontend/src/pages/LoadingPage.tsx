@@ -14,7 +14,7 @@ import { AccessProviderService } from '../services'
 import { useVoterStore } from '../store'
 import getWeb3 from '../util/getWeb3'
 import { delay } from '../util/helper'
-import { createAccountRPC, unlockAccountRPC } from '../util/rpc'
+import { unlockAccountRPC } from '../util/rpc'
 
 // The 3 things that are checked inside this component
 function getSteps(): string[] {

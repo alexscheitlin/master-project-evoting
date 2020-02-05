@@ -1,4 +1,4 @@
-import { AppBar, Button, Grid, IconButton, makeStyles, Theme, Toolbar, Typography } from '@material-ui/core'
+import { AppBar, Button, Grid, IconButton, makeStyles, Theme, Toolbar } from '@material-ui/core'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import React from 'react'
 

@@ -19,8 +19,6 @@ const AppManager: React.FC = () => {
   const [votingState, setVotingState] = useState<VotingState>()
   const [contract, setContract] = useState<string>('')
 
-  const [error, setError] = useState(false)
-
   const setupDone = (): boolean => {
     return state.isAuthenticated() && state.isTokenSet() && state.isWalletSet() && state.isBallotContractAddressSet()
   }
@@ -50,7 +48,7 @@ const AppManager: React.FC = () => {
       setVotingState(res.state)
       setContract(res.address)
     } catch (error) {
-      setError(true)
+      console.log(error)
     }
   }
 
