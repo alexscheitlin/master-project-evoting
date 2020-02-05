@@ -101,7 +101,6 @@ export const generateKeys = async (): Promise<void> => {
     if (!(response.status === 201)) {
       throw new Error(`POST /generateKeys failed -> Status Code: ${response.status}`)
     }
-    console.log(response.data)
   } catch (error) {
     console.log(error)
     throw new Error(`Something went wrong with key generation. ${error.message}`)

@@ -54,12 +54,10 @@ export const Register: React.FC<Props> = ({ nextStep }: Props) => {
   useEffect(() => {
     const events = new EventSource(`${AUTH_BACKEND_URL}/registered`)
     events.onmessage = event => {
-      console.log('eventData', event.data, event)
       const parsedData = JSON.parse(event.data)
       setSealers(sealers => sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index))
     }
     return () => {
-      console.log('eventSource closed.')
       events.close()
     }
   }, [])

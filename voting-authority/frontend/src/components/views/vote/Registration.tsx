@@ -44,7 +44,6 @@ export const Registration: React.FC<RegistrationProps> = ({ requiredSealers, han
       setSealers(sealers => sealers.concat(parsedData).filter((element, index, arr) => arr.indexOf(element) === index))
     }
     return () => {
-      console.log('eventSource closed.')
       events.close()
     }
   }, [])

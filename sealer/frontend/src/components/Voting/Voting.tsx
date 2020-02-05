@@ -24,7 +24,6 @@ export const Voting: React.FC<Props> = ({ nextStep }) => {
     try {
       const response = await BallotService.getBallotState()
       if (response.state === VotingState.VOTING) {
-        console.log('ballot state', response)
         setVotesSubmitted(response.nrOfVotes)
         setVotingQuesiton(response.votingQuestion)
       } else if (response.state === VotingState.TALLYING) {
