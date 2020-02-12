@@ -16,6 +16,6 @@ npm run start:localhost
 # frontend will run on localhost:3001
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
 Please see instructions in root folder on how to run the dockerized version. This will always also include the backend.

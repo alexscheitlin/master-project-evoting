@@ -4,12 +4,6 @@
 | :---------------------: | :-------------------------: | :----------------------: |
 | ![](./assets/voter.png) | ![](./assets/authority.png) | ![](./assets/sealer.png) |
 
-## What to do initially
-
-`npm run lerna:install` to link packages in order for the husky hook to work
-
-see https://github.com/alexscheitlin/master-project-sink/pull/30 for more details
-
 ## Prerequisites
 
 The following must be installed on your machine in order to run the whole setup.
@@ -32,14 +26,14 @@ sudo dnf install jq
 
 ### Crypto Private Github Package
 
-While the crypto library is a private npm package, you need to login to npm on your command line.
+Since the crypto library (evote-crypto) is a private npm package, you need to be logged in to the Github package registry in order to be able to download the package.
 `npm login --registry=https://npm.pkg.github.com`
 
 You will need a Github personal access token with `package:read, package:write` permission. Unlock this in your Github account.
 
 #### Github Config JSON
 
-If the file does not exist, create a JSON file in the top-level folder (`/github.json`) that has the following structure. Insert your personal values here.
+Create a JSON file in the top-level folder (`/github.json`) which has the following structure, if it does not exist yet. Insert your credentials and personal information in there.
 
 ```json
 {
@@ -51,6 +45,12 @@ If the file does not exist, create a JSON file in the top-level folder (`/github
 }
 ```
 
+## Initial Setup
+
+`npm run lerna:install` to link packages in order for the husky hook to work
+
+see https://github.com/alexscheitlin/master-project-sink/pull/30 for more details
+
 ## Modules
 
 ![modules](./assets/eVoting.svg)
@@ -59,6 +59,8 @@ If the file does not exist, create a JSON file in the top-level folder (`/github
 
 Each subproject is configured to set and wire the PORTS automatically for every service that this subproject needs. For example: with `sealer/docker-start.sh`, the needed environment variables are fetched from `system.json` and written to `.env` files. These `.env` files are then used in `docker-compose.yml`.
 
+#### Development Mode
+
 Use `./docker-up.sh` and `./docker-down.sh` to start/stop all docker containers. This includes:
 
 - one voting authority backend
@@ -66,6 +68,10 @@ Use `./docker-up.sh` and `./docker-down.sh` to start/stop all docker containers.
 - one identity provider backend
 - one access provider backend
 - three sealer/parity nodes
+
+#### Production Mode
+
+To use a production optimized mode, use `./docker-prod-up.sh` to start all docker containers. This includes the same setup as in the development mode.
 
 ### Voter Frontend
 
@@ -100,9 +106,9 @@ npm run start:localhost
 # frontend will run on localhost:3001
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
-In production mode, the frontend and backend will run in docker-containers in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run scripts if it does not exist yet.
+In docker mode, the frontend and backend will run in docker-containers in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run scripts if it does not exist yet.
 
 ```bash
 docker network ls
@@ -132,22 +138,13 @@ npm run serve:localhost
 # backend will run on localhost:4002
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
-In production mode, the backend will run in a docker-container in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run script if it does not exist yet.
-
-```bash
-docker network ls
-
-NETWORK ID    NAME      DRIVER   SCOPE
-019cded65b2a  e-voting  bridge   local
-```
+In docker mode, the backend will run on `172.1.1.42:4002`.
 
 ```bash
 cd access-provider-backend/
 ./docker-start.sh
-
-# backend will run on 172.1.1.42:4002
 ```
 
 ### Identity Provider
@@ -163,22 +160,13 @@ npm run serve:localhost
 # backend will run on localhost:4003
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
-In production mode, the backend will run in a docker-container in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run script if it does not exist yet.
-
-```bash
-docker network ls
-
-NETWORK ID    NAME      DRIVER   SCOPE
-019cded65b2a  e-voting  bridge   local
-```
+In docker mode, the backend will run on `172.1.1.43:4003`.
 
 ```bash
 cd identity-provider-backend/
 ./docker-start.sh
-
-# backend will run on 172.1.1.43:4003
 ```
 
 ### Sealer
@@ -201,16 +189,9 @@ npm run start:localhost
 # frontend will run on localhost:3011
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
-In production mode, the frontend and backend will run in docker-containers in the network (`172.1.1.0/24`) `e-voting`. This network is automatically created in the run scripts if it does not exist yet.
-
-```bash
-docker network ls
-
-NETWORK ID    NAME      DRIVER   SCOPE
-019cded65b2a  e-voting  bridge   local
-```
+In docker mode, the frontend and backend will run in docker-containers in the network (`172.1.1.0/24`) `e-voting`. The frontends will run on `172.1.1.13[1-3]:301[1-3]`. The backends will run on `172.1.1.14[1-3]:401[1-3]`.
 
 ```bash
 cd sealer
@@ -218,9 +199,6 @@ cd sealer
 
 # example
 ./docker-start.sh 1 # will create backend and frontend for sealer 1
-
-# backend will run on 172.1.1.14[1-3]:401[1-3]
-# frontend will run on 172.1.1.13[1-3]:301[1-3]
 ```
 
 ### Proof of Authority Blockchain
@@ -240,7 +218,7 @@ all this script does, is call the following 3 times:
 sealer/docker-start.sh <sealerNr>
 ```
 
-the only thing that is different to starting all sealers on their own, is that `./dev-chain-parity-nodes.sh` will also connect the nodes for you directly
+the only thing that is different to starting all sealers on their own, is that `./dev-chain-parity-nodes.sh` will also connect the nodes for you directly.
 
 ### Solidity Contracts
 
@@ -268,3 +246,13 @@ chmod +x ./docker-start.sh
 ```
 
 more details in: `ethstats/`
+
+## Authors
+
+- **Moritz Eck** - [meck93](https://github.com/meck93)
+- **Alex Scheitlin** - [alexscheitlin](https://github.com/alexscheitlin)
+- **Nik Zaugg** - [nikzaugg](https://github.com/nikzaugg)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

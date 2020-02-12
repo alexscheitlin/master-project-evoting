@@ -16,7 +16,7 @@ npm run serve:localhost
 # backend will run on localhost:4003
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
 Please see instructions in root folder on how to run the dockerized version.
 
@@ -26,4 +26,46 @@ Run `npm run test` to run all test of the project or `npm run test:watch` to con
 
 ### Endpoint
 
-TODO
+```http
+POST /registerVoters
+```
+
+**Response**:
+
+```javascript
+201: "created"
+{
+  "success"           : boolean,
+  "msg"               : string,
+  "alreadyRegistered" : number,
+  "newlyRegistered"   : number
+}
+
+400: "userError"
+{
+  "success"           : boolean,
+  "msg"               : string,
+  "error"             : string,
+}
+```
+
+```http
+POST /getTokens
+```
+
+**Response**:
+
+```javascript
+201: "created"
+{
+  "success" : boolean,
+  "msg"     : string,
+  "token"   : string
+}
+
+400: "userError"
+{
+  "success" : boolean,
+  "msg"     : string
+}
+```

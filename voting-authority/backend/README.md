@@ -25,7 +25,7 @@ npm run serve:localhost
 # backend will run on localhost:4001
 ```
 
-**Mode=Production (`docker`)**
+**Mode=Docker (`docker`)**
 
 Please see instructions in root folder on how to run the dockerized version. This will always also include the frontend.
 
