@@ -31,7 +31,7 @@ export const setSystemParameters = async (): Promise<void> => {
   const contract = getContract()
   const authAcc = await getAuthAccount()
 
-  // TODO: how do we generate suitable params?
+  // possible parameters for p_: 23, 167, 263, 359
   const p_: number = 23
   const g_: number = 2
   const systemParams: FFelGamal.SystemParameters = FFelGamal.SystemSetup.generateSystemParameters(p_, g_)
