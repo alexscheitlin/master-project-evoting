@@ -222,21 +222,21 @@ the only thing that is different to starting all sealers on their own, is that `
 
 ### Solidity Contracts
 
+**Project**: `contracts/`
+
 ```bash
 npm run compile # compile contracts
 
 npm run test # run tests in /test
 ```
 
-The contracts live inside `/contracts`. There, we can test them isolated with the truffle framework. With `npm run compile` all contracts will be compiled and a JSON representation of the contract will be put inside `/contracts/compiled` (e.g., `Ballot.json`).
+The contracts are inside `contracts/contracts`. There, we can test them isolated with the truffle framework. With `npm run compile` all contracts will be compiled and a JSON representation of the contract will be put inside `contracts/compiled` (e.g., `Ballot.json`).
 
 These `JSON` objects contain important information to interface with the contract once it is deployed on a chain.
 
-The compiled contract `JSON` files will be automatically put into the folders that need them. Currently these are the follwing:
+The compiled contract `JSON` files will be automatically put into the folders that need them.
 
-- `voting-authority-backend/solidity/toDeploy/`
-- `voter-frontend/src/contract-abis/`
-- `sealer/backend/src/contract-abis/`
+More details in `contracts/`
 
 ### ETH Blockchain Explorer
 
