@@ -11,6 +11,10 @@ This sub-project holds all Solidity smart contracts used in the e-Voting project
 
 ## Compile Contracts
 
+```bash
+npm run compile
+```
+
 Run `npm run compile` to compile all contracts inside `contracts/` into `compiled/`.
 
 The compiled contracts are `JSON` files which can be used to deploy the contract or to interface with the contract. The `npm run compile` command automatically distributes the `JSON` files into the other sub-projects that need them. Adjust the `distribute-contracts.sh` to change this.
