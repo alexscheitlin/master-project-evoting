@@ -6,7 +6,7 @@ found here: https://github.com/Alethio/ethereum-lite-explorer
 
 ## How to run
 
-The explorer is automatically started with the start-script `docker-up.sh` and also removed inside `doker-down.sh`
+The explorer is automatically started with the start-script `docker-up.sh` and also removed inside `doker-down.sh` (both scripts found in the root of the project)
 
 ```bash
 chmod +x ./docker-start.sh
