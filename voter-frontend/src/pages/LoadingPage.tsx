@@ -63,8 +63,6 @@ export const LoadingPage: React.FC = () => {
       voterState.setBallotContractAddress(response.ballot)
       return response.ballot
     } catch (error) {
-      // TODO set error message that token is not valid
-      // currenlty just redirecting to login
       voterState.setError(true)
       voterState.setMessage('Token is invalid.')
       voterState.logout()

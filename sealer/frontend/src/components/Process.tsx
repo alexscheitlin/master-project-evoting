@@ -22,7 +22,7 @@ export const Process: React.FC = () => {
         const data = await SealerBackend.getState()
         setActiveStep(VOTE_STATES.indexOf(data.state))
       } catch (error) {
-        // TODO: wire up project with a error snack bar
+        // TODO: wire up project with a global error snack bar
         console.log(error)
       }
     }

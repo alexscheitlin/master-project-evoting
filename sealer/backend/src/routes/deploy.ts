@@ -7,14 +7,11 @@ const router: express.Router = express.Router()
 router.get('/deploy', async (req, res) => {
   try {
     const response = await AuthBackend.getBallotAddress()
-    // TODO: fix this, does not work somehow
-    // make sure to get the right boolean
+    // TODO: fix this, does not work somehow => make sure to extract the boolean
     if (response === '') {
       res.status(200).json({ deployed: false })
-      return
     } else {
       res.status(200).json({ deployed: true })
-      return
     }
   } catch (error) {
     console.log(error)

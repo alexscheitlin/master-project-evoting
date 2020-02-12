@@ -14,8 +14,6 @@ interface Props {
 const ChainInfo: React.FC<Props> = ({ contractAddress, walletAddress, balance }) => {
   const classes = useStyles()
 
-  // TODO: we should probaly add the hash or something of the membership proof that has been submitted? Or maybe the block address in which it is contained?
-
   return (
     <div className={classes.root}>
       <Grid container direction="row">

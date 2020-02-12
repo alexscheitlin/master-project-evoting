@@ -110,7 +110,6 @@ router.post('/deploy', async (req: express.Request, res: express.Response) => {
   }
 
   // deploy contracts
-  // TODO: change to try/catch with await
   Deploy.init(voteQuestion, parityConfig.numberOfAuthorityNodes, priviledgedAddresses)
     .then(address => {
       setValue(BALLOT_ADDRESS_TABLE, address)

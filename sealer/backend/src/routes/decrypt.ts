@@ -13,16 +13,13 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
     let state: VotingState = await BallotManager.getBallotState()
     state = VotingState.TALLYING
 
-    // TODO: add handling for other cases
     switch (state) {
       case VotingState.TALLYING: {
-        // TODO: check if decrypted share for this authority has already been submitted
         const votesAsStrings = await BallotManager.getAllVotes()
         const votes: FFelGamal.Cipher[] = votesAsStrings.map(
           vote => ({ a: new BN(vote.a), b: new BN(vote.b) } as FFelGamal.Cipher)
         )
 
-        // TODO: maybe this can be fetched from somewhere else or done more intelligently
         const systemParamsString: number[] = await BallotManager.getSystemParameters()
         const systemParams: FFelGamal.SystemParameters = {
           p: new BN(systemParamsString[0]),
@@ -46,13 +43,12 @@ router.post('/decrypt', async (req: express.Request, res: express.Response) => {
         break
       }
       default:
-        // TODO: improve message
-        res.status(400).json({ msg: `Invalid request!` })
+        res
+          .status(400)
+          .json({ msg: `A decrypted share of the cast votes can only be submitted in the Tallying stage!` })
         break
     }
   } catch (error) {
-    console.log(error)
-    // TODO: think of good error message
     res.status(500).json({ msg: error.msg })
   }
 })
