@@ -61,6 +61,27 @@ see https://github.com/alexscheitlin/master-project-sink/pull/30 for more detail
 
 Each subproject is configured to set and wire the PORTS automatically for every service that this subproject needs. For example: with `sealer/docker-start.sh`, the needed environment variables are fetched from `system.json` and written to `.env` files. These `.env` files are then used in `docker-compose.yml`.
 
+For both modes, the identity provider needs to be initialized after the containers are started. Every voter needs to have an eIdentity (username, password, and uuid v4; e.g., generated with https://www.uuidgenerator.net/). The eIdentities need to be added to `identity-provider-backend/src/database/identities` in the following format: `uuidv4:username:password`. By default, three voters are provided.
+
+To initialize the identity provider, send the uuid of every eIdentity that is eligible to vote using the following command:
+
+```bash
+# request
+curl -X POST \
+  http://localhost:4003/registerVoters \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "voters": [
+        "9980280d-32d1-41e9-8959-7c483e43256b",
+        "afd948fe-7b48-421b-accb-389619f8456c",
+        "5342b7e8-3f8e-4520-ac4e-e0b54f1d1ead"
+    ]
+}'
+
+# response
+{"success":true,"msg":"Successfully registered voters!","alreadyRegistered":0,"newlyRegistered":3}
+```
+
 #### Development Mode
 
 Use `./docker-up.sh` and `./docker-down.sh` to start/stop all docker containers. This includes:
