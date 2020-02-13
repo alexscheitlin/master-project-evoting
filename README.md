@@ -4,6 +4,8 @@
 | :---------------------: | :-------------------------: | :----------------------: |
 | ![](./assets/voter.png) | ![](./assets/authority.png) | ![](./assets/sealer.png) |
 
+[Project Report](./assets/report.pdf)
+
 ## Prerequisites
 
 The following must be installed on your machine in order to run the whole setup.
