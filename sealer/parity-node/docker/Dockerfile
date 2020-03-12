@@ -8,7 +8,7 @@
 #
 # This allows us to copy over resources needed at runtime (e.g., the KeyStore file and Password)
 
-FROM parity/parity:stable
+FROM parity/parity:v2.5.6-stable
 
 ARG NETWORK_NAME=${NETWORK_NAME}
 ARG ID=${ID}
