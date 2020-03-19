@@ -17,7 +17,7 @@ server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(requestLogger)
 server.use(responseLogger)
-server.use(cors({ origin: 'http://localhost:3000' }))
+server.use(cors({ origin: ['http://localhost:3000', 'http://172.1.1.30:3000'] }))
 
 // add all routes
 server.use('/', nodeUrl)

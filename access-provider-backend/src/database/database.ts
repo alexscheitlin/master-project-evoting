@@ -1,4 +1,5 @@
 import { AdapterSync } from 'lowdb'
+import path from 'path'
 
 import low from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
@@ -12,7 +13,7 @@ export const VALID_TOKENS_TABLE: string = 'validSignupTokens'
 export const USED_TOKENS_TABLE: string = 'usedSignupTokens'
 
 export const setupDB = (): void => {
-  const adapter: AdapterSync = new FileSync('./src/database/db.json')
+  const adapter: AdapterSync = new FileSync(path.join(__dirname, 'db.json'))
   db = low(adapter)
 
   // set defaults (if JSON is empty)

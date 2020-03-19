@@ -1,17 +1,57 @@
-FROM node:12-alpine
+FROM node:12-alpine as builder
 
-# install bash
-RUN apk add --no-cache bash
+# variables used during the build
+ARG PARITY_PORT
+ARG PARITY_IP
+ARG VA_PORT
+ARG VA_IP
+ARG AP_PORT
+ARG AP_IP
+
+# env variables
+ENV PARITY_NODE_PORT=$PARITY_PORT
+ENV PARITY_NODE_IP=$PARITY_IP
+ENV VOTING_AUTH_BACKEND_PORT=$VA_PORT
+ENV VOTING_AUTH_BACKEND_IP=$VA_IP
+ENV ACCESS_PROVIDER_BACKEND_PORT=$AP_PORT
+ENV ACCESS_PROVIDER_BACKEND_IP=$AP_IP
+ENV NODE_ENV=development
 
 # Create app directory
-WORKDIR /usr/src/backend
+WORKDIR /usr/code
+
+# install build dependencies
+RUN apk add --no-cache bash python make g++ gcc openssh-client git
 
 # Install app dependencies
 COPY package*.json ./
+COPY ./src ./src
 
-RUN npm install --force
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm install
 
-# Bundle app source
-COPY . .
+COPY tsconfig.json ./
+COPY postbuild.sh ./
+COPY ./src/database/db_default.json ./src/database/
+COPY ./src/database/db.json ./src/database/
+RUN npm run build   
+
+# remove the dev node_modules and install the production version (backend-only)
+RUN rm -rf ./node_modules
+RUN npm install --production
+
+## STAGE 2 -> only copy the important stuff from the previous stage
+FROM node:12-alpine
+
+# env variables
+ENV NODE_ENV=production
+
+# create app directory
+WORKDIR /usr/code
+
+# copy the backend: production node_modules
+COPY --from=builder /usr/code/node_modules /usr/code/node_modules
+
+# copy the output (dist) folder
+COPY --from=builder /usr/code/dist /usr/code/dist
+
+CMD ["node", "./dist/server.js"]
