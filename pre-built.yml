@@ -1,0 +1,148 @@
+version: "3.7"
+
+services:
+  voting_authority:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/voting_authority:v1
+    environment:
+      NODE_ENV: production
+      VOTING_AUTH_BACKEND_PORT: 4001
+      VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      PARITY_NODE_PORT: 7011
+      PARITY_NODE_IP: 172.1.1.171
+      REACT_APP_ACCESS_PROVIDER_PORT: 4002
+      REACT_APP_ACCESS_PROVIDER_IP: 172.1.1.42
+      REACT_APP_IDENTITY_PROVIDER_PORT: 4003
+      REACT_APP_IDENTITY_PROVIDER_IP: 172.1.1.43
+      REACT_APP_VOTING_AUTH_BACKEND_PORT: 4001
+      REACT_APP_VOTING_AUTH_BACKEND_IP: 172.1.1.41
+    ports:
+      - 4001:4001
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.41
+    command: node ./backend/dist/src/server.js
+
+  sealer_1:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/voting_sealer_1:v1
+    environment:
+      NODE_ENV: production
+      VOTING_AUTH_BACKEND_PORT: 4001
+      VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      SEALER_BACKEND_PORT: 4011
+      SEALER_BACKEND_IP: 172.1.1.141
+      PARITY_NODE_PORT: 7011
+      PARITY_NODE_IP: 172.1.1.171
+      REACT_APP_VOTING_AUTH_BACKEND_PORT: 4001
+      REACT_APP_VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      REACT_APP_SEALER_BACKEND_PORT: 4011
+      REACT_APP_SEALER_BACKEND_IP: 172.1.1.141
+    ports:
+      - 4011:4011
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.141
+    command: node ./backend/dist/server.js
+
+  sealer_2:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/voting_sealer_2:v1
+    environment:
+      NODE_ENV: production
+      VOTING_AUTH_BACKEND_PORT: 4001
+      VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      SEALER_BACKEND_PORT: 4012
+      SEALER_BACKEND_IP: 172.1.1.142
+      PARITY_NODE_PORT: 7012
+      PARITY_NODE_IP: 172.1.1.172
+      REACT_APP_VOTING_AUTH_BACKEND_PORT: 4001
+      REACT_APP_VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      REACT_APP_SEALER_BACKEND_PORT: 4012
+      REACT_APP_SEALER_BACKEND_IP: 172.1.1.142
+    ports:
+      - 4012:4012
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.142
+    command: node ./backend/dist/server.js
+
+  sealer_3:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/voting_sealer_3:v1
+    environment:
+      NODE_ENV: production
+      VOTING_AUTH_BACKEND_PORT: 4001
+      VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      SEALER_BACKEND_PORT: 4013
+      SEALER_BACKEND_IP: 172.1.1.143
+      PARITY_NODE_PORT: 7013
+      PARITY_NODE_IP: 172.1.1.173
+      REACT_APP_VOTING_AUTH_BACKEND_PORT: 4001
+      REACT_APP_VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      REACT_APP_SEALER_BACKEND_PORT: 4013
+      REACT_APP_SEALER_BACKEND_IP: 172.1.1.143
+    ports:
+      - 4013:4013
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.143
+    command: node ./backend/dist/server.js
+
+  access_provider:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/access_provider:v2
+    environment:
+      ACCESS_PROVIDER_BACKEND_PORT: 4002
+      ACCESS_PROVIDER_BACKEND_IP: 172.1.1.42
+      VOTING_AUTH_BACKEND_PORT: 4001
+      VOTING_AUTH_BACKEND_IP: 172.1.1.41
+      PARITY_NODE_PORT: 7011
+      PARITY_NODE_IP: 172.1.1.171
+      NODE_ENV: production
+    ports:
+      - 4002:4002
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.42
+    command: node dist/server.js
+
+  identity_provider:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/identity_provider:v2
+    environment:
+      IDENTITY_PROVIDER_BACKEND_PORT: 4003
+      IDENTITY_PROVIDER_BACKEND_IP: 172.1.1.43
+      ACCESS_PROVIDER_BACKEND_PORT: 4002
+      ACCESS_PROVIDER_BACKEND_IP: 172.1.1.42
+      NODE_ENV: production
+    ports:
+      - 4003:4003
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.43
+    command: node dist/server.js
+
+  voter:
+    image: docker.pkg.github.com/alexscheitlin/master-project-evoting/voter_frontend:v2
+    environment:
+      NODE_ENV: production
+      REACT_APP_IDENTITY_PROVIDER_PORT: 4003
+      REACT_APP_IDENTITY_PROVIDER_IP: 172.1.1.43
+      REACT_APP_ACCESS_PROVIDER_PORT: 4002
+      REACT_APP_ACCESS_PROVIDER_IP: 172.1.1.42
+      PORT: 3000
+    ports:
+      - 3000:3000
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.30
+    command: "serve -s build -l tcp://172.1.1.30:3000"
+
+  ethstats:
+    image: alethio/ethereum-lite-explorer
+    environment:
+      - APP_NODE_URL=http://172.1.1.171:7011
+    ports:
+      - 6001:80
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.181
+
+networks:
+  e-voting:
+    external: true
