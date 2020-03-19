@@ -1,0 +1,20 @@
+{
+  "identities": [
+    {
+      "uuid": "9980280d-32d1-41e9-8959-7c483e43256b",
+      "username": "alex",
+      "password": "alex"
+    },
+    {
+      "uuid": "afd948fe-7b48-421b-accb-389619f8456c",
+      "username": "moritz",
+      "password": "moritz"
+    },
+    {
+      "uuid": "5342b7e8-3f8e-4520-ac4e-e0b54f1d1ead",
+      "username": "nik",
+      "password": "nik"
+    }
+  ],
+  "tokens": []
+}

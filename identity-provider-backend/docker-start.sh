@@ -61,10 +61,11 @@ cd $dir
 
 if [[ $1 == 1 ]]; then
     # build containers
-    docker-compose -p identity-provider -f docker-compose.yml up --build --detach
+    DOCKER_BUILDKIT=1 docker build -t identity_provider . --build-arg AP_PORT=$ACCESS_PROVIDER_BACKEND_PORT --build-arg AP_IP=$ACCESS_PROVIDER_BACKEND_IP --build-arg IP_IP=$IDENTITY_PROVIDER_BACKEND_IP --build-arg IP_PORT=$IDENTITY_PROVIDER_BACKEND_PORT 
+    docker-compose -f pre_built.yml up --detach --no-build
 else
     # don't build containers
-    docker-compose -p identity-provider -f docker-compose.yml up --detach
+    docker-compose -f pre_built.yml up --detach --no-build
 fi
 
 rm -f $dir/.env

@@ -1,4 +1,5 @@
 import { AdapterSync } from 'lowdb'
+import path from 'path'
 
 import low from 'lowdb'
 import fs from 'fs'
@@ -12,13 +13,13 @@ export const IDENTITIES_TABLE: string = 'identities'
 export const TOKENS_TABLE: string = 'tokens'
 
 export const setupDB = (): void => {
-  const adapter: AdapterSync = new FileSync('./src/database/db.json')
+  const adapter: AdapterSync = new FileSync(path.join(__dirname, 'db.json'))
   db = low(adapter)
 
   // read identities and map them to the Identity interface
   // assumption: voters already have an existing eIdentity
   // uuids version 4 generated with: https://www.uuidgenerator.net/
-  const rawIdentities = fs.readFileSync('./src/database/identities', 'utf8')
+  const rawIdentities = fs.readFileSync(path.join(__dirname, 'identities'), 'utf8')
   const identities = []
   for (const identity of rawIdentities.split('\n')) {
     const values = identity.split(':')

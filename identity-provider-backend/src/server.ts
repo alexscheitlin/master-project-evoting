@@ -15,7 +15,11 @@ server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
 server.use(requestLogger)
 server.use(responseLogger)
-server.use(cors({ origin: ['http://localhost:3000', 'http://localhost:4003'] }))
+server.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://172.1.1.30:3000', 'http://localhost:4003', 'http://172.1.1.43:4003'],
+  })
+)
 
 // add all routes
 server.use('/', register)

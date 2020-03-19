@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  identity_provider:
+    image: identity_provider:latest
+    environment:
+      - IDENTITY_PROVIDER_BACKEND_PORT=${IDENTITY_PROVIDER_BACKEND_PORT}
+      - IDENTITY_PROVIDER_BACKEND_IP=${IDENTITY_PROVIDER_BACKEND_IP}
+      - ACCESS_PROVIDER_BACKEND_PORT=${ACCESS_PROVIDER_BACKEND_PORT}
+      - ACCESS_PROVIDER_BACKEND_IP=${ACCESS_PROVIDER_BACKEND_IP}
+      - NODE_ENV=${NODE_ENV}
+    ports:
+      - ${IDENTITY_PROVIDER_BACKEND_PORT}:${IDENTITY_PROVIDER_BACKEND_PORT}
+    networks:
+      e-voting:
+        ipv4_address: ${IDENTITY_PROVIDER_BACKEND_IP}
+    command: node dist/server.js
+
+networks:
+  e-voting:
+    external: true
