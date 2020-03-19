@@ -57,7 +57,21 @@ see https://github.com/alexscheitlin/master-project-sink/pull/30 for more detail
 
 ![modules](./assets/eVoting.svg)
 
-## How to run
+## How To Run A Demo!
+
+To run a demo of the project with one voting authority and three sealers use the following command.
+
+```bash
+./docker-prebuilt-up.sh
+```
+
+Once the demo is finished, everything can be shutdown with the following command:
+
+```bash
+./docker-prebuilt-down.sh
+```
+
+## How To Run The Project (in detail -> more for development)
 
 Each subproject is configured to set and wire the PORTS automatically for every service that this subproject needs. For example: with `sealer/docker-start.sh`, the needed environment variables are fetched from `system.json` and written to `.env` files. These `.env` files are then used in `docker-compose.yml`.
 
