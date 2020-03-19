@@ -111,11 +111,14 @@ $parentDir/docker-network.sh $network_name
 cd $dir/backend && npm run clean
 cd $dir
 
-# start docker containers
-docker-compose -p controller_$sealerNr -f production.yml build --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER \
---build-arg SB_PORT=$SEALER_BACKEND_PORT --build-arg SB_IP=$SEALER_BACKEND_IP --build-arg SF_PORT=$SEALER_FRONTEND_PORT --build-arg SF_IP=$SEALER_FRONTEND_IP \
---build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP 
-docker-compose -p controller_$sealerNr -f production.yml up --detach --no-build
+if [[ $2 == 1 ]]; then
+    # build containers
+    DOCKER_BUILDKIT=1 docker build -t voting_sealer_$sealerNr . --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER --build-arg SB_PORT=$SEALER_BACKEND_PORT --build-arg SB_IP=$SEALER_BACKEND_IP --build-arg SF_PORT=$SEALER_FRONTEND_PORT --build-arg SF_IP=$SEALER_FRONTEND_IP --build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP 
+    docker-compose -f pre_built.yml up --detach --no-build
+else
+    # don't build containers
+    docker-compose -f pre_built.yml up --detach --no-build
+fi
 
 # remove all temp files
 rm -f $backendDir/wallet/sealer.json
