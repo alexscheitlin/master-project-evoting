@@ -1,10 +1,7 @@
 /* eslint-disable no-undef */
 import axios from 'axios'
-
+import { ACCESS_PROVIDER_URL } from '../constants'
 import { VotingState } from '../models/voting'
-
-const getAccessProviderUrl = (): string =>
-  `http://${process.env.REACT_APP_ACCESS_PROVIDER_IP}:${process.env.REACT_APP_ACCESS_PROVIDER_PORT}`
 
 interface FundWalletResponse {
   success: boolean
@@ -23,7 +20,7 @@ export const fundWallet = async (token: string, wallet: string): Promise<FundWal
     address: wallet,
   }
   try {
-    const res = await axios.post(getAccessProviderUrl() + '/register', requestBody)
+    const res = await axios.post(`${ACCESS_PROVIDER_URL}/register`, requestBody)
     // return the ballot contract address
     return {
       success: res.data.success,
@@ -41,7 +38,7 @@ export const fundWallet = async (token: string, wallet: string): Promise<FundWal
  */
 export const getConnectionNodeUrl = async (): Promise<string> => {
   try {
-    const res = await axios.get(getAccessProviderUrl() + '/getNodeURL')
+    const res = await axios.get(`${ACCESS_PROVIDER_URL}/getNodeURL`)
     return res.data.node
   } catch (error) {
     throw new Error(`Could not get connection node from the access provider: ${error.response.data.msg}`)
@@ -55,7 +52,7 @@ interface StateResponse {
 
 export const getState = async (): Promise<StateResponse> => {
   try {
-    const res = await axios.get(getAccessProviderUrl() + '/state')
+    const res = await axios.get(`${ACCESS_PROVIDER_URL}/state`)
     return {
       state: res.data.state,
       address: res.data.address,

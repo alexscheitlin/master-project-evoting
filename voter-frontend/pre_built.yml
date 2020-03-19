@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  voter:
+    image: voter_frontend:latest
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - REACT_APP_ACCESS_PROVIDER_IP=${REACT_APP_ACCESS_PROVIDER_IP}
+      - REACT_APP_ACCESS_PROVIDER_PORT=${REACT_APP_ACCESS_PROVIDER_PORT}
+      - REACT_APP_IDENTITY_PROVIDER_IP=${REACT_APP_IDENTITY_PROVIDER_IP}
+      - REACT_APP_IDENTITY_PROVIDER_PORT=${REACT_APP_IDENTITY_PROVIDER_PORT}
+      - PORT=3000
+    ports:
+      - 3000:3000
+    networks:
+      e-voting:
+        ipv4_address: 172.1.1.30
+    command: 'serve -s build -l tcp://172.1.1.30:3000'
+
+networks:
+  e-voting:
+    external: true
