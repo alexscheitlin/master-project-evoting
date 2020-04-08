@@ -43,6 +43,37 @@ Insert your credentials and personal information in there.
 }
 ```
 
+## How To Run A Demo
+
+To run a demo of the project with one voting authority and three sealers use the following command.
+
+```bash
+./docker-prebuilt-up.sh
+```
+
+**Voting Authority**
+[Voting Authority Frontend](http://172.1.1.41:4001/) on http://172.1.1.41:4001/
+
+**Access Provider** (only backend)
+[Access Provider](http://172.1.1.42:4002/) on http://172.1.1.42:4002/
+
+**Sealers**
+[Sealer Frontend 1](http://172.1.1.141:4011/) on http://172.1.1.141:4011/ 
+[Sealer Frontend 2](http://172.1.1.141:4012/) on http://172.1.1.141:4012/ 
+[Sealer Frontend 3](http://172.1.1.141:4013/) on http://172.1.1.141:4013/
+
+**Voter Frontend**
+[Voter Frontend](http://172.1.1.30:3000/) on http://172.1.1.30:3000/
+
+**Blockchain Explorer**
+[Blockchain Explorer](http://127.0.0.1:6001/) on http://127.0.0.1:6001/
+
+Once the demo is finished, everything can be shutdown with the following command:
+
+```bash
+./docker-prebuilt-down.sh
+```
+
 ## Initial Setup
 
 `npm run lerna:install` to link packages in order for the husky hook to work
@@ -52,20 +83,6 @@ see https://github.com/alexscheitlin/master-project-sink/pull/30 for more detail
 ## Modules
 
 ![modules](./assets/eVoting.svg)
-
-## How To Run A Demo!
-
-To run a demo of the project with one voting authority and three sealers use the following command.
-
-```bash
-./docker-prebuilt-up.sh
-```
-
-Once the demo is finished, everything can be shutdown with the following command:
-
-```bash
-./docker-prebuilt-down.sh
-```
 
 ## How To Run The Project (in detail -> more for development)
 
