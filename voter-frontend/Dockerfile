@@ -1,9 +1,5 @@
 FROM node:12-alpine as builder
 
-# variables used to perform npm-cli-login
-ARG GITHUB_TOKEN
-ARG GITHUB_USER
-ARG GITHUB_EMAIL
 ARG AP_IP
 ARG AP_PORT
 ARG IP_IP
@@ -27,10 +23,6 @@ RUN apk add --no-cache bash python make g++ gcc openssh-client git
 COPY . .
 COPY .env ./.env
 
-# install npm cli login to retrieve private package from github
-RUN npm install -g npm-cli-login
-RUN NPM_USER=${GITHUB_USER} NPM_PASS=${GITHUB_TOKEN} NPM_EMAIL=${GITHUB_EMAIL} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
-
 # install all dependencies (including dev)
 RUN npm install
 
@@ -50,6 +42,6 @@ RUN npm install -g serve
 # copy the output (build & public) folder
 COPY --from=builder /usr/code/build /usr/code/build
 COPY --from=builder /usr/code/.env /usr/code/.env
-COPY --from=builder /usr/code/public /usr/code/public 
+COPY --from=builder /usr/code/public /usr/code/public
 
 CMD ["serve", "-d -s build -l tcp://172.1.1.30:3000"]

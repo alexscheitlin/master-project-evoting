@@ -8,12 +8,12 @@ echo '##############################################'
 echo
 
 if [[ $1 == '--build' ]]; then
-    
+
     echo '> building docker containers'
     shouldBuild=1
 else
     echo '> using existing containers...'
-    echo '> if you wish to build the docker containers, run:' 
+    echo '> if you wish to build the docker containers, run:'
     echo '> ./docker-up.sh --build'
 fi
 
@@ -37,7 +37,7 @@ echo
 echo '> starting Blockchain Explorer Dashboard'
 ./ethstats/docker-start.sh $shouldBuild
 
-echo 
+echo
 echo '-------------------------------------------------'
 echo '> Running Docker Containers'
 echo '-------------------------------------------------'

@@ -26,13 +26,6 @@ echo "The mode is: $mode"
 # - the config file with all IPs and ports
 ###########################################
 globalConfig=$parentDir/system.json
-githubConfig=$parentDir/github.json
-
-# check if the github config json exists -> if not we stop the process
-if [ ! -f "$githubConfig" ]; then
-    echo "$githubConfig doesn't exist! Please create it!"
-    exit
-fi
 
 ###########################################
 # Set Sealer Number
@@ -50,7 +43,7 @@ cp $parentDir/poa-blockchain/keys/sealer$sealerNr.pwd $backendDir/wallet/sealer.
 ###########################################
 # ENV variables
 ###########################################
-# - Voting Authority Backend PORT (the port stays the same, in dev and prod mode) 
+# - Voting Authority Backend PORT (the port stays the same, in dev and prod mode)
 VOTING_AUTH_BACKEND_PORT=$(cat $globalConfig | jq .services.voting_authority_backend.port)
 # - Voting Authority Backend IP (either 172.1.1.XXX or localhost)
 VOTING_AUTH_BACKEND_IP=$(cat $globalConfig | jq .services.voting_authority_backend.ip.$mode | tr -d \")
@@ -58,7 +51,7 @@ VOTING_AUTH_BACKEND_IP=$(cat $globalConfig | jq .services.voting_authority_backe
 SEALER_BACKEND_PORT=$(cat $globalConfig | jq .services.sealer_backend_$sealerNr.port)
 # - Sealer Backend IP (either 172.1.1.XXX or localhost)
 SEALER_BACKEND_IP=$(cat $globalConfig | jq .services.sealer_backend_$sealerNr.ip.$mode | tr -d \")
-# - Sealer Frontend Port (the port stays the same, in dev and prod mode) 
+# - Sealer Frontend Port (the port stays the same, in dev and prod mode)
 SEALER_FRONTEND_PORT=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.port)
 # - Sealer Frontend IP (either 172.1.1.XXX or localhost)
 SEALER_FRONTEND_IP=$(cat $globalConfig | jq .services.sealer_frontend_$sealerNr.ip.$mode | tr -d \")
@@ -68,10 +61,6 @@ PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.port
 PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_$sealerNr.ip.$mode | tr -d \")
 # - Specify NODE_ENV
 NODE_ENV=$mode
-# - Specify the Github credentials
-GITHUB_TOKEN=$(cat $githubConfig | jq .github.token | tr -d \")
-GITHUB_EMAIL=$(cat $githubConfig | jq .github.email | tr -d \")
-GITHUB_USER=$(cat $githubConfig | jq .github.user | tr -d \")
 
 ###########################################
 # write ENV variables into .env
@@ -113,7 +102,7 @@ cd $dir
 
 if [[ $2 == 1 ]]; then
     # build containers
-    DOCKER_BUILDKIT=1 docker build -t voting_sealer_$sealerNr . --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER --build-arg SB_PORT=$SEALER_BACKEND_PORT --build-arg SB_IP=$SEALER_BACKEND_IP --build-arg SF_PORT=$SEALER_FRONTEND_PORT --build-arg SF_IP=$SEALER_FRONTEND_IP --build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP 
+    DOCKER_BUILDKIT=1 docker build -t voting_sealer_$sealerNr . --build-arg SB_PORT=$SEALER_BACKEND_PORT --build-arg SB_IP=$SEALER_BACKEND_IP --build-arg SF_PORT=$SEALER_FRONTEND_PORT --build-arg SF_IP=$SEALER_FRONTEND_IP --build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP
     docker-compose -f pre_built.yml up --detach --no-build
 else
     # don't build containers

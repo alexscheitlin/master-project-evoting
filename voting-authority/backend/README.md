@@ -9,9 +9,7 @@
 ## How to build the container
 
 The development mode backend container can be built with the following command:
-`DOCKER_BUILDKIT=1 docker build -t vote-auth-backend --build-arg GITHUB_TOKEN=<GITHUB_PERSONAL_TOKEN> --build-arg GITHUB_USER=<GITHUB_USERNAME> --build-arg GITHUB_EMAIL=<GITHUB_EMAIL> .`
-
-This requires that you have access to the private package repository on Github. Additionally, you will need a personal access token with rights: `package:read, package:write`. You can use your Github username and email address.
+`DOCKER_BUILDKIT=1 docker build -t vote-auth-backend .`
 
 ## How to run
 

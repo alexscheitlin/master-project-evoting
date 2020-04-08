@@ -1,9 +1,5 @@
 FROM node:12-alpine as builder
 
-# variables used to perform npm-cli-login
-ARG GITHUB_TOKEN
-ARG GITHUB_USER
-ARG GITHUB_EMAIL
 ARG PARITY_PORT
 ARG PARITY_IP
 ARG VA_PORT
@@ -24,13 +20,8 @@ WORKDIR /usr/src
 # install build dependencies
 RUN apk add --no-cache bash python make g++ gcc openssh-client git
 
-# copy the backend folder
+# copy the backend folder and install the backend
 COPY ./backend ./backend
-
-# install npm cli login to retrieve private package from github
-RUN npm install -g npm-cli-login
-RUN NPM_USER=${GITHUB_USER} NPM_PASS=${GITHUB_TOKEN} NPM_EMAIL=${GITHUB_EMAIL} NPM_REGISTRY=https://npm.pkg.github.com npm-cli-login
-
 RUN cd ./backend && npm i
 
 # copy the frontend folder and install the frontend
