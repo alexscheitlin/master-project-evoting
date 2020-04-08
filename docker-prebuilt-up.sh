@@ -12,6 +12,7 @@ GITHUB_TOKEN=$(cat $githubConfig | jq .github.token | tr -d \")
 GITHUB_USER=$(cat $githubConfig | jq .github.user | tr -d \")
 
 # login into docker package registry
+# -> this is required even if the images are public (Github Packages Limitation)
 docker login docker.pkg.github.com --username $GITHUB_USER --password $GITHUB_TOKEN
 
 # create docker network

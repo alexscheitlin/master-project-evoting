@@ -25,18 +25,11 @@ echo "The mode is: $mode"
 # - the config file with all IPs and ports
 ###########################################
 globalConfig=$parentDir/system.json
-githubConfig=$parentDir/github.json
-
-# check if the github config json exists -> if not we stop the process
-if [ ! -f "$githubConfig" ]; then
-    echo "$githubConfig doesn't exist! Please create it!"
-    exit
-fi
 
 ###########################################
 # ENV variables
 ###########################################
-# - Voting Authority Backend PORT (the port stays the same, in dev and prod mode) 
+# - Voting Authority Backend PORT (the port stays the same, in dev and prod mode)
 VOTING_AUTH_BACKEND_PORT=$(cat $globalConfig | jq .services.voting_authority_backend.port)
 # - Voting Authority Backend IP (either 172.1.1.XXX or localhost)
 VOTING_AUTH_BACKEND_IP=$(cat $globalConfig | jq .services.voting_authority_backend.ip.$mode | tr -d \")
@@ -50,10 +43,6 @@ PARITY_NODE_PORT=$(cat $globalConfig | jq .services.sealer_parity_1.port)
 PARITY_NODE_IP=$(cat $globalConfig | jq .services.sealer_parity_1.ip.$mode | tr -d \")
 # - Specify NODE_ENV
 NODE_ENV=$mode
-# - Specify the Github credentials
-GITHUB_TOKEN=$(cat $githubConfig | jq .github.token | tr -d \")
-GITHUB_EMAIL=$(cat $githubConfig | jq .github.email | tr -d \")
-GITHUB_USER=$(cat $githubConfig | jq .github.user | tr -d \")
 
 ###########################################
 # write ENV variables into .env
@@ -100,8 +89,7 @@ cd $dir/backend && npm run clean
 cd $dir
 
 # start docker containers
-DOCKER_BUILDKIT=1 docker build -t voting_authority . --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER \
---build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP 
+DOCKER_BUILDKIT=1 docker build -t voting_authority . --build-arg PARITY_PORT=$PARITY_NODE_PORT --build-arg PARITY_IP=$PARITY_NODE_IP --build-arg VA_PORT=$VOTING_AUTH_BACKEND_PORT --build-arg VA_IP=$VOTING_AUTH_BACKEND_IP
 docker-compose -f pre_built.yml up --detach --no-build
 
 # remove all temp files

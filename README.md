@@ -26,22 +26,18 @@ sudo apt-get install jq
 sudo dnf install jq
 ```
 
-### Crypto Private Github Package
+### Github Packages & Github Config JSON (Important!)
 
-Since the crypto library (evote-crypto) is a private npm package, you need to be logged in to the Github package registry in order to be able to download the package.
-`npm login --registry=https://npm.pkg.github.com`
+The pre-built docker images are hosted on Gitub Packages. Accessing the images is currently only possible when logged in to: `docker.pkg.github.com`.
+You will need a Github personal access token with `repo, package:read` permission. Unlock this in your Github account.
 
-You will need a Github personal access token with `package:read, package:write` permission. Unlock this in your Github account.
-
-#### Github Config JSON
-
-Create a JSON file in the top-level folder (`/github.json`) which has the following structure, if it does not exist yet. Insert your credentials and personal information in there.
+Create a JSON file in the top-level folder (`/github.json`) which has the following structure, if it does not exist yet.
+Insert your credentials and personal information in there.
 
 ```json
 {
   "github": {
     "user": "",
-    "email": "",
     "token": ""
   }
 }

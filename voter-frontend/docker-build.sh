@@ -23,23 +23,12 @@ echo "The mode is: $mode"
 # - the config file with all IPs and ports
 ###########################################
 globalConfig=$parentDir/system.json
-githubConfig=$parentDir/github.json
-
-# check if the github config json exists -> if not we stop the process
-if [ ! -f "$githubConfig" ]; then
-    echo "$githubConfig doesn't exist! Please create it!"
-    exit
-fi
 
 ###########################################
 # ENV variables
 ###########################################
 # - Specify NODE_ENV
 NODE_ENV=$mode
-# - Specify the Github credentials
-GITHUB_TOKEN=$(cat $githubConfig | jq .github.token | tr -d \")
-GITHUB_EMAIL=$(cat $githubConfig | jq .github.email | tr -d \")
-GITHUB_USER=$(cat $githubConfig | jq .github.user | tr -d \")
 
 ###########################################
 # write ENV variables into .env
@@ -68,7 +57,7 @@ echo REACT_APP_IDENTITY_PROVIDER_IP=${IDENTITY_PROVIDER_IP} >> $dir/.env
 cd $dir
 
 # start docker containers
-DOCKER_BUILDKIT=1 docker build -t voter_frontend . --build-arg GITHUB_EMAIL=$GITHUB_EMAIL --build-arg GITHUB_TOKEN=$GITHUB_TOKEN --build-arg GITHUB_USER=$GITHUB_USER --build-arg AP_PORT=$REACT_APP_ACCESS_PROVIDER_PORT --build-arg AP_IP=$REACT_APP_ACCESS_PROVIDER_IP --build-arg IP_PORT=$REACT_APP_IDENTITY_PROVIDER_PORT --build-arg IP_IP=$REACT_APP_IDENTITY_PROVIDER_IP
+DOCKER_BUILDKIT=1 docker build -t voter_frontend . --build-arg AP_PORT=$REACT_APP_ACCESS_PROVIDER_PORT --build-arg AP_IP=$REACT_APP_ACCESS_PROVIDER_IP --build-arg IP_PORT=$REACT_APP_IDENTITY_PROVIDER_PORT --build-arg IP_IP=$REACT_APP_IDENTITY_PROVIDER_IP
 docker-compose -f pre_built.yml up --detach --no-build
 
 # remove all temp files
