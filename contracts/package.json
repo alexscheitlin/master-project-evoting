@@ -28,7 +28,8 @@
     "prettier-plugin-solidity": "^1.0.0-alpha.34",
     "random": "^2.1.1",
     "truffle": "^5.0.5",
-    "typescript": "3.7.2"
+    "typescript": "3.7.2",
+    "snyk": "^1.316.1"
   },
   "scripts": {
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
@@ -41,7 +42,9 @@
     "migrate:parity": "./node_modules/.bin/truffle migrate --network parity --reset",
     "test": "cd test && ../node_modules/.bin/truffle test --network ganache",
     "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol",
-    "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol"
+    "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "lint-staged": {
     "*.+(js|jsx|ts|tsx)": [
@@ -71,5 +74,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "snyk": true
 }
