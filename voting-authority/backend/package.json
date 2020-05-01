@@ -21,7 +21,9 @@
     "contracts:deploy": "./node_modules/.bin/ts-node solidity/scripts/deploy.ts",
     "contracts": "npm run contracts:compile && npm run contracts:deploy",
     "clean:db": "rm -f src/database/db.json",
-    "clean": "rm -rf dist && rm -rf node_modules && rm -f src/database/db.json && cp src/database/db_default.json src/database/db.json"
+    "clean": "rm -rf dist && rm -rf node_modules && rm -f src/database/db.json && cp src/database/db_default.json src/database/db.json",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "license": "MIT",
   "dependencies": {
@@ -33,7 +35,8 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
-    "web3": "^1.2.4"
+    "web3": "^1.2.4",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/bn.js": "^4.11.5",
@@ -88,5 +91,6 @@
       ".ts"
     ],
     "all": true
-  }
+  },
+  "snyk": true
 }
