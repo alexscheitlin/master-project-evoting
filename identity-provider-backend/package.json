@@ -18,7 +18,9 @@
     "tsc": "./node_modules/.bin/tsc",
     "serve:localhost": "./dev.sh",
     "serve:dev:clean": "npm run clean:db && NODE_ENV=development ts-node-dev --respawn --transpileOnly ./src/server.ts",
-    "debug": "node --nolazy --inspect-brk=9229 ./dist/server.js"
+    "debug": "node --nolazy --inspect-brk=9229 ./dist/server.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "license": "MIT",
   "dependencies": {
@@ -28,7 +30,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
-    "lowdb": "^1.0.0"
+    "lowdb": "^1.0.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/bn.js": "^4.11.6",
@@ -62,5 +65,6 @@
       ".ts"
     ],
     "all": true
-  }
+  },
+  "snyk": true
 }
