@@ -33,7 +33,7 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
-    "web3": "^1.2.4"
+    "web3": "^1.2.8"
   },
   "devDependencies": {
     "@types/bn.js": "^4.11.5",
