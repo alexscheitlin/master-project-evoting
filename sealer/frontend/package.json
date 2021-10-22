@@ -28,7 +28,8 @@
     "eslint-config-react": "^1.1.7",
     "eslint-plugin-prettier": "^3.1.1",
     "lint-staged": "^9.4.2",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "@snyk/protect": "latest"
   },
   "scripts": {
     "start:localhost": "./dev.sh 1",
@@ -39,7 +40,9 @@
     "pre-commit": "lint-staged",
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
     "lint": "eslint . --ext .js,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix"
+    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "browserslist": {
     "production": [
@@ -52,5 +55,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "snyk": true
 }
