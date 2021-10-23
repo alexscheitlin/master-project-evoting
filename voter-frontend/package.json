@@ -43,7 +43,8 @@
     "typescript": "3.7.2",
     "web3": "^1.2.2",
     "web3-typescript-typings": "^0.10.2",
-    "zustand": "^2.2.1"
+    "zustand": "^2.2.1",
+    "@snyk/protect": "latest"
   },
   "scripts": {
     "start:localhost": "./dev.sh",
@@ -54,7 +55,9 @@
     "eject": "react-scripts eject",
     "format": "prettier --write \"**/*.+(js|jsx|ts|tsx|json|css|md)\"",
     "lint": "eslint . --ext .js,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix"
+    "lint:fix": "eslint . --ext .js,.ts,.tsx --fix",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "browserslist": {
     "production": [
@@ -67,5 +70,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "snyk": true
 }
