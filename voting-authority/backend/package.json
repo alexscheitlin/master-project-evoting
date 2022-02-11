@@ -26,7 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@meck93/evote-crypto": "latest",
-    "axios": "^0.19.0",
+    "axios": "^0.20.0",
     "bn.js": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
